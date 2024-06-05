@@ -1,0 +1,4 @@
+ecodev-core==0.*
+ecodev-front==0.*
+gunicorn == 21.*
+gevent==23.*

@@ -1,0 +1,27 @@
+# Ignoring backup folders
+backup/
+# Ignoring R cache files
+.RData
+.Rhistory
+# Ignoring PyCharm cach files
+/.idea
+/app/.idea
+/backend/.idea
+/backend/app/.idea
+__pycache__/
+venv/
+.python-version
+.mypy_cache/
+# Ignoring PyCharm cach files
+# Ignoring files other than code
+*.png
+*.xlsx
+# Ignoring notebooks
+.ipynb
+.ipynb_checkpoints
+*.ipynb
+*.ipynb_checkpoints
+# ignoring data
+data/
+#ignoring environment file
+.env

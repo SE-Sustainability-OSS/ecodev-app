@@ -1,0 +1,36 @@
+# App name
+app_name= template # Name of the app. Will appear on the app header.
+
+# API app
+app_port=8000 # API app port number. Remove this entry in production
+fastapi_url= # API app web url. Fill only in production.
+
+# Dash app
+dash_app_port=8071 # Dash app port number. Remove this entry in production
+dash_url= # Dash app web url.  Fill only in production.
+
+# Jupyter app
+jupyter_port=5000 # Jupyter notebook port number. Remove this entry in production
+
+# Database access
+db_port=5432 # Database port number
+db_host=db # Database server name
+db_name=db # Database name
+db_username=user # Database login username. Change to a real username.
+db_password=password # Database login password. Change to a secured password.
+
+# Hashing secrets
+secret_key=azertyuiopqdfghjklmwxcvbn134567890azertyuiopqsdfghjklmwxcvbn1234567890 # App secret key (for hashing purposed)
+algorithm=HS256 # Password hashing algorithm
+
+# Other
+access_token_expire_minutes=1440 # App JWT access token expiry duration
+
+# App mailbox
+email_sender= # Mailbox email address. Put to the real email sender
+email_password= # Mailbox password. Put to the real email sender password
+email_smtp= # Mailbox SMTP (like smtp.gmail.com or mail.outlook.com). Put your smtp provider here
+
+# gunicorn/uvicorn setup
+gunicorn_setup=false # Should be true in production. Simpler to only work with uvicorn for local dev
+debug=false # Put to true if you want to be in dash debug mode
