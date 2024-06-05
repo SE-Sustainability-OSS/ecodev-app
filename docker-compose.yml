@@ -1,0 +1,90 @@
+services:
+# BEGIN ecodev_app
+  ecodev_app:
+    image: ecodev_app:latest
+    restart: always
+    container_name: ecodev_app
+    command: gunicorn app.dash_app:server --workers 4 --worker-class gevent  --bind 0.0.0.0:80
+    environment:
+      TZ: Europe/Paris
+    volumes:
+      - ./data:/app/data
+      - ./app:/app/app
+    env_file:
+      - ./.env
+    labels:
+      # Enable Traefik for this specific "backend" service
+      - traefik.enable=true
+      # Define the port inside of the Docker service to use
+      - traefik.http.services.ecodev-app.loadbalancer.server.port=80
+      # Make Traefik use this domain in HTTP
+      - traefik.http.routers.ecodev-app-http.entrypoints=http
+      - traefik.http.routers.ecodev-app-http.rule=Host(`${dash_url}`)
+      # Use the traefik-network network (declared below)
+      - traefik.docker.network=traefik-network
+      # Make Traefik use this domain in HTTPS
+      - traefik.http.routers.ecodev-app-https.entrypoints=https
+      - traefik.http.routers.ecodev-app-https.rule=Host(`${dash_url}`)
+      - traefik.http.routers.ecodev-app-https.tls=true
+      # Use the "le" (Let's Encrypt) resolver
+      - traefik.http.routers.ecodev-app-https.tls.certresolver=le
+      # https-redirect middleware to redirect HTTP to HTTPS
+      - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
+      # Middleware to redirect HTTP to HTTPS
+      - traefik.http.routers.ecodev-app-http.middlewares=https-redirect
+      - traefik.http.routers.ecodev-app-https.middlewares=secured
+    networks:
+      - red-base-network
+      # Use the public network created to be shared between Traefik and
+      # any other service that needs to be publicly available with HTTPS
+      - traefik-network
+# END ecodev_app
+# BEGIN ecodev_app_backend
+  ecodev_app_backend:
+    image: ecodev_app:latest
+    restart: always
+    container_name: ecodev_app_backend
+    command: gunicorn app.app:app --workers 4 --worker-class gevent  --bind 0.0.0.0:80
+    environment:
+      TZ: Europe/Paris
+    labels:
+      # Enable Traefik for this specific "backend" service
+      - traefik.enable=true
+      # Define the port inside of the Docker service to use
+      - traefik.http.services.ecodev-app-api.loadbalancer.server.port=80
+      # Make Traefik use this domain in HTTP
+      - traefik.http.routers.ecodev-app-api-http.entrypoints=http
+      - traefik.http.routers.ecodev-app-api-http.rule=Host(`${fastapi_url}`)
+      # Use the traefik-network network (declared below)
+      - traefik.docker.network=traefik-network
+      # Make Traefik use this domain in HTTPS
+      - traefik.http.routers.ecodev-app-api-https.entrypoints=https
+      - traefik.http.routers.ecodev-app-api-https.rule=Host(`${fastapi_url}`)
+      - traefik.http.routers.ecodev-app-api-https.tls=true
+      # Use the "le" (Let's Encrypt) resolver
+      - traefik.http.routers.ecodev-app-api-https.tls.certresolver=le
+      # https-redirect middleware to redirect HTTP to HTTPS
+      - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
+      # Middleware to redirect HTTP to HTTPS
+      - traefik.http.routers.ecodev-app-api-http.middlewares=https-redirect
+      - traefik.http.routers.ecodev-app-api-https.middlewares=secured
+    volumes:
+      - ./data:/app/data
+      - ./app:/app/app
+    env_file:
+      - ./.env
+    networks:
+      - red-base-network
+      # Use the public network created to be shared between Traefik and
+      # any other service that needs to be publicly available with HTTPS
+      - traefik-network
+# END ecodev_app_backend
+# NETWORKS
+networks:
+  red-base-network:
+   name: red-base-network
+   external: true
+  traefik-network:
+    external: true

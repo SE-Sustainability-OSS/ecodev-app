@@ -1,0 +1,152 @@
+@font-face {
+    font-family: 'Averta';
+    src: url('fonts/Averta_Regular.otf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Averta Bold';
+    src: url('fonts/Averta_ExtraBold.otf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Stag Medium';
+    src: url('fonts/stag-medium.otf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Stag Sans Book';
+    src: url('fonts/Stag Sans-Book.otf') format('truetype');
+}
+@font-face {
+    font-family: 'Thunder Bold';
+    src: url('fonts/Thunder-BoldLC.woff');
+}
+
+/* Dash mantine conflicts */
+input:invalid {
+    outline: none !important;
+}
+
+/* HTML elements */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: rgb(244, 247, 254);
+    padding-bottom: 5%;
+}
+
+h4 {
+    font-family: 'Averta';
+    font-size: 25px;
+    font-weight: bold;
+    color: #0066A1;
+    padding: 10px 0px 0px 10px;
+}
+
+h5 {
+    font-family: 'Averta';
+    font-size: 14px;
+    font-weight: bold;
+    color: #A0AEC0;
+    padding: 10px 0px 0px 10px;
+    margin: 0px;
+}
+
+h6 {
+    padding: 0;
+}
+
+a {
+    color: white
+}
+
+p {
+    font-size: 14px;
+    font-family: 'Averta';
+    color: black;
+    font-style: italic;
+    text-align: center;
+}
+
+/* Overall app-style and layout*/
+.page {
+    background-color: #f2f2f2;
+    padding-top: 1em;
+}
+
+.navbar {
+    background-color: #0066A1;
+}
+
+
+/* Custom component style */
+.navbar-divider {
+    color: #f2f2f2;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+
+.card {
+    padding: 2%;
+    position: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+
+.upload-box {
+    height: 30vh;
+    line-height: 60px;
+    border-width: 1px;
+    border-style: dashed;
+    border-radius: 10px;
+    text-align: center;
+    margin: auto;
+    color:#A0AEC0;
+    vertical-align: middle;
+}
+
+.graph {
+    width: 90%;
+    height: 90%;
+}
+
+/* AG Grid table formatting */
+.ag-theme-material .ag-row {
+    font-family: Averta;
+}
+
+.ag-theme-material .ag-header {
+    font-weight: bold;
+    font-family: Averta;
+    background-color: #0066A1;
+    height: 20px;
+}
+
+.ag-theme-material .ag-header-cell {
+    color: #fff;
+}
+
+/* Flex containers */
+.group {
+    display: flex;
+}
+
+.small-card {
+    flex-grow: 1;
+}
+
+.big-card {
+    flex-grow: 2;
+}

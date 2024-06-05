@@ -1,0 +1,3 @@
+ecodev-core==0.*
+ecodev-front==0.*
+notebook==6.*
