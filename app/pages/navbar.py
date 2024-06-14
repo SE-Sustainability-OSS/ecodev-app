@@ -3,11 +3,11 @@ Module implementing an example of customisable navbar components.
 """
 import dash_mantine_components as dmc
 from dash import html
-from ecodev_front import navbar_action_item
-from ecodev_front import navbar_header
-from ecodev_front import navbar_login
-from ecodev_front import navbar_menu
-from ecodev_front import navbar_menu_item
+from ecodev_front.components import navbar_action_item
+from ecodev_front.components import navbar_header
+from ecodev_front.components import navbar_login
+from ecodev_front.components import navbar_menu
+from ecodev_front.components import navbar_menu_item
 
 NAVBAR_DIVIDER = dmc.Divider(className='navbar-divider', orientation='vertical')
 

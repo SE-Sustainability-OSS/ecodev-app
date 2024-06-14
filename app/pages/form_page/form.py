@@ -2,8 +2,8 @@
 Module implementing components for a form example
 """
 import dash_mantine_components as dmc
-from ecodev_front import background_card
-from ecodev_front import card_title
+from ecodev_front.components import background_card
+from ecodev_front.components import card_title
 
 
 def get_example_form():

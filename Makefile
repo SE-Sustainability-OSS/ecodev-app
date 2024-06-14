@@ -37,7 +37,7 @@ prod-build:            ##@docker build production image
 	docker build --tag ecodev_app .
 
 dev-build:            ##@docker build development image
-	docker build --tag ecodev_app . -f Dockerfile-dev
+	docker build --tag ecodev_app . -f Dockerfile-dev --no-cache
 
 all-tests:		##@tests Run all the tests
 	docker exec ecodev_app python3 -m unittest discover tests

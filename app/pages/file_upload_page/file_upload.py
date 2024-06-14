@@ -11,9 +11,9 @@ from dash import Input
 from dash import no_update
 from dash import Output
 from ecodev_core import logger_get
-from ecodev_front import background_card
-from ecodev_front import card_title
-from ecodev_front import upload_box
+from ecodev_front.components import background_card
+from ecodev_front.components import card_title
+from ecodev_front.components import upload_box
 
 from app.pages.file_upload_page import UPLOAD_BOX_ID
 from app.pages.file_upload_page import UPLOAD_OUTPUT_ID

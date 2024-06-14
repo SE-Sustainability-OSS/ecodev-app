@@ -28,9 +28,9 @@ input:invalid {
 }
 
 /* HTML elements */
-* {
+/* * {
     box-sizing: border-box;
-}
+} */
 
 body {
     background-color: rgb(244, 247, 254);
@@ -73,7 +73,7 @@ p {
 /* Overall app-style and layout*/
 .page {
     background-color: #f2f2f2;
-    padding-top: 1em;
+    /* padding-top: 1em; */
 }
 
 .navbar {
@@ -118,8 +118,8 @@ p {
 }
 
 .graph {
-    width: 90%;
-    height: 90%;
+    width: 80%;
+    height: 80%;
 }
 
 /* AG Grid table formatting */
