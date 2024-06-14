@@ -1,65 +1,13 @@
 
-# EcoDev App
+# MY-APP-NAME
 
-This app can serve as a template. It includes some basic functionalities such as user login,
-customisable components such as navbar menus, and customised component builders such as
+_Description of my app_
 
 ### Usage
-1. First create a `<new-repository>` in your GitHub, then follow these commands, replacing any mention of `<new-repository>`, with your repo name:
 
-    ```bash
-    # Create new folder where you would like your repo to be located on your machine
-    mkdir <new-repository>; cd <new-repository>
+Go to `<APP_URL>` to view the app.
 
-    # Make a bare clone of this repository
-    git clone https://github.com/FR-PAR-ECOACT/ecodev-app
-
-    # Move files to parent directory
-    cd .. ; mv <new-repository>/ecodev-app/* <new-repository>/
-
-    # Delete remaining ecodev-app files
-    cd <new-repository> ; rm -rf ecodev-app/
-
-    # Remove git file
-    rm -rf .git
-
-    # Create new .git file (and optionally rename master to main)
-    git init ; git branch -M main
-
-    # Add new remote
-    git remote add origin https://github.com/<user>/<new-repository>
-    ```
-
-
-2. Search for and replace any references to `ecodev-app` and `ecodev_app` within the repo, with your own app name.
-
-    - `docker-compose.yml`
-    - `docker-compose.override.yml`
-    - `Makefile`
-
-    :warning: Do keep the respective `-` and `_` used throughout
-
-
-3. Update this `README.md` with your own. A template is provided in `README-template.md`
-
-    _Feel free to remove any other markdown file (e.g. `SECURITY.md`, `CODE_OF_CONDUCT.md`, etc.) that are not applicable._
-
-4. Once done, create your first commit and push to your new repo, as you would normally do.
-    ```bash
-    git add . ; git commit -m 'Initial commit'
-    git push origin main
-    ```
-
-5. To run your app, follow the `Local development` steps below (also available in the `README-template.md` file)
-
-
-### Help, Bugs & Feedback
-
-Product Owners: Thomas Epelbaum, Amaury Salles & Yoann Diep
-
-If encountering any bugs, feel free to browse the issue list & contribute!
-
-Use the docs/issues_template whenever possible. It will greatly help the developper team understand the full extent of your bug or feature request.
+Got to `<API_URL>/docs` to view the API documentation (with Swagger)
 
 
 ### Local development
@@ -67,20 +15,20 @@ Use the docs/issues_template whenever possible. It will greatly help the develop
 1. Clone the repo and build the docker image:
 
     ```git
-    git clone git@github.com:FR-PAR-ECOACT/ecodev-app.git
+    git clone git@github.com:FR-PAR-ECOACT/<new-repository>.git
     ```
 
 2. Create an `.env` file and save it under the application's root folder. It must contain the following (you have an `env_template` to help you):
     ```.env
     # App name
-    app_name= template # Name of the app. Will appear on the app header.
+    app_name= My New App # Name of the app. Will appear on the app header.
 
     # API app
     app_port=8000 # API app port number. Remove this entry in production
     fastapi_url= # API app web url. Fill only in production.
 
     # Dash app
-    dash_app_port=8071 # Dash app port number. Remove this entry in production
+    dash_app_port=8050 # Dash app port number. Remove this entry in production
     dash_url= # Dash app web url.  Fill only in production.
 
     # Jupyter app
@@ -94,7 +42,7 @@ Use the docs/issues_template whenever possible. It will greatly help the develop
     db_password=password # Database login password. Change to a secured password.
 
     # Hashing secrets
-    secret_key=azertyuiopqdfghjklmwxcvbn134567890azertyuiopqsdfghjklmwxcvbn1234567890 # App secret key (for hashing purposed)
+    secret_key=abcdefghijklmnopqrstuvwxyz134567890 # App secret key (for hashing purposed)
     algorithm=HS256 # Password hashing algorithm
 
     # Other
