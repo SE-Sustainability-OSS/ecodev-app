@@ -22,8 +22,6 @@ def send_credentials(email: str, user: AppUser, password: str) -> None:
     Your username: {user.user}<br>
     Your password: {password}<br>
     <br>
-    We recommend you save these username and password in your browser.
-    <br>
     <br>
     Thanks & Kind regards,<br>
     IT team<br>
