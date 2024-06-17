@@ -19,6 +19,7 @@ from ecodev_core import upsert_app_users
 from ecodev_front.ids import LOGIN_BTN_ID
 from ecodev_front.ids import LOGIN_PASSWORD_INPUT_ID
 from ecodev_front.ids import LOGIN_USERNAME_INPUT_ID
+from ecodev_front.layouts import dash_base_layout
 from fastapi import HTTPException
 from flask import Flask
 from pydantic_settings import BaseSettings
@@ -26,14 +27,15 @@ from pydantic_settings import SettingsConfigDict
 from sqlmodel import Session
 
 import app.db_model as db_model
+from app.components.footer import app_footer
 from app.constants import ASSETS_DIR
 from app.constants import DATA_DIR
 from app.constants import DUMMY_OUTPUT
+from app.constants import FOOTER
 from app.constants import LOGOUT_BTN_ID
 from app.constants import NAVBAR
 from app.constants import TOKEN
 from app.constants import URL
-from app.front_test import dash_base_layout
 from app.pages import navbar
 from app.pages import navbar_login_header
 
@@ -96,15 +98,18 @@ ecoact_colors = {'ecoact': ['#DDF5FF',
 dash_app.layout = dash_base_layout(dash_stores, ecoact_colors)
 
 
-@callback(Output(NAVBAR, 'children'), Input(TOKEN, 'data'), Input(URL, 'pathname'))
-def update_navbar_component(token: dict[str, str | None], pathname):
+@callback(Output(NAVBAR, 'children'),
+          Output(FOOTER, 'children'),
+          Input(TOKEN, 'data'),
+          Input(URL, 'pathname'))
+def update_navbar_footer_on_login(token: dict[str, str | None], pathname):
     """
     Navbar update. If no valid token is present in the store, return only navbar header.
     Otherwise, return the full navbar with all the page app.
     """
     if user := safe_get_user(token):
-        return navbar(user.permission == Permission.ADMIN)
-    return navbar_login_header()
+        return navbar(user.permission == Permission.ADMIN), app_footer()
+    return navbar_login_header(), app_footer()
 
 
 @callback(
