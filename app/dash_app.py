@@ -36,7 +36,6 @@ from app.constants import LOGOUT_BTN_ID
 from app.constants import NAVBAR
 from app.constants import TOKEN
 from app.constants import URL
-from app.front_test import dash_base_layout
 from app.pages import navbar
 from app.pages import navbar_login_header
 
