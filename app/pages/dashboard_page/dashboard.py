@@ -3,8 +3,8 @@ Module implementing an example dashboard
 """
 import dash_mantine_components as dmc
 from dash import html
-from ecodev_front import background_card
-from ecodev_front import card_title
+from ecodev_front.components import background_card
+from ecodev_front.components import card_title
 
 from app.components.plots.bar_chart import bar_chart
 from app.components.plots.heatmap import heat_map

@@ -2,10 +2,8 @@
 Module creating the app_template tool dash app
 """
 import dash
-import dash_mantine_components as dmc
 from dash import callback
 from dash import Dash
-from dash import dcc
 from dash import Input
 from dash import no_update
 from dash import Output
@@ -18,9 +16,10 @@ from ecodev_core import logger_get
 from ecodev_core import Permission
 from ecodev_core import safe_get_user
 from ecodev_core import upsert_app_users
-from ecodev_front import LOGIN_BTN_ID
-from ecodev_front import LOGIN_PASSWORD_INPUT_ID
-from ecodev_front import LOGIN_USERNAME_INPUT_ID
+from ecodev_front.ids import LOGIN_BTN_ID
+from ecodev_front.ids import LOGIN_PASSWORD_INPUT_ID
+from ecodev_front.ids import LOGIN_USERNAME_INPUT_ID
+from ecodev_front.layouts import dash_base_layout
 from fastapi import HTTPException
 from flask import Flask
 from pydantic_settings import BaseSettings
@@ -28,10 +27,11 @@ from pydantic_settings import SettingsConfigDict
 from sqlmodel import Session
 
 import app.db_model as db_model
-from app.components import app_footer
+from app.components.footer import app_footer
 from app.constants import ASSETS_DIR
 from app.constants import DATA_DIR
 from app.constants import DUMMY_OUTPUT
+from app.constants import FOOTER
 from app.constants import LOGOUT_BTN_ID
 from app.constants import NAVBAR
 from app.constants import TOKEN
@@ -78,34 +78,38 @@ dash._dash_renderer._set_react_version('18.2.0')
 dash_app = init_dash_app()
 server = dash_app.server
 
-DASH_APP_LAYOUT = dmc.AppShell(
-    [
-        dcc.Location(id=URL, refresh=True),
-        dcc.Store(id=TOKEN, data={TOKEN: None}, storage_type='local'),
-        dcc.Store(id=DUMMY_OUTPUT, storage_type='session'),
-        dmc.AppShellHeader(id=NAVBAR, children=[]),
-        dmc.AppShellMain(dash.page_container),
-        dmc.AppShellFooter(app_footer()),
-    ],
-    header={'height': 55},
-    style={'padding-inline': '0px', 'background-color': '#f2f2f2'},
-    footer={'height': 40},
-)
 
-dash_app.layout = dmc.MantineProvider(
-    forceColorScheme='light', children=DASH_APP_LAYOUT
-)
+SESSION_STORE = 'session'
+LOCAL_STORE = 'local'
+EXAMPLE_STORE = 'example-store-id'
+
+dash_stores = [(DUMMY_OUTPUT, SESSION_STORE),
+               (EXAMPLE_STORE, SESSION_STORE)]
+ecoact_colors = {'ecoact': ['#DDF5FF',
+                            '#81DBFF',
+                            '#34C6FF',
+                            '#00B3FF',
+                            '#009CFF',
+                            '#0082DE',
+                            '#0066A1',
+                            '#005794',
+                            '#004576',
+                            '#00385F']}
+dash_app.layout = dash_base_layout(dash_stores, ecoact_colors)
 
 
-@callback(Output(NAVBAR, 'children'), Input(TOKEN, 'data'), Input(URL, 'pathname'))
-def update_navbar_component(token: dict[str, str | None], pathname):
+@callback(Output(NAVBAR, 'children'),
+          Output(FOOTER, 'children'),
+          Input(TOKEN, 'data'),
+          Input(URL, 'pathname'))
+def update_navbar_footer_on_login(token: dict[str, str | None], pathname):
     """
     Navbar update. If no valid token is present in the store, return only navbar header.
     Otherwise, return the full navbar with all the page app.
     """
     if user := safe_get_user(token):
-        return navbar(user.permission == Permission.ADMIN)
-    return navbar_login_header()
+        return navbar(user.permission == Permission.ADMIN), app_footer()
+    return navbar_login_header(), app_footer()
 
 
 @callback(

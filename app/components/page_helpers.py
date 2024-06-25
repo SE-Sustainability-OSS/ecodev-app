@@ -21,8 +21,4 @@ def generic_page(token: dict,
     if not (user := get_user(get_access_token(token))):
         return NOT_AUTHORIZED
 
-    return (
-        html.Div(page, className='page')
-        if (not admin or user.permission == Permission.ADMIN)
-        else NOT_AUTHORIZED
-    )
+    return page if (not admin or user.permission == Permission.ADMIN) else NOT_AUTHORIZED

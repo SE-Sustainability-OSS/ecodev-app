@@ -9,7 +9,7 @@ from dash import Input
 from dash import Output
 from dash import register_page
 from ecodev_core import logger_get
-from ecodev_front import background_card
+from ecodev_front.components import background_card
 
 from app.components import USER_COMPONENTS
 from app.components.page_helpers import generic_page
