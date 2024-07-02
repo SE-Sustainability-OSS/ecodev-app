@@ -5,14 +5,17 @@ import dash_mantine_components as dmc
 from dash import html
 from dash_iconify import DashIconify
 from ecodev_front.components import action_item
-from ecodev_front.components import app_header, app_title, app_logo
+from ecodev_front.components import app_header
+from ecodev_front.components import app_logo
+from ecodev_front.components import app_title
 from ecodev_front.components import login
-# from ecodev_front.components import menu
 from ecodev_front.components import menu_item
+# from ecodev_front.components import menu
 
 NAVBAR_DIVIDER = dmc.Divider(className='navbar-divider', orientation='vertical')
 APP_TITLE = app_title()
 APP_LOGO = app_logo()
+
 
 def navbar(is_admin: bool = False) -> html.Div:
     """
@@ -20,7 +23,8 @@ def navbar(is_admin: bool = False) -> html.Div:
     Only show certain additional buttons to admin users.
     """
     return html.Div([dmc.Grid(
-        children=[app_header(APP_TITLE, APP_LOGO), navbar_app_pages(), user_admin_settings(is_admin)],
+        children=[app_header(APP_TITLE, APP_LOGO), navbar_app_pages(),
+                  user_admin_settings(is_admin)],
         justify='space-between',
         align='stretch',
         style={
@@ -34,7 +38,7 @@ def navbar_login_header() -> html.Div:
     """
     Example of navbar header grid
     """
-    
+
     return html.Div([dmc.Grid(
         children=[app_header(APP_TITLE, APP_LOGO), login()],
         justify='space-between',
@@ -44,6 +48,7 @@ def navbar_login_header() -> html.Div:
             'color': 'white',
         },
     )])
+
 
 def menu(label: str,
          icon: str,
@@ -63,7 +68,7 @@ def menu(label: str,
                 id='action-icon',
                 n_clicks=0,
             )),
-            dmc.MenuDropdown([dmc.MenuLabel(label.upper(), style={'textAlign':'center'}),
+            dmc.MenuDropdown([dmc.MenuLabel(label.upper(), style={'textAlign': 'center'}),
                               html.Div([item for item in menu_items])
                               ])
         ], offset=9, trigger='hover')
@@ -71,6 +76,7 @@ def menu(label: str,
               'justifyContent': 'center',
               'alignItems': 'center',
               'textAlign': 'center'})
+
 
 def navbar_app_pages() -> dmc.GridCol:
     """

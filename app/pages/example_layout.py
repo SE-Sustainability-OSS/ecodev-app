@@ -11,10 +11,7 @@ from ecodev_core import logger_get
 
 from app.components.page_helpers import generic_page
 from app.constants import TOKEN
-from app.front_test import LEFT_ASIDE_EXAMPLE
 from app.front_test import page_left_right_asides
-from app.front_test import RIGHT_ASIDE_EXAMPLE
-from app.pages.report_page.report import get_example_report
 
 log = logger_get(__name__)
 
