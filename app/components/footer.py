@@ -47,7 +47,6 @@ def _footer(
     """
     return html.Div(
         children,
-        id=FOOTER,
         style={
             'paddingBottom': '10px',
             'backgroundColor': color,
@@ -60,15 +59,14 @@ def _footer(
     )
 
 
-@callback(
-    Output(FOOTER, 'style'),
-    Input(TOKEN, 'data'),
-    State(FOOTER, 'style'),
-)
-def show_hide_footer(token, style: dict) -> dict:
-    """
-    Navbar update. If no valid token is present in the store, return the login component.
-    Otherwise, return the full navbar with all the page app.
-    """
-    style['display'] = 'flex' if is_authorized_user(get_access_token(token)) else 'None'
-    return style
+# @callback(
+#     Output(FOOTER, 'children'),
+#     Input(TOKEN, 'data'),
+# )
+# def show_hide_footer(token) -> dmc.Group:
+#     """
+#     Navbar update. If no valid token is present in the store, return the login component.
+#     Otherwise, return the full navbar with all the page app.
+#     """
+#     return app_footer() if is_authorized_user(get_access_token(token)) else None
+

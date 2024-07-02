@@ -27,7 +27,7 @@ from pydantic_settings import SettingsConfigDict
 from sqlmodel import Session
 
 import app.db_model as db_model
-from app.components.footer import app_footer
+from app.components.footer import _footer, app_footer
 from app.constants import ASSETS_DIR
 from app.constants import DATA_DIR
 from app.constants import DUMMY_OUTPUT
@@ -109,7 +109,7 @@ def update_navbar_footer_on_login(token: dict[str, str | None], pathname):
     """
     if user := safe_get_user(token):
         return navbar(user.permission == Permission.ADMIN), app_footer()
-    return navbar_login_header(), app_footer()
+    return navbar_login_header(), _footer(None)
 
 
 @callback(
