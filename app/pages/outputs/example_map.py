@@ -7,27 +7,26 @@ from dash import Input
 from dash import Output
 from dash import register_page
 from ecodev_core import logger_get
+from ecodev_front import TOKEN
 from ecodev_front.components import background_card
+from ecodev_front.components import card_title
 
 from app.components.page_helpers import generic_page
-from app.constants import TOKEN
-from app.front_test import LEFT_ASIDE_EXAMPLE
-from app.front_test import page_left_aside
-from app.pages.map_page.map import MAP_GRAPH
+from app.pages.outputs import MAP_PAGE_ID
+from app.pages.outputs import MAP_PAGE_URL
+from app.pages.outputs.map_page.map import MAP_GRAPH
 
 log = logger_get(__name__)
-register_page(__name__, path='/outputs/map')
-PAGE_ID = 'outputs-example-map'
-layout = [html.Div(id=PAGE_ID, className='centered')]
+register_page(__name__, path=MAP_PAGE_URL)
+
+layout = [html.Div(id=MAP_PAGE_ID, className='centered')]
 
 
-@callback(Output(PAGE_ID, 'children'), Input(TOKEN, 'data'))
+@callback(Output(MAP_PAGE_ID, 'children'), Input(TOKEN, 'data'))
 def render_page(token):
     """
     Example usage of a map component (using plotly).
     Component includes some defaults which can be overridden.
     """
-    page = page_left_aside(
-        aside_content=LEFT_ASIDE_EXAMPLE,
-        page_content=background_card([MAP_GRAPH]))
+    page = background_card([card_title('Example of map component'), MAP_GRAPH])
     return generic_page(token, page)

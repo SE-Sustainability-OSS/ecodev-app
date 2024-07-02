@@ -16,9 +16,6 @@ def get_example_report() -> dmc.Card:
             dmc.Stack(
                 [
                     card_title('Example output report', align='center'),
-                    dmc.Space(h=5),
-                    dmc.Divider(),
-                    dmc.Space(h=5),
                     dmc.SimpleGrid(
                         cols=2,
                         children=[

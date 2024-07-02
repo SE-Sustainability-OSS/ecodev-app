@@ -24,7 +24,7 @@ def get_example_form():
                         ],
                         style={'text-align': 'left'},
                     ),
-                    dmc.Button('Submit'),
+                    dmc.Button('Submit', color='ecoact'),
                 ]
             )
         ]

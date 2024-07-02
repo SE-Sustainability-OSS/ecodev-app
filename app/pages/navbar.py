@@ -3,16 +3,28 @@ Module implementing an example of customisable navbar components.
 """
 import dash_mantine_components as dmc
 from dash import html
-from dash_iconify import DashIconify
 from ecodev_front.components import action_item
 from ecodev_front.components import app_header
 from ecodev_front.components import app_logo
 from ecodev_front.components import app_title
 from ecodev_front.components import login
+from ecodev_front.components import menu
 from ecodev_front.components import menu_item
-# from ecodev_front.components import menu
+from ecodev_front.components import navbar_divider
 
-NAVBAR_DIVIDER = dmc.Divider(className='navbar-divider', orientation='vertical')
+from app.pages.inputs import FILE_UPLOAD_PAGE_URL
+from app.pages.inputs import FORMS_PAGE_URL
+from app.pages.inputs import IN_DATA_TABLE_PAGE_URL
+from app.pages.inputs import SEARCH_BAR_PAGE_URL
+from app.pages.layouts import LEFT_ASIDE_PAGE_URL
+from app.pages.layouts import LEFT_RIGHT_ASIDE_PAGE_URL
+from app.pages.layouts import RIGHT_ASIDE_PAGE_URL
+from app.pages.layouts import SIMPLE_PAGE_URL
+from app.pages.outputs import DASHBOARD_PAGE_URL
+from app.pages.outputs import MAP_PAGE_URL
+from app.pages.outputs import OUT_DATA_TABLE_PAGE_URL
+from app.pages.outputs import REPORT_PAGE_URL
+
 APP_TITLE = app_title()
 APP_LOGO = app_logo()
 
@@ -27,10 +39,6 @@ def navbar(is_admin: bool = False) -> html.Div:
                   user_admin_settings(is_admin)],
         justify='space-between',
         align='stretch',
-        style={
-            'backgroundColor': '#0066A1',
-            'color': 'white',
-        },
     )])
 
 
@@ -42,40 +50,8 @@ def navbar_login_header() -> html.Div:
     return html.Div([dmc.Grid(
         children=[app_header(APP_TITLE, APP_LOGO), login()],
         justify='space-between',
-        align='stretch',
-        style={
-            'backgroundColor': '#0066A1',
-            'color': 'white',
-        },
+        align='stretch'
     )])
-
-
-def menu(label: str,
-         icon: str,
-         menu_items: list[dmc.MenuItem],
-         icon_color: str = 'white') -> html.Div:
-    """
-    Component to create a navbar menu.
-    The menu items must be created beforehand & passed to this component.
-    """
-    return html.Div(children=[
-        dmc.Menu([
-            dmc.MenuTarget(dmc.ActionIcon(
-                DashIconify(icon=icon,
-                            color=icon_color, width=30),
-                size='xl',
-                variant='transparent',
-                id='action-icon',
-                n_clicks=0,
-            )),
-            dmc.MenuDropdown([dmc.MenuLabel(label.upper(), style={'textAlign': 'center'}),
-                              html.Div([item for item in menu_items])
-                              ])
-        ], offset=9, trigger='hover')
-    ], style={'display': 'flex',
-              'justifyContent': 'center',
-              'alignItems': 'center',
-              'textAlign': 'center'})
 
 
 def navbar_app_pages() -> dmc.GridCol:
@@ -87,16 +63,24 @@ def navbar_app_pages() -> dmc.GridCol:
         icon='ph:layout',
         menu_items=[
             menu_item(
-                label='Simple page', href='/layouts/simple', icon='bi:square'
+                label='Basic Page',
+                href=SIMPLE_PAGE_URL,
+                icon='bi:square'
             ),
             menu_item(
-                label='Left navbar', href='/layouts/left-aside', icon='bi:layout-sidebar'
+                label='Left Aside',
+                href=LEFT_ASIDE_PAGE_URL,
+                icon='bi:layout-sidebar'
             ),
             menu_item(
-                label='Right aside', href='/layouts/right-aside', icon='bi:layout-sidebar-reverse'
+                label='Right Aside',
+                href=RIGHT_ASIDE_PAGE_URL,
+                icon='bi:layout-sidebar-reverse'
             ),
             menu_item(
-                label='Left-right asides', href='/inputs/left-right-aside', icon='bi:layout-three-columns',
+                label='Left-right Asides',
+                href=LEFT_RIGHT_ASIDE_PAGE_URL,
+                icon='bi:layout-three-columns',
             ),
         ],
     )
@@ -106,17 +90,23 @@ def navbar_app_pages() -> dmc.GridCol:
         icon='clarity:form-line',
         menu_items=[
             menu_item(
-                label='Forms', href='/inputs/forms', icon='solar:text-field-linear'
+                label='Forms',
+                href=FORMS_PAGE_URL,
+                icon='solar:text-field-linear'
             ),
             menu_item(
-                label='Search bar', href='/inputs/search-bar', icon='basil:search-solid'
+                label='Search Bar',
+                href=SEARCH_BAR_PAGE_URL,
+                icon='basil:search-solid'
             ),
             menu_item(
-                label='Data table', href='/inputs/data-table', icon='uiw:table'
+                label='Data Table',
+                href=IN_DATA_TABLE_PAGE_URL,
+                icon='uiw:table'
             ),
             menu_item(
-                label='Upload box',
-                href='/inputs/file-upload',
+                label='Upload Box',
+                href=FILE_UPLOAD_PAGE_URL,
                 icon='material-symbols:upload',
             ),
         ],
@@ -126,16 +116,22 @@ def navbar_app_pages() -> dmc.GridCol:
         label='OUTPUTS EXAMPLES',
         icon='mdi:graph-box-outline',
         menu_items=[
-            menu_item(label='Reports', href='/outputs/reports', icon='gg:notes'),
+            menu_item(label='Reports',
+                      href=REPORT_PAGE_URL,
+                      icon='gg:notes'),
             menu_item(
                 label='Graphs/Dashboards',
-                href='/outputs/dashboards',
+                href=DASHBOARD_PAGE_URL,
                 icon='ic:round-dashboard',
             ),
             menu_item(
-                label='Tabular', href='/outputs/data-table', icon='ph:table-bold'
+                label='Tabular',
+                href=OUT_DATA_TABLE_PAGE_URL,
+                icon='ph:table-bold'
             ),
-            menu_item(label='Map', href='/outputs/map', icon='tabler:map-pin-2'),
+            menu_item(label='Map',
+                      href=MAP_PAGE_URL,
+                      icon='tabler:map-pin-2'),
         ],
     )
 
@@ -143,13 +139,13 @@ def navbar_app_pages() -> dmc.GridCol:
         [
             dmc.Group(
                 [
-                    NAVBAR_DIVIDER,
+                    navbar_divider(),
                     layout_examples_menu,
-                    NAVBAR_DIVIDER,
+                    navbar_divider(),
                     inputs_example_menu,
-                    NAVBAR_DIVIDER,
+                    navbar_divider(),
                     outputs_example_menu,
-                    NAVBAR_DIVIDER,
+                    navbar_divider(),
                 ],
                 justify='space-around',
             ),
@@ -193,9 +189,9 @@ def user_admin_settings(is_admin: bool) -> dmc.GridCol:
             dmc.Group(
                 [
                     admin_menu if is_admin else None,
-                    NAVBAR_DIVIDER,
+                    navbar_divider(),
                     doc_btn,
-                    NAVBAR_DIVIDER,
+                    navbar_divider(),
                     logout_btn,
                 ],
                 justify='flex-end',

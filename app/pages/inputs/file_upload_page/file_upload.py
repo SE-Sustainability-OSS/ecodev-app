@@ -15,20 +15,18 @@ from ecodev_front.components import background_card
 from ecodev_front.components import card_title
 from ecodev_front.components import upload_box
 
-from app.pages.file_upload_page import UPLOAD_BOX_ID
-from app.pages.file_upload_page import UPLOAD_OUTPUT_ID
+from app.pages.inputs.file_upload_page import UPLOAD_BOX_ID
+from app.pages.inputs.file_upload_page import UPLOAD_OUTPUT_ID
 
 log = logger_get(__name__)
 UPLOAD = upload_box(id=UPLOAD_BOX_ID, label='Upload a file (.xlsx/.csv)', multiple=False)
 OUTPUT_UPLOAD = html.Div(id=UPLOAD_OUTPUT_ID)
-UPLOADERS = background_card(
-    [dmc.Stack(
-        [
-            dmc.Group([card_title('Example file upload'), dmc.Space(w=55),],
-                      style={'justify-content': 'space-between'},),
-            dmc.Space(h=10), UPLOAD, OUTPUT_UPLOAD
-        ]
-    )]
+UPLOADERS = background_card([
+    card_title('Example file upload'),
+    dmc.Box([
+            UPLOAD, OUTPUT_UPLOAD
+            ], style={'min-width': '700px', 'padding': '10px'})
+]
 )
 
 

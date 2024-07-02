@@ -1,0 +1,10 @@
+LAYOUT_PAGE_URL = '/layouts'
+SIMPLE_PAGE_URL = f'{LAYOUT_PAGE_URL}/simple-page'
+LEFT_ASIDE_PAGE_URL = f'{LAYOUT_PAGE_URL}/left-aside'
+RIGHT_ASIDE_PAGE_URL = f'{LAYOUT_PAGE_URL}/right-aside'
+LEFT_RIGHT_ASIDE_PAGE_URL = f'{LAYOUT_PAGE_URL}/left-right-asides'
+
+SIMPLE_PAGE_ID = 'simple-page-id'
+LEFT_ASIDE_PAGE_ID = 'left-aside-page-id'
+RIGHT_ASIDE_PAGE_ID = 'right-aside-page-id'
+LEFT_RIGHT_ASIDE_PAGE_ID = 'left-right-aside-page-id'

@@ -1,3 +1,6 @@
+"""
+Module implementing a map component example
+"""
 import pandas as pd
 from dash import dcc
 from plotly import express as px
@@ -27,4 +30,4 @@ def get_map():
     return fig
 
 
-MAP_GRAPH = dcc.Graph(figure=get_map(), className='graph', id=MAP)
+MAP_GRAPH = dcc.Graph(figure=get_map(), className='graph', id=MAP, style={'padding-top': '10px'})

@@ -8,7 +8,7 @@ import dash_ag_grid as dag
 from ecodev_front.components import data_table
 from plotly.data import iris
 
-from app.pages.data_table_page import DATA_TABLE
+from app.pages.outputs.data_table_page import DATA_TABLE
 
 
 def get_example_table() -> dag.AgGrid:

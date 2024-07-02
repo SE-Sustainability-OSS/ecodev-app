@@ -1,0 +1,10 @@
+OUTPUT_PAGE_URL = '/outputs'
+DASHBOARD_PAGE_URL = f'{OUTPUT_PAGE_URL}/dashboard'
+OUT_DATA_TABLE_PAGE_URL = f'{OUTPUT_PAGE_URL}/data-table'
+MAP_PAGE_URL = f'{OUTPUT_PAGE_URL}/map'
+REPORT_PAGE_URL = f'{OUTPUT_PAGE_URL}/report'
+
+DASHBOARD_PAGE_ID = 'dashboard-page-id'
+OUT_DATA_TABLE_PAGE_ID = 'out-data-table-page-id'
+MAP_PAGE_ID = 'map-page-id'
+REPORT_PAGE_ID = 'report-page-id'

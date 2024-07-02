@@ -2,10 +2,8 @@
 Module creating the app_template tool dash app
 """
 import dash
-import dash_mantine_components as dmc
 from dash import callback
 from dash import Dash
-from dash import dcc
 from dash import Input
 from dash import no_update
 from dash import Output
@@ -18,14 +16,15 @@ from ecodev_core import logger_get
 from ecodev_core import Permission
 from ecodev_core import safe_get_user
 from ecodev_core import upsert_app_users
-from ecodev_front.ids import APPSHELL
-from ecodev_front.ids import FOOTER_ID
-from ecodev_front.ids import LEFT_ASIDE_ID
-from ecodev_front.ids import LOGIN_BTN_ID
-from ecodev_front.ids import LOGIN_PASSWORD_INPUT_ID
-from ecodev_front.ids import LOGIN_USERNAME_INPUT_ID
-from ecodev_front.ids import NAVBAR_ID
-from ecodev_front.ids import RIGHT_ASIDE_ID
+from ecodev_front import FOOTER_ID
+from ecodev_front import LOGIN_BTN_ID
+from ecodev_front import LOGIN_PASSWORD_INPUT_ID
+from ecodev_front import LOGIN_USERNAME_INPUT_ID
+from ecodev_front import LOGOUT_BTN_ID
+from ecodev_front import NAVBAR
+from ecodev_front import TOKEN
+from ecodev_front import URL
+from ecodev_front.layouts import dash_base_layout
 from fastapi import HTTPException
 from flask import Flask
 from pydantic_settings import BaseSettings
@@ -37,14 +36,8 @@ from app.components.footer import app_footer
 from app.constants import ASSETS_DIR
 from app.constants import DATA_DIR
 from app.constants import DUMMY_OUTPUT
-from app.constants import FOOTER
-from app.constants import LOGOUT_BTN_ID
-from app.constants import NAVBAR
-from app.constants import TOKEN
-from app.constants import URL
 from app.pages import navbar
 from app.pages import navbar_login_header
-# from ecodev_front.layouts import dash_base_layout
 
 log = logger_get(__name__)
 
@@ -104,71 +97,11 @@ ecoact_colors = {'ecoact': ['#DDF5FF',
                             '#004576',
                             '#00385F']}
 
-
-def dash_base_layout(stores: list[tuple[str, str]],
-                     main_color: str = '#0066A1',
-                     colors: dict[str, list[str]] | None = None,
-                     header_height: int = 55,
-                     footer_height: int = 40) -> dmc.MantineProvider:
-    """
-    Returns a base layout for any Dash application
-    """
-    return dmc.MantineProvider(
-        forceColorScheme='light',
-        theme={'colors': colors} if colors else None,
-        children=dmc.AppShell(
-            [
-                dcc.Location(id=URL, refresh=True),
-                dcc.Store(id=TOKEN, data={TOKEN: None}, storage_type='local'),
-                *[dcc.Store(id=store_id, storage_type=storage_type)
-                  for store_id, storage_type in stores],
-                dmc.AppShellHeader(id=NAVBAR_ID, style={'background-color': main_color},
-                                   zIndex=100, children=[]),
-                dmc.AppShellNavbar(
-                    id=LEFT_ASIDE_ID,
-                    children=[],
-                    zIndex=90,
-                    withBorder=True, visibleFrom='md'),
-
-                dmc.AppShellMain(dash.page_container, style={'margin': '2%',
-                                                             'justifyContent': 'center',
-                                                             'display': 'flex'}),
-                dmc.AppShellAside(
-                    id=RIGHT_ASIDE_ID,
-                    children=[],
-                    zIndex=90,
-                    withBorder=True, visibleFrom='md'),
-
-                dmc.AppShellFooter(id=FOOTER_ID, zIndex=100, children=[],
-                                   style={'paddingBottom': '10px',
-                                          'backgroundColor': main_color,
-                                          'color': 'white',
-                                          'textAlign': 'center',
-                                          'alignContent': 'center',
-                                          'justifyContent': 'center'}
-                                   )
-            ],
-            style={'padding-inline': '0px', 'background-color': '#f2f2f2'},
-            header={'height': header_height},
-            footer={'height': footer_height},
-            navbar={
-                'breakpoint': 'xl',
-                'collapsed': {'desktop': False, 'mobile': True},
-            },
-            aside={
-                'breakpoint': 'xl',
-                'collapsed': {'desktop': False, 'mobile': True},
-            },
-            id=APPSHELL
-        )
-    )
-
-
 dash_app.layout = dash_base_layout(dash_stores, colors=ecoact_colors)
 
 
 @callback(Output(NAVBAR, 'children'),
-          Output(FOOTER, 'children'),
+          Output(FOOTER_ID, 'children'),
           Input(TOKEN, 'data'),
           Input(URL, 'pathname'))
 def update_navbar_footer_on_login(token: dict[str, str | None], pathname):
