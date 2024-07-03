@@ -7,10 +7,10 @@ from ecodev_front.components import action_item
 from ecodev_front.components import app_header
 from ecodev_front.components import app_logo
 from ecodev_front.components import app_title
+from ecodev_front.components import header_divider
 from ecodev_front.components import login
 from ecodev_front.components import menu
 from ecodev_front.components import menu_item
-from ecodev_front.components import navbar_divider
 
 from app.pages.inputs import FILE_UPLOAD_PAGE_URL
 from app.pages.inputs import FORMS_PAGE_URL
@@ -139,13 +139,13 @@ def navbar_app_pages() -> dmc.GridCol:
         [
             dmc.Group(
                 [
-                    navbar_divider(),
+                    header_divider(),
                     layout_examples_menu,
-                    navbar_divider(),
+                    header_divider(),
                     inputs_example_menu,
-                    navbar_divider(),
+                    header_divider(),
                     outputs_example_menu,
-                    navbar_divider(),
+                    header_divider(),
                 ],
                 justify='space-around',
             ),
@@ -189,9 +189,9 @@ def user_admin_settings(is_admin: bool) -> dmc.GridCol:
             dmc.Group(
                 [
                     admin_menu if is_admin else None,
-                    navbar_divider(),
+                    header_divider(),
                     doc_btn,
-                    navbar_divider(),
+                    header_divider(),
                     logout_btn,
                 ],
                 justify='flex-end',

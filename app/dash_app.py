@@ -21,7 +21,7 @@ from ecodev_front import LOGIN_BTN_ID
 from ecodev_front import LOGIN_PASSWORD_INPUT_ID
 from ecodev_front import LOGIN_USERNAME_INPUT_ID
 from ecodev_front import LOGOUT_BTN_ID
-from ecodev_front import NAVBAR
+from ecodev_front import NAVBAR_ID
 from ecodev_front import TOKEN
 from ecodev_front import URL
 from ecodev_front.layouts import dash_base_layout
@@ -100,7 +100,7 @@ ecoact_colors = {'ecoact': ['#DDF5FF',
 dash_app.layout = dash_base_layout(dash_stores, colors=ecoact_colors)
 
 
-@callback(Output(NAVBAR, 'children'),
+@callback(Output(NAVBAR_ID, 'children'),
           Output(FOOTER_ID, 'children'),
           Input(TOKEN, 'data'),
           Input(URL, 'pathname'))
