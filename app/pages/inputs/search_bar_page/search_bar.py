@@ -6,8 +6,8 @@ from dash import callback
 from dash import html
 from dash import Input
 from dash import Output
-from ecodev_front.components import background_card
-from ecodev_front.components import search_bar
+from ecodev_front import background_card
+from ecodev_front import search_bar
 
 from app.pages.inputs.search_bar_page import SEARCH_BAR_ID
 from app.pages.inputs.search_bar_page import SEARCH_OUTPUT_ID

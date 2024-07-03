@@ -12,11 +12,11 @@ from dash import Output
 from dash import register_page
 from dash import State
 from ecodev_core import safe_get_user
+from ecodev_front import APPSHELL
+from ecodev_front import ASIDE
+from ecodev_front import NAVBAR
 from ecodev_front import TOKEN
 from ecodev_front import URL
-from ecodev_front.ids import APPSHELL
-from ecodev_front.ids import ASIDE
-from ecodev_front.ids import NAVBAR
 
 from app.components.page_helpers import generic_page
 from app.pages.layouts import LEFT_ASIDE_PAGE_URL

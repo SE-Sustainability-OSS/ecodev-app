@@ -16,6 +16,7 @@ from ecodev_core import logger_get
 from ecodev_core import Permission
 from ecodev_core import safe_get_user
 from ecodev_core import upsert_app_users
+from ecodev_front import dash_base_layout
 from ecodev_front import FOOTER_ID
 from ecodev_front import LOGIN_BTN_ID
 from ecodev_front import LOGIN_PASSWORD_INPUT_ID
@@ -24,7 +25,6 @@ from ecodev_front import LOGOUT_BTN_ID
 from ecodev_front import NAVBAR_ID
 from ecodev_front import TOKEN
 from ecodev_front import URL
-from ecodev_front.layouts import dash_base_layout
 from fastapi import HTTPException
 from flask import Flask
 from pydantic_settings import BaseSettings
@@ -96,6 +96,7 @@ ecoact_colors = {'ecoact': ['#DDF5FF',
                             '#005794',
                             '#004576',
                             '#00385F']}
+
 
 dash_app.layout = dash_base_layout(dash_stores, colors=ecoact_colors)
 

@@ -3,14 +3,15 @@ Module implementing an example of customisable navbar components.
 """
 import dash_mantine_components as dmc
 from dash import html
-from ecodev_front.components import action_item
-from ecodev_front.components import app_header
-from ecodev_front.components import app_logo
-from ecodev_front.components import app_title
-from ecodev_front.components import header_divider
-from ecodev_front.components import login
-from ecodev_front.components import menu
-from ecodev_front.components import menu_item
+from ecodev_front import action_item
+from ecodev_front import app_header
+from ecodev_front import app_logo
+from ecodev_front import app_title
+from ecodev_front import header_divider
+from ecodev_front import login
+from ecodev_front import LOGOUT_BTN_ID
+from ecodev_front import menu
+from ecodev_front import menu_item
 
 from app.pages.inputs import FILE_UPLOAD_PAGE_URL
 from app.pages.inputs import FORMS_PAGE_URL
@@ -159,7 +160,7 @@ def user_admin_settings(is_admin: bool) -> dmc.GridCol:
     Example of how to create / assemble the navbar for the user/admin specific pages.
     """
     logout_btn = action_item(
-        id='logout-button', label='LOGOUT', icon='ic:baseline-logout', href='/'
+        id=LOGOUT_BTN_ID, label='LOGOUT', icon='ic:baseline-logout', href='/'
     )
 
     doc_btn = action_item(

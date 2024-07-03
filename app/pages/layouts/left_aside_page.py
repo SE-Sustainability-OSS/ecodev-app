@@ -11,9 +11,9 @@ from dash import Output
 from dash import register_page
 from dash import State
 from ecodev_core import safe_get_user
+from ecodev_front import LEFT_ASIDE_ID
 from ecodev_front import TOKEN
 from ecodev_front import URL
-from ecodev_front.ids import LEFT_ASIDE_ID
 
 from app.components.page_helpers import generic_page
 from app.pages.layouts import LEFT_ASIDE_PAGE_ID

@@ -7,9 +7,9 @@ from dash import Input
 from dash import Output
 from dash import register_page
 from ecodev_core import logger_get
+from ecodev_front import background_card
+from ecodev_front import card_title
 from ecodev_front import TOKEN
-from ecodev_front.components import background_card
-from ecodev_front.components import card_title
 
 from app.components.page_helpers import generic_page
 from app.pages.outputs import MAP_PAGE_ID
