@@ -10,15 +10,17 @@ from ecodev_core import logger_get
 
 from app.components.page_helpers import generic_page
 from app.constants import TOKEN
-from app.pages.form_page.form import get_example_form
+from app.pages.inputs import FORMS_PAGE_ID
+from app.pages.inputs import FORMS_PAGE_URL
+from app.pages.inputs.form_page.form import get_example_form
 
 log = logger_get(__name__)
-register_page(__name__, path='/inputs/forms')
-PAGE_ID = 'input-example-form-page'
-layout = [html.Div(id=PAGE_ID, className='centered')]
+register_page(__name__, path=FORMS_PAGE_URL)
+
+layout = [html.Div(id=FORMS_PAGE_ID, className='centered')]
 
 
-@callback(Output(PAGE_ID, 'children'), Input(TOKEN, 'data'))
+@callback(Output(FORMS_PAGE_ID, 'children'), Input(TOKEN, 'data'))
 def render_page(token):
     """
     Example of a input form using dmc_utils components.

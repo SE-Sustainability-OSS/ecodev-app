@@ -10,15 +10,17 @@ from ecodev_core import logger_get
 
 from app.components.page_helpers import generic_page
 from app.constants import TOKEN
-from app.pages.search_bar_page.search_bar import SEARCH_COMPONENTS
+from app.pages.inputs import SEARCH_BAR_PAGE_ID
+from app.pages.inputs import SEARCH_BAR_PAGE_URL
+from app.pages.inputs.search_bar_page.search_bar import SEARCH_COMPONENTS
 
 log = logger_get(__name__)
-register_page(__name__, path='/inputs/search-bar')
-PAGE_ID = 'input-example-search-bar'
-layout = [html.Div(id=PAGE_ID, className='centered')]
+register_page(__name__, path=SEARCH_BAR_PAGE_URL)
+
+layout = [html.Div(id=SEARCH_BAR_PAGE_ID, className='centered')]
 
 
-@callback(Output(PAGE_ID, 'children'), Input(TOKEN, 'data'))
+@callback(Output(SEARCH_BAR_PAGE_ID, 'children'), Input(TOKEN, 'data'))
 def render_page(token):
     """
     Example usage of a search-bar component

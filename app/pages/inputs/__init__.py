@@ -1,0 +1,10 @@
+INPUTS_PAGE_URL = '/inputs'
+FILE_UPLOAD_PAGE_URL = f'{INPUTS_PAGE_URL}/file-upload'
+FORMS_PAGE_URL = f'{INPUTS_PAGE_URL}/forms'
+IN_DATA_TABLE_PAGE_URL = f'{INPUTS_PAGE_URL}/data-table'
+SEARCH_BAR_PAGE_URL = f'{INPUTS_PAGE_URL}/search-bar'
+
+FILE_UPLOAD_PAGE_ID = 'file-upload-page-id'
+FORMS_PAGE_ID = 'forms-page-id'
+IN_DATA_TABLE_PAGE_ID = 'input-data-table-page-id'
+SEARCH_BAR_PAGE_ID = 'search-bar-page-id'

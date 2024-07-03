@@ -6,11 +6,11 @@ from dash import callback
 from dash import html
 from dash import Input
 from dash import Output
-from ecodev_front.components import background_card
-from ecodev_front.components import search_bar
+from ecodev_front import background_card
+from ecodev_front import search_bar
 
-from app.pages.search_bar_page import SEARCH_BAR_ID
-from app.pages.search_bar_page import SEARCH_OUTPUT_ID
+from app.pages.inputs.search_bar_page import SEARCH_BAR_ID
+from app.pages.inputs.search_bar_page import SEARCH_OUTPUT_ID
 
 SEARCH = search_bar(id=SEARCH_BAR_ID, label='Search something',
                     helper="This search bar isn't really useful. Neither is this helper.")

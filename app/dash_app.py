@@ -16,10 +16,15 @@ from ecodev_core import logger_get
 from ecodev_core import Permission
 from ecodev_core import safe_get_user
 from ecodev_core import upsert_app_users
-from ecodev_front.ids import LOGIN_BTN_ID
-from ecodev_front.ids import LOGIN_PASSWORD_INPUT_ID
-from ecodev_front.ids import LOGIN_USERNAME_INPUT_ID
-from ecodev_front.layouts import dash_base_layout
+from ecodev_front import dash_base_layout
+from ecodev_front import FOOTER_ID
+from ecodev_front import LOGIN_BTN_ID
+from ecodev_front import LOGIN_PASSWORD_INPUT_ID
+from ecodev_front import LOGIN_USERNAME_INPUT_ID
+from ecodev_front import LOGOUT_BTN_ID
+from ecodev_front import NAVBAR_ID
+from ecodev_front import TOKEN
+from ecodev_front import URL
 from fastapi import HTTPException
 from flask import Flask
 from pydantic_settings import BaseSettings
@@ -31,11 +36,6 @@ from app.components.footer import app_footer
 from app.constants import ASSETS_DIR
 from app.constants import DATA_DIR
 from app.constants import DUMMY_OUTPUT
-from app.constants import FOOTER
-from app.constants import LOGOUT_BTN_ID
-from app.constants import NAVBAR
-from app.constants import TOKEN
-from app.constants import URL
 from app.pages import navbar
 from app.pages import navbar_login_header
 
@@ -85,6 +85,7 @@ EXAMPLE_STORE = 'example-store-id'
 
 dash_stores = [(DUMMY_OUTPUT, SESSION_STORE),
                (EXAMPLE_STORE, SESSION_STORE)]
+
 ecoact_colors = {'ecoact': ['#DDF5FF',
                             '#81DBFF',
                             '#34C6FF',
@@ -95,11 +96,13 @@ ecoact_colors = {'ecoact': ['#DDF5FF',
                             '#005794',
                             '#004576',
                             '#00385F']}
-dash_app.layout = dash_base_layout(dash_stores, ecoact_colors)
 
 
-@callback(Output(NAVBAR, 'children'),
-          Output(FOOTER, 'children'),
+dash_app.layout = dash_base_layout(dash_stores, colors=ecoact_colors)
+
+
+@callback(Output(NAVBAR_ID, 'children'),
+          Output(FOOTER_ID, 'children'),
           Input(TOKEN, 'data'),
           Input(URL, 'pathname'))
 def update_navbar_footer_on_login(token: dict[str, str | None], pathname):
@@ -109,7 +112,7 @@ def update_navbar_footer_on_login(token: dict[str, str | None], pathname):
     """
     if user := safe_get_user(token):
         return navbar(user.permission == Permission.ADMIN), app_footer()
-    return navbar_login_header(), app_footer()
+    return navbar_login_header(), None
 
 
 @callback(

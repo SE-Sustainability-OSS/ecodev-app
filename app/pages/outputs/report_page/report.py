@@ -2,9 +2,9 @@
 Module implementing components for a report example
 """
 import dash_mantine_components as dmc
-from ecodev_front.components import background_card
-from ecodev_front.components import card_title
-from ecodev_front.components import report_value
+from ecodev_front import background_card
+from ecodev_front import card_title
+from ecodev_front import report_value
 
 
 def get_example_report() -> dmc.Card:
@@ -16,9 +16,6 @@ def get_example_report() -> dmc.Card:
             dmc.Stack(
                 [
                     card_title('Example output report', align='center'),
-                    dmc.Space(h=5),
-                    dmc.Divider(),
-                    dmc.Space(h=5),
                     dmc.SimpleGrid(
                         cols=2,
                         children=[

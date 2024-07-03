@@ -17,7 +17,7 @@ from ecodev_core import Permission
 from ecodev_core.app_user import USER_INSERTOR
 from ecodev_core.authentication import _hash_password
 from ecodev_core.db_insertion import create_or_update
-from ecodev_front.components import card_title
+from ecodev_front import card_title
 from sqlmodel import Session
 
 from app.constants import PASSWORD_LENGTH

@@ -7,18 +7,20 @@ from dash import Input
 from dash import Output
 from dash import register_page
 from ecodev_core import logger_get
+from ecodev_front import TOKEN
 
 from app.components.page_helpers import generic_page
-from app.constants import TOKEN
-from app.pages.data_table_page.data_table import get_example_table
+from app.pages.outputs import OUT_DATA_TABLE_PAGE_ID
+from app.pages.outputs import OUT_DATA_TABLE_PAGE_URL
+from app.pages.outputs.data_table_page.data_table import get_example_table
 
 log = logger_get(__name__)
-register_page(__name__, path='/outputs/data-table')
-PAGE_ID = 'outputs-example-data-table'
-layout = [html.Div(id=PAGE_ID, className='centered')]
+register_page(__name__, path=OUT_DATA_TABLE_PAGE_URL)
+
+layout = [html.Div(id=OUT_DATA_TABLE_PAGE_ID, className='centered')]
 
 
-@callback(Output(PAGE_ID, 'children'), Input(TOKEN, 'data'))
+@callback(Output(OUT_DATA_TABLE_PAGE_ID, 'children'), Input(TOKEN, 'data'))
 def render_page(token):
     """
     Example usage of a data-table component (Dash AgGrid).

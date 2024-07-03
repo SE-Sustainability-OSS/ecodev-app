@@ -2,7 +2,7 @@
 Module implementing an example of a heat map with Plotly
 """
 from dash import html
-from ecodev_front.components import graph_box
+from ecodev_front import graph_box
 from plotly import express as px
 
 
