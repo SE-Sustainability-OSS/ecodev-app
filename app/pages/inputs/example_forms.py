@@ -7,9 +7,9 @@ from dash import Input
 from dash import Output
 from dash import register_page
 from ecodev_core import logger_get
+from ecodev_front import TOKEN
 
 from app.components.page_helpers import generic_page
-from app.constants import TOKEN
 from app.pages.inputs import FORMS_PAGE_ID
 from app.pages.inputs import FORMS_PAGE_URL
 from app.pages.inputs.form_page.form import get_example_form

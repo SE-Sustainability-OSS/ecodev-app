@@ -22,12 +22,7 @@ APP_NAME = AppNameSettings().app_name
 """
 PAGE & NAVIGATION CONSTANTS
 """
-TOKEN = 'token'
-URL = 'url'
-FOOTER = 'footer-id'
-NAVBAR = 'navbar-id'
 DUMMY_OUTPUT = 'dummy-output'
-LOGOUT_BTN_ID = 'logout-button'
 DATA_DIR = Path('/app/data')
 ASSETS_DIR = Path('/app/app/assets')
 COMM_CHANNEL_URL = 'https://teams.microsoft.com'

@@ -18,11 +18,11 @@ from ecodev_core import safe_get_user
 from ecodev_core import upsert_app_users
 from ecodev_front import dash_base_layout
 from ecodev_front import FOOTER_ID
+from ecodev_front import HEADER_ID
 from ecodev_front import LOGIN_BTN_ID
 from ecodev_front import LOGIN_PASSWORD_INPUT_ID
 from ecodev_front import LOGIN_USERNAME_INPUT_ID
 from ecodev_front import LOGOUT_BTN_ID
-from ecodev_front import NAVBAR_ID
 from ecodev_front import TOKEN
 from ecodev_front import URL
 from fastapi import HTTPException
@@ -101,7 +101,7 @@ ecoact_colors = {'ecoact': ['#DDF5FF',
 dash_app.layout = dash_base_layout(dash_stores, colors=ecoact_colors)
 
 
-@callback(Output(NAVBAR_ID, 'children'),
+@callback(Output(HEADER_ID, 'children'),
           Output(FOOTER_ID, 'children'),
           Input(TOKEN, 'data'),
           Input(URL, 'pathname'))

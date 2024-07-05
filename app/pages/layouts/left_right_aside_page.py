@@ -11,8 +11,8 @@ from dash import Output
 from dash import register_page
 from dash import State
 from ecodev_core import safe_get_user
-from ecodev_front import LEFT_ASIDE_ID
-from ecodev_front import RIGHT_ASIDE_ID
+from ecodev_front import ASIDE
+from ecodev_front import NAVBAR
 from ecodev_front import TOKEN
 from ecodev_front import URL
 
@@ -26,8 +26,8 @@ register_page(__name__, path=LEFT_RIGHT_ASIDE_PAGE_URL)
 layout = [html.Div(id=LEFT_RIGHT_ASIDE_PAGE_ID)]
 
 
-@callback(Output(LEFT_ASIDE_ID, 'children', allow_duplicate=True),
-          Output(RIGHT_ASIDE_ID, 'children', allow_duplicate=True),
+@callback(Output(NAVBAR, 'children', allow_duplicate=True),
+          Output(ASIDE, 'children', allow_duplicate=True),
           Input(URL, 'pathname'),
           State(TOKEN, 'data'),
           prevent_initial_call=True)
