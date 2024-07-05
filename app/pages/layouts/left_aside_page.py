@@ -11,7 +11,7 @@ from dash import Output
 from dash import register_page
 from dash import State
 from ecodev_core import safe_get_user
-from ecodev_front import LEFT_ASIDE_ID
+from ecodev_front import NAVBAR
 from ecodev_front import TOKEN
 from ecodev_front import URL
 
@@ -25,7 +25,7 @@ register_page(__name__, path=LEFT_ASIDE_PAGE_URL)
 layout = [html.Div(id=LEFT_ASIDE_PAGE_ID)]
 
 
-@callback(Output(LEFT_ASIDE_ID, 'children'),
+@callback(Output(NAVBAR, 'children'),
           Input(URL, 'pathname'),
           State(TOKEN, 'data'))
 def enable_left_aside(pathname: str, token: dict):

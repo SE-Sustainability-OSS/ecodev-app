@@ -35,7 +35,7 @@ services:
       - traefik.http.routers.ecodev-app-http.middlewares=https-redirect
       - traefik.http.routers.ecodev-app-https.middlewares=secured
     networks:
-      - red-base-network
+      - app-network
       # Use the public network created to be shared between Traefik and
       # any other service that needs to be publicly available with HTTPS
       - traefik-network
@@ -76,15 +76,15 @@ services:
     env_file:
       - ./.env
     networks:
-      - red-base-network
+      - app-network
       # Use the public network created to be shared between Traefik and
       # any other service that needs to be publicly available with HTTPS
       - traefik-network
 # END ecodev_app_backend
 # NETWORKS
 networks:
-  red-base-network:
-   name: red-base-network
+  app-network:
+   name: app-network
    external: true
   traefik-network:
     external: true
