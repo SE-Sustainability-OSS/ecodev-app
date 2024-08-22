@@ -17,6 +17,7 @@ from ecodev_core import Permission
 from ecodev_core.app_user import USER_INSERTOR
 from ecodev_core.authentication import _hash_password
 from ecodev_core.db_insertion import create_or_update
+from ecodev_front import background_card
 from ecodev_front import card_title
 from ecodev_front import TOKEN
 from sqlmodel import Session
@@ -38,31 +39,28 @@ USER_TEXT = dmc.TextInput(
     label="User's email:",
     required=True,
     leftSection=DashIconify(icon='ic:round-alternate-email'),
-    style={'width': '50%'},
 )
 USER_PERMISSION = dmc.Select(
     id=CREATE_USER_PERMISSION,
     label='Permissions level',
     value='Consultant',
     data=['Consultant', 'Admin', 'Client'],
-    style={'width': '50%'},
 )
-USER_BUTTON = dmc.Button('Submit', id=CREATE_USER_SUBMIT_BTN, style={'width': '50%'})
-USER_NOTIF = html.Div(id=CREATE_USER_NOTIFICATION, style={'width': '50%'})
+USER_BUTTON = dmc.Button('Submit', id=CREATE_USER_SUBMIT_BTN, color='ecoact')
+USER_NOTIF = html.Div(id=CREATE_USER_NOTIFICATION)
 
-USER_COMPONENTS = (
+USER_COMPONENTS = background_card([
     dmc.Stack(
         [
-            card_title('Create a new user', size=24),
+            card_title('Create a new user', align='left'),
             USER_TEXT,
             USER_PERMISSION,
             dmc.Space(h=10),
             USER_BUTTON,
             dmc.Space(h=10),
             USER_NOTIF,
-        ],
-        className='centered',
-    ),
+        ]
+    )]
 )
 
 
