@@ -31,7 +31,7 @@ layout = [html.Div(id=LEFT_RIGHT_ASIDE_PAGE_ID)]
           Input(URL, 'pathname'),
           State(TOKEN, 'data'),
           prevent_initial_call=True)
-def enable_right_aside(pathname: str, token: dict):
+def enable_left_right_aside(pathname: str, token: dict):
     """
     Callback rendering the page / main content.
     Note: This does not change.

@@ -22,6 +22,7 @@ from ecodev_front import card_title
 from ecodev_front import TOKEN
 from sqlmodel import Session
 
+from app.constants import COLORS_ID
 from app.constants import PASSWORD_LENGTH
 from app.constants import PWD_CHAR_CHOICES
 from app.db_model import AppUser
@@ -46,7 +47,7 @@ USER_PERMISSION = dmc.Select(
     value='Consultant',
     data=['Consultant', 'Admin', 'Client'],
 )
-USER_BUTTON = dmc.Button('Submit', id=CREATE_USER_SUBMIT_BTN, color='ecoact')
+USER_BUTTON = dmc.Button('Submit', id=CREATE_USER_SUBMIT_BTN, color=COLORS_ID)
 USER_NOTIF = html.Div(id=CREATE_USER_NOTIFICATION)
 
 USER_COMPONENTS = background_card([

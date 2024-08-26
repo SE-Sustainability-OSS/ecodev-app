@@ -11,6 +11,7 @@ from ecodev_core import logger_get
 from ecodev_front import TOKEN
 
 from app.components.page_helpers import generic_page
+from app.constants import COLORS_ID
 from app.pages.outputs import REPORT_PAGE_ID
 from app.pages.outputs import REPORT_PAGE_URL
 from app.pages.outputs.report_page.report import get_example_report
@@ -26,8 +27,8 @@ def render_page(token):
     """
     Example of a output report using dmc_utils components.
     """
-    PREVIOUS_BTN = dmc.Button('Previous', color='ecoact', size='lg')
-    CONTINUE_BTN = dmc.Button('Continue', color='ecoact', size='lg')
+    PREVIOUS_BTN = dmc.Button('Previous', color=COLORS_ID, size='lg')
+    CONTINUE_BTN = dmc.Button('Continue', color=COLORS_ID, size='lg')
     PAGE_TITLE = dmc.Title('Report example')
     page = dmc.Stack([
         dmc.Group([PREVIOUS_BTN, PAGE_TITLE, CONTINUE_BTN], justify='space-between'),

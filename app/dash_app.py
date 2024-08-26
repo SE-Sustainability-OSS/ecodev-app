@@ -34,6 +34,7 @@ from sqlmodel import Session
 import app.db_model as db_model
 from app.components.footer import app_footer
 from app.constants import ASSETS_DIR
+from app.constants import COLORS_ID
 from app.constants import DATA_DIR
 from app.constants import DUMMY_OUTPUT
 from app.pages import navbar
@@ -86,19 +87,19 @@ EXAMPLE_STORE = 'example-store-id'
 dash_stores = [(DUMMY_OUTPUT, SESSION_STORE),
                (EXAMPLE_STORE, SESSION_STORE)]
 
-ecoact_colors = {'ecoact': ['#DDF5FF',
-                            '#81DBFF',
-                            '#34C6FF',
-                            '#00B3FF',
-                            '#009CFF',
-                            '#0082DE',
-                            '#0066A1',
-                            '#005794',
-                            '#004576',
-                            '#00385F']}
+APP_COLORS = {COLORS_ID: ['#DDF5FF',
+                          '#81DBFF',
+                          '#34C6FF',
+                          '#00B3FF',
+                          '#009CFF',
+                          '#0082DE',
+                          '#0066A1',
+                          '#005794',
+                          '#004576',
+                          '#00385F']}
 
 
-dash_app.layout = dash_base_layout(dash_stores, colors=ecoact_colors)
+dash_app.layout = dash_base_layout(dash_stores, colors=APP_COLORS)
 
 
 @callback(Output(HEADER_ID, 'children'),

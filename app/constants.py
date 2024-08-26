@@ -26,7 +26,7 @@ DUMMY_OUTPUT = 'dummy-output'
 DATA_DIR = Path('/app/data')
 ASSETS_DIR = Path('/app/app/assets')
 COMM_CHANNEL_URL = 'https://teams.microsoft.com'
-
+COLORS_ID = 'global_colors'
 
 FEEDBACK_URL = 'https://forms.office.com'
 
