@@ -5,8 +5,10 @@ import dash_mantine_components as dmc
 from ecodev_front import background_card
 from ecodev_front import card_title
 
+from app.constants import COLORS_ID
 
-def get_example_form():
+
+def get_example_form() -> dmc.Card:
     """
     Components for a form example
     """
@@ -24,7 +26,7 @@ def get_example_form():
                         ],
                         style={'text-align': 'left'},
                     ),
-                    dmc.Button('Submit', color='ecoact'),
+                    dmc.Button('Submit', color=COLORS_ID),
                 ]
             )
         ]
