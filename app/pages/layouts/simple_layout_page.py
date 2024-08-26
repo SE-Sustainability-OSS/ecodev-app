@@ -25,10 +25,11 @@ from app.pages.layouts import RIGHT_ASIDE_PAGE_URL
 from app.pages.layouts import SIMPLE_PAGE_ID
 from app.pages.layouts import SIMPLE_PAGE_URL
 
-
 register_page(__name__, path=SIMPLE_PAGE_URL)
 
-layout = [html.Div(id=SIMPLE_PAGE_ID)]
+layout = [html.Div(id=SIMPLE_PAGE_ID,
+                   style={'display': 'flex', 'justifyContent': 'center'}
+                   )]
 
 
 @callback(Output(SIMPLE_PAGE_ID, 'children'),

@@ -50,6 +50,7 @@ customisable components such as navbar menus, and customised component builders 
     git push origin main
     ```
 
+
 5. To run your app, follow the `Local development` steps below (also available in the `README-template.md` file)
 
 
@@ -106,12 +107,16 @@ Use the docs/issues_template whenever possible. It will greatly help the develop
     email_smtp= # Mailbox SMTP (like smtp.gmail.com or mail.outlook.com). Put your smtp provider here
 
     # gunicorn/uvicorn setup
-    gunicorn_setup=false # Should be True in production. Simpler to only with uvicorn for local dev
-    debug=false # Put to true if you want to be in dash debug mode
+    gunicorn_setup=false # Should be True in production. Simpler to only use uvicorn for local dev
+    debug=false # Change to true if you want to be in dash debug mode
     ```
 
 
-3. Run `make setup` to install the pre-commits
+3. Install the pre-commits
+
+    ```bash
+    make setup
+    ```
 
 4. Build the docker image
     ```bash
@@ -126,7 +131,7 @@ Use the docs/issues_template whenever possible. It will greatly help the develop
 
 7. Create a new database `<YOUR_DB_NAME>_db`, as per your .env file (`db`) in the example.
 
-8. Add a user.json file under data, if you'd like to initialise a few users. It should contain:
+8. (Optional) Add a user.json file under data, if you'd like to initialise a few users. It should contain:
     ```json
     [
         {

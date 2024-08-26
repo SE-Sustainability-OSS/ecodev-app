@@ -19,10 +19,11 @@ from app.components.page_helpers import generic_page
 from app.pages.layouts import RIGHT_ASIDE_PAGE_ID
 from app.pages.layouts import RIGHT_ASIDE_PAGE_URL
 
-
 register_page(__name__, path=RIGHT_ASIDE_PAGE_URL)
 
-layout = [html.Div(id=RIGHT_ASIDE_PAGE_ID)]
+layout = [html.Div(id=RIGHT_ASIDE_PAGE_ID,
+                   style={'display': 'flex', 'justifyContent': 'center'}
+                   )]
 
 
 @callback(Output(ASIDE, 'children'),
@@ -33,7 +34,7 @@ def enable_right_aside(pathname: str, token: dict):
     Callback rendering the left aside (setting width and content)
     """
     right_aside_content = dmc.Text('Example of right aside content',
-                                   fz=24, style={'padding': '20px'})
+                                   fz=18, style={'padding': '20px'})
     if safe_get_user(token) and pathname == RIGHT_ASIDE_PAGE_URL:
         return right_aside_content
 
