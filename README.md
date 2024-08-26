@@ -12,7 +12,7 @@ customisable components such as navbar menus, and customised component builders 
     mkdir <new-repository>; cd <new-repository>
 
     # Make a bare clone of this repository
-    git clone https://github.com/FR-PAR-ECOACT/ecodev-app
+    git clone https://github.com/SE-Sustainability-OSS/ecodev-app
 
     # Move files to parent directory
     cd .. ; mv <new-repository>/ecodev-app/* <new-repository>/
