@@ -17,6 +17,7 @@ from app.pages.inputs import FILE_UPLOAD_PAGE_URL
 from app.pages.inputs import FORMS_PAGE_URL
 from app.pages.inputs import IN_DATA_TABLE_PAGE_URL
 from app.pages.inputs import SEARCH_BAR_PAGE_URL
+from app.pages.layouts import COLLAPSIBLE_ASIDE_PAGE_URL
 from app.pages.layouts import LEFT_ASIDE_PAGE_URL
 from app.pages.layouts import LEFT_RIGHT_ASIDE_PAGE_URL
 from app.pages.layouts import RIGHT_ASIDE_PAGE_URL
@@ -82,6 +83,11 @@ def navbar_app_pages() -> dmc.GridCol:
                 label='Left-right Asides',
                 href=LEFT_RIGHT_ASIDE_PAGE_URL,
                 icon='bi:layout-three-columns',
+            ),
+            menu_item(
+                label='Collapsible Aside',
+                href=COLLAPSIBLE_ASIDE_PAGE_URL,
+                icon='iconoir:sidebar-collapse',
             ),
         ],
     )
