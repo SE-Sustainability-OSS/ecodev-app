@@ -37,7 +37,7 @@ def navbar(is_admin: bool = False) -> html.Div:
     Only show certain additional buttons to admin users.
     """
     return html.Div([dmc.Grid(
-        children=[app_header(APP_TITLE, APP_LOGO), navbar_app_pages(),
+        children=[app_header(APP_LOGO, APP_TITLE), navbar_app_pages(),
                   user_admin_settings(is_admin)],
         justify='space-between',
         align='stretch',
@@ -50,7 +50,7 @@ def navbar_login_header() -> html.Div:
     """
 
     return html.Div([dmc.Grid(
-        children=[app_header(APP_TITLE, APP_LOGO), login()],
+        children=[app_header(APP_LOGO, APP_TITLE), login()],
         justify='space-between',
         align='stretch'
     )])
@@ -173,7 +173,7 @@ def user_admin_settings(is_admin: bool) -> dmc.GridCol:
         id='documentation',
         label='DOCUMENTATION',
         icon='bxs:book',
-        href='https://ecosia.com',
+        href='https://ecodev-doc.lcabox.com/',
         in_new_tab=True,
     )
 
