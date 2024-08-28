@@ -10,11 +10,10 @@ from dash import Input
 from dash import Output
 from dash import register_page
 from ecodev_core import logger_get
-from ecodev_front import centered_div
 from ecodev_front import URL
 
-from app.components.intro import CREDENTIALS_SECTION
 from app.components.intro import INTRO_SECTION
+
 
 log = logger_get(__name__)
 register_page(__name__, path='/')
@@ -29,12 +28,5 @@ def get_main_page(pathname):
     """
     Renders main page.
     Note - This page is visible without user login.
-
     """
-    return dmc.Container(
-        size='md',
-        children=[
-            INTRO_SECTION,
-            centered_div(dmc.Divider(w='100%', mt=50, mb=50)),
-            CREDENTIALS_SECTION,
-        ])
+    return dmc.Container(INTRO_SECTION, size='md')
