@@ -7,6 +7,7 @@ from ecodev_core import get_access_token
 from ecodev_core import get_user
 from ecodev_core import Permission
 
+
 NOT_AUTHORIZED = [html.P('Unauthorized. Please login to access')]
 
 

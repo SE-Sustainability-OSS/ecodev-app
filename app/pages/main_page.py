@@ -10,20 +10,23 @@ from dash import Input
 from dash import Output
 from dash import register_page
 from ecodev_core import logger_get
-from ecodev_front import TOKEN
+from ecodev_front import URL
 
-from app.components.page_helpers import generic_page
+from app.components.intro import INTRO_SECTION
+
 
 log = logger_get(__name__)
 register_page(__name__, path='/')
+
 PAGE_ID = 'main-page'
 layout = [html.Div(id=PAGE_ID)]
 
 
-@callback(Output(PAGE_ID, 'children'), Input(TOKEN, 'data'))
-def get_main_page(token):
+@callback(Output(PAGE_ID, 'children'),
+          Input(URL, 'pathname'))
+def get_main_page(pathname):
     """
     Renders main page.
+    Note - This page is visible without user login.
     """
-    page = dmc.Text('Main page')
-    return generic_page(token, page)
+    return dmc.Container(INTRO_SECTION, size='md')

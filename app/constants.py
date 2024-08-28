@@ -50,3 +50,4 @@ APP_COLORS = {COLORS_ID: ['#DDF5FF',
                           '#005794',
                           '#004576',
                           '#00385F']}
+MAIN_COLOR = '#0066A1'
