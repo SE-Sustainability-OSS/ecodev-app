@@ -2,7 +2,10 @@
 # EcoDev App
 
 This app can serve as a template. It includes some basic functionalities such as user login,
-customisable components such as navbar menus, and customised component builders such as
+customisable components such as navbar menus, and customised component builders.
+
+Associated documentation can be found [here](https://ecodev-doc.lcabox.com/cookiecutters/app/).
+ 
 
 ### Usage
 1. First create a `<new-repository>` in your GitHub, then follow these commands, replacing any mention of `<new-repository>`, with your repo name:
