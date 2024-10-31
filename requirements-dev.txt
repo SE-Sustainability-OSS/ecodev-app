@@ -1,3 +1,3 @@
-ecodev-core==0.*
-ecodev-front==0.*
+ecodev-core==0.0.33
+ecodev-front==0.0.59
 notebook==6.*
