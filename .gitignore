@@ -25,3 +25,14 @@ venv/
 data/
 #ignoring environment file
 .env
+#.DS_Store
+*.DS_Store
+# vscode settings
+.vscode/
+# secrets
+secrets/
+# dev-tools
+app/assets/collapse-devtools.js
+
+# docs
+docs/

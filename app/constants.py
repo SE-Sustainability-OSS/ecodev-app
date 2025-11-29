@@ -4,21 +4,10 @@ Global useful constants
 import string
 from pathlib import Path
 
-from pydantic_settings import BaseSettings
-from pydantic_settings import SettingsConfigDict
+from ecodev_core import SETTINGS
 
 
-class AppNameSettings(BaseSettings):
-    """
-    Settings class to control the app name.
-    """
-
-    app_name: str = ''
-    model_config = SettingsConfigDict(env_file='.env')
-
-
-APP_NAME = AppNameSettings().app_name
-
+APP_NAME = SETTINGS.app_name
 
 """
 PATH VARIABLES
@@ -28,26 +17,60 @@ ASSETS_DIR = Path('/app/app/assets')
 
 
 """
-ADMIN CONSTANTS
+MAIN URL CONSTANTS
 """
-COMM_CHANNEL_URL = 'https://teams.microsoft.com'
-FEEDBACK_URL = 'https://forms.office.com'
+MAIN_PAGE_URL = '/'
+
+"""
+LINKS CONSTANTS
+"""
+COMM_CHANNEL_URL = 'https://teams.microsoft.com/l/channel/19%3A4e561a8106124325a043fd3ce86acae1%40thread.tacv2/CDA%20Hotline?groupId=53fa0177-24a8-4119-bbce-5410193dc50d&tenantId=6e51e1ad-c54b-4b39-b598-0ffe9ae68fef'  # noqa: E501
+FEEDBACK_URL = 'https://forms.office.com/e/UwibxMamt8'
+DOCUMENTATION_URL = 'https://ecosia.com'
+
+
+"""
+SECURITY CONSTANTS
+"""
 PWD_CHAR_CHOICES = string.ascii_letters + string.digits + '!?.,;@#~][+=-/*()&^%$'
 PASSWORD_LENGTH = 15
 
 
 """
-APP COLORS
+DASH DATA STORES
 """
-COLORS_ID = 'global_colors'
-APP_COLORS = {COLORS_ID: ['#DDF5FF',
-                          '#81DBFF',
-                          '#34C6FF',
-                          '#00B3FF',
-                          '#009CFF',
-                          '#0082DE',
-                          '#0066A1',
-                          '#005794',
-                          '#004576',
-                          '#00385F']}
-MAIN_COLOR = '#0066A1'
+ALERT_STORE = 'alert-store'
+PROJECT_ID_STORE = 'project-id-store'
+VALIDATION_STORE = 'validation-store'
+USER_DELETION_STORE = 'user-deletion-store'
+
+
+"""
+ACCESS CONSTANTS
+"""
+PROJECT = 'project'
+CREATE_PROJECT = 'create_project'
+
+# Project #
+NAME = 'name'
+DESCRIPTION = 'description'
+PROJECT_ID = 'project_id'
+YEAR = 'year'
+MODIFIED_BY = 'modified_by'
+DEMO = 'demo'
+
+# ProjectAccess #
+USER_ID = 'user_id'
+ROLE = 'role'
+IS_PM = 'is_pm'
+USER = 'user'
+
+# ModuleAccess #
+MODULE_NAME = 'module_name'
+HAS_ACCESS = 'has_access'
+PROJECT_ACCESS_ID = 'project_access_id'
+
+
+"""
+OTHER CALLBACK CONSTANTS
+"""

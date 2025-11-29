@@ -10,6 +10,8 @@ services:
     volumes:
       - ./data:/app/data
       - ./app:/app/app
+      - ./config:/app/config
+      - ./secrets:/app/secrets
     env_file:
       - ./.env
     labels:
@@ -73,6 +75,8 @@ services:
     volumes:
       - ./data:/app/data
       - ./app:/app/app
+      - ./config:/app/config
+      - ./secrets:/app/secrets
     env_file:
       - ./.env
     networks:

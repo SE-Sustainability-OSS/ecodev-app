@@ -1,0 +1,27 @@
+"""
+Module containing all app user retrievers.
+"""
+from ecodev_core import AppUser
+from sqlmodel import select
+from sqlmodel import Session
+
+
+def retrieve_user_by_id(user_id: int, session: Session) -> AppUser | None:
+    """
+    Retrieves a user from the database by their ID.
+    """
+    return session.exec(select(AppUser).where(AppUser.id == user_id)).first()
+
+
+def retrieve_user_by_email(email: str, session: Session) -> AppUser | None:
+    """
+    Find user by email in the database.
+    """
+    return session.exec(select(AppUser).where(AppUser.user == email)).first()
+
+
+def retrieve_all_users(session: Session) -> list[AppUser]:
+    """
+    Retrieves a list of all users
+    """
+    return session.exec(select(AppUser)).all()

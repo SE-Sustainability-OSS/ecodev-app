@@ -1,0 +1,93 @@
+"""
+Module implementing the project information page
+"""
+from functools import partial
+
+import dash_mantine_components as dmc
+from dash import ALL
+from dash import callback
+from dash import html
+from dash import Input
+from dash import Output
+from dash import State
+from dash.exceptions import PreventUpdate
+from ecodev_core import engine
+from ecodev_core import logger_get
+from ecodev_front import CHILDREN
+from ecodev_front import DATA
+from ecodev_front import header_layout
+from ecodev_front import ID
+from ecodev_front import INDEX
+from ecodev_front import N_CLICKS
+from ecodev_front import Page
+from ecodev_front import PATHNAME
+from ecodev_front import TOKEN
+from ecodev_front import TYPE
+from ecodev_front import URL
+from ecodev_front import VALUE
+from sqlmodel import Session
+
+from app.constants import PROJECT_ID_STORE
+from app.db_model.inserters.project_inserters import upsert_project
+from app.db_model.retrievers.project_retrievers import retrieve_project_by_id
+from app.pages.common.monitored_callback import monitored_callback
+from app.pages.common.page_access import check_page_access
+from app.pages.module_project.page_info import PROJECT_INFO_INPUT_ID
+from app.pages.module_project.page_info.common import PROJECT_INFO_SAVE_BTN_ID
+from app.pages.module_project.page_info.common.general_info import general_info_section
+from app.pages.module_project.page_info.common.save_button import SAVE_INFO_BUTTON
+from app.pages.module_project.page_rights.page_rights import PAGE_RIGHTS
+
+log = logger_get(__name__)
+
+PAGE_INFO = Page(
+    module=__name__,
+    name='information',
+    icon='material-symbols:info-outline',
+    title='Information',
+    description='Edit basic and financial project information',
+    layout=partial(header_layout, with_icon=False),
+)
+
+
+@monitored_callback(Output(PAGE_INFO.id, CHILDREN),
+                    Input(TOKEN, DATA),
+                    Input(PROJECT_ID_STORE, DATA))
+def render_project_info_page(token: dict, project_id: int) -> html.Div:
+    """
+    Renders project information page.
+    """
+    with Session(engine) as session:
+        project = retrieve_project_by_id(token, project_id, session)
+        page = dmc.Stack(
+            children=[
+                general_info_section(project),
+                SAVE_INFO_BUTTON
+            ], w='100%', gap='ls', align='center', mb=50)
+        return check_page_access(token, page)
+
+
+@callback(Output(PROJECT_ID_STORE, DATA, allow_duplicate=True),
+          Output(URL, PATHNAME, allow_duplicate=True),
+          State(TOKEN, DATA),
+          Input(PROJECT_INFO_SAVE_BTN_ID, N_CLICKS),
+          State(PROJECT_ID_STORE, DATA),
+          State({TYPE: PROJECT_INFO_INPUT_ID, INDEX: ALL}, VALUE),
+          State({TYPE: PROJECT_INFO_INPUT_ID, INDEX: ALL}, ID),
+          prevent_initial_call=True)
+def save_basic_info(token: dict,
+                    save_basic_info_btn: int,
+                    project_id: int | None,
+                    info_values: list,
+                    info_ids: list,
+                    ) -> tuple[int, html.Div]:
+    """
+    Callback which saves new or edited project information fields
+    """
+    if not save_basic_info_btn:
+        raise PreventUpdate
+
+    with Session(engine) as session:
+        info_dict = {id[INDEX]: value for id, value in zip(info_ids, info_values)}
+        project = upsert_project(info_dict, token, session)
+        return project.id, PAGE_RIGHTS.url  # type: ignore[return-value]
