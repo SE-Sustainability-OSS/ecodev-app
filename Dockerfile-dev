@@ -1,13 +1,17 @@
 ###########
 # BUILDER #
 ###########
-FROM python:3.11-slim AS builder
+FROM python:3.13-slim
 
-# set environment variableså
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# install packages
+# Set up virtual environment
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install packages
 RUN python3 -m pip install --upgrade pip
 COPY ./requirements.txt /requirements.txt
 COPY ./requirements-dev.txt /requirements-dev.txt
@@ -17,22 +21,22 @@ RUN python3 -m pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r req
 #########
 # FINAL #
 #########
-FROM python:3.11-slim
+FROM python:3.13-slim
 
-# Install build packages
-COPY --from=builder /app/wheels /wheels
-RUN python3 -m pip install --no-cache /wheels/*
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-## Ship code
-COPY app/ /app/app
+# Add and switch to non-root user
+RUN adduser --disabled-password --gecos '' appuser
+USER appuser
+
+# Copy application code as non-root
 WORKDIR /app
-
-#Opened ports
-#Jupyter
-EXPOSE 5000
-#Dash
-EXPOSE 80
-
+COPY --chown=appuser:appuser app/ /app/app
 ENV PYTHONPATH=/app
+
+# Opened ports
+EXPOSE 80
 
 CMD ["uvicorn", "app.dash_app:server", "--host", "0.0.0.0", "--port", "80", "--timeout-keep-alive", "300", "--ws-ping-timeout", "300" ]
