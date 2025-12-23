@@ -15,8 +15,8 @@ from sqlmodel import Session
 
 from app.db_model.inserters.app_user_inserters import upsert_user
 from app.db_model.inserters.project_access_inserters import upsert_project_access
-from app.db_model.retrievers.app_user_retrievers import retrieve_user_by_email
-from app.db_model.retrievers.app_user_retrievers import retrieve_users_by_client
+from app.db_model.retrievers.app_user_retrievers import get_user_by_email
+from app.db_model.retrievers.app_user_retrievers import get_users_by_client
 from app.domain_model import ALL_MODULE_NAMES
 from app.domain_model import ProjectAccessData
 from app.domain_model import Role
@@ -35,7 +35,7 @@ def get_new_project_users(user: AppUser,
     AppUser instance, for the purpose of adding their project & module access (done in later stage)
     """
     return [
-        (retrieve_user_by_email(email, session) or _create_new_client_user(user, email, session))
+        (get_user_by_email(email, session) or _create_new_client_user(user, email, session))
         for email in emails
     ]
 
@@ -50,7 +50,7 @@ def _create_new_client_user(inviting_user: AppUser, email: str, session: Session
     This ensures users only get modules they're both entitled to AND that the inviter can share.
     """
     inviting_user_modules = get_app_services(inviting_user, session)
-    invited_user_modules = retrieve_users_by_client(email, session)
+    invited_user_modules = get_users_by_client(email, session)
 
     # Grant the intersection: smallest set of modules between inviter rights and invitee license
     if invited_user_modules:
@@ -98,9 +98,9 @@ def restrict_to_user_module_rights(user: AppUser,
     """
     if user.permission == Permission.ADMIN:
         return ALL_MODULE_NAMES
-    if user_license_modules := get_app_services(user, session):
-        return [module for module in modules if module in user_license_modules]
-    if client_user_group := retrieve_users_by_client(user.client, session):
+    if user_module_rights := get_app_services(user, session):
+        return [module for module in modules if module in user_module_rights]
+    if client_user_group := get_users_by_client(user.client, session):
         return [module for module in modules
                 if module in get_app_services(client_user_group[0], session)]
     return modules

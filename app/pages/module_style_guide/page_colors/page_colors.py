@@ -21,7 +21,7 @@ from ecodev_front import TOKEN
 from ecodev_front import TYPE
 
 from app.constants import PROJECT_ID_STORE
-from app.pages.common.page_access import check_page_access
+from app.pages.common.custom_callback import safe_callback
 from app.pages.module_style_guide.page_colors import COLOR_PALETTE_CLIPBOARD
 from app.pages.module_style_guide.page_colors import COLOR_PALETTE_HEX_BUTTON
 from app.pages.module_style_guide.page_colors.common.color_box import CLAY_PALETTE
@@ -45,15 +45,16 @@ PAGE_COLORS = Page(
 )
 
 
-@callback(Output(PAGE_COLORS.id, CHILDREN),
-          Input(TOKEN, DATA),
-          State(PROJECT_ID_STORE, DATA),
-          prevent_initial_call=True)
+@safe_callback(Output(PAGE_COLORS.id, CHILDREN),
+               Input(TOKEN, DATA),
+               State(PROJECT_ID_STORE, DATA))
 def render_page(token: dict, project_id: int):
     """
-    Renders page component once token has been validated.
+    Renders page's initial layout / content.
+    NOTE: Page access is checked via the safe_callback decorator,
+    to disable this check, set check_access to False.
     """
-    page = dmc.Stack([
+    return dmc.Stack([
         HOW_TO_TEXT,
         dcc.Clipboard(id=COLOR_PALETTE_CLIPBOARD, style={'display': 'none'}),
         dmc.Group([
@@ -66,8 +67,6 @@ def render_page(token: dict, project_id: int):
         SAND_PALETTE,
         EARTH_PALETTE,
     ], align='center', gap='xl', ml=50)
-
-    return check_page_access(token, page)
 
 
 @callback(

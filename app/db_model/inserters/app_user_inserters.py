@@ -12,14 +12,13 @@ from sqlmodel import Session
 
 from app.constants import PASSWORD_LENGTH
 from app.constants import PWD_CHAR_CHOICES
-from app.db_model.retrievers.app_user_retrievers import retrieve_user_by_email
-# from app.methodo.emails.registration import send_registration_email
+from app.db_model.retrievers.app_user_retrievers import get_user_by_email
 
 
 def create_user_credentials(email: str,
                             permission: Permission,
-                            client: str,
-                            session: Session) -> tuple[AppUser, str]:
+                            session: Session,
+                            client: str = '') -> tuple[AppUser, str]:
     """
     Create user, auto-generated password and hashed-password.
     """
@@ -67,9 +66,8 @@ def upsert_user(email: str, app_rights: list[str], session: Session) -> AppUser:
     Upserts a user and its module rights in the database.
     """
     try:
-        if not (user_exists := bool(user := retrieve_user_by_email(email, session))):
+        if not (user_exists := bool(user := get_user_by_email(email, session))):
             user, password = create_user_credentials(email, Permission.Client, session)
-            # send_registration_email(email, password)
         update_user_module_rights(user, app_rights, session)
         if user_exists:
             raise UserExistsError('User already exists')

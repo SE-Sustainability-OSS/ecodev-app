@@ -2,8 +2,6 @@
 Module implementing the main page
 """
 import dash_mantine_components as dmc
-from dash import callback
-from dash import html
 from dash import Input
 from dash import Output
 from dash import State
@@ -18,7 +16,7 @@ from sqlmodel import Session
 
 from app.constants import ALERT_STORE
 from app.constants import PROJECT_ID_STORE
-from app.pages.common.page_access import check_page_access
+from app.pages.common.custom_callback import safe_callback
 from app.pages.page_main.common.c_intro_text import INTRO_TEXT
 from app.pages.page_main.common.cb_documentation_popup import DOCUMENTATION
 from app.pages.page_main.common.cb_documentation_popup import documentation_popup
@@ -38,17 +36,17 @@ PAGE_MAIN = Page(
 )
 
 
-@callback(Output(PAGE_MAIN.id, CHILDREN),
-          Input(TOKEN, DATA),
-          State(PROJECT_ID_STORE, DATA),
-          State(ALERT_STORE, DATA),)
-def get_main_page(token: dict, project_id: int | None, alert_store: dict[str, bool]) -> html.Div:
+@safe_callback(Output(PAGE_MAIN.id, CHILDREN),
+               Input(TOKEN, DATA),
+               State(PROJECT_ID_STORE, DATA),
+               State(ALERT_STORE, DATA))
+def get_main_page(token: dict, project_id: int | None, alert_store: dict[str, bool]) -> dmc.Box:
     """
     Renders the main / landing page, on which user either create an new project,
     or select a previous project which displays module buttons.
     """
     with Session(engine) as session:
-        page = html.Div([
+        return dmc.Box([
             dmc.Container([
                 dmc.Stack([
                     INTRO_TEXT,
@@ -58,4 +56,3 @@ def get_main_page(token: dict, project_id: int | None, alert_store: dict[str, bo
                 ], gap='xs', w='100%'),
             ], w='80%', fluid=True)
         ])
-        return check_page_access(token, page)

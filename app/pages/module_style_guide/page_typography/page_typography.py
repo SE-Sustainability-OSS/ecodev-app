@@ -2,7 +2,6 @@
 Module implementing the typography page of the style-guide
 """
 import dash_mantine_components as dmc
-from dash import callback
 from dash import Input
 from dash import Output
 from dash import State
@@ -20,7 +19,7 @@ from ecodev_front import text_title
 from ecodev_front import TOKEN
 
 from app.constants import PROJECT_ID_STORE
-from app.pages.common.page_access import check_page_access
+from app.pages.common.custom_callback import safe_callback
 
 log = logger_get(__name__)
 
@@ -34,15 +33,16 @@ PAGE_TYPO = Page(
 )
 
 
-@callback(Output(PAGE_TYPO.id, CHILDREN),
-          Input(TOKEN, DATA),
-          State(PROJECT_ID_STORE, DATA),
-          prevent_initial_call=True)
+@safe_callback(Output(PAGE_TYPO.id, CHILDREN),
+               Input(TOKEN, DATA),
+               State(PROJECT_ID_STORE, DATA))
 def render_page(token: dict, project_id: int):
     """
-    Renders page component once token has been validated.
+    Renders page's initial layout / content.
+    NOTE: Page access is checked via the safe_callback decorator,
+    to disable this check, set check_access to False.
     """
-    page = dmc.Group([
+    return dmc.Group([
         dmc.Stack([
             section_title('Default headers'),
             dmc.Text('The following header typographies are embedded into our dmc.Theme:', mb=20),
@@ -67,4 +67,3 @@ def render_page(token: dict, project_id: int):
             subtext('Subtext', mb=20),
         ], justify='flex-start', align='flext-start', gap=0)
     ], grow=True, w='90%', align='flext-start',)
-    return check_page_access(token, page)

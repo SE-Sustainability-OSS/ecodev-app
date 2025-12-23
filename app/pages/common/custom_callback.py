@@ -119,9 +119,7 @@ def safe_callback(*args: Any,
 
                 with Session(engine) as session:
                     if check_access is True or project_id is not None:
-                        # type: ignore[arg-type]
                         if not verify_project_access(token, int(project_id), session):
-                            log.warning('TOTO!')
                             raise ValueError('User does not have access to the requested project')
 
                     if monitoring:

@@ -26,7 +26,7 @@ from app.constants import MAIN_PAGE_URL
 from app.constants import PROJECT_ID_STORE
 from app.db_model import Project
 from app.db_model.deleters import delete_project
-from app.db_model.retrievers import retrieve_project_by_id
+from app.db_model.retrievers import get_project_by_id
 from app.pages.module_project.page_rights import DELETE_PROJECT_BUTTON_ID
 from app.pages.module_project.page_rights import DELETE_PROJECT_CONFIRMATION_BUTTON_ID
 from app.pages.module_project.page_rights import DELETE_PROJECT_CONFIRMATION_MODAL_ID
@@ -83,7 +83,7 @@ def open_delete_confirmation_modal(n_click: int,
         raise PreventUpdate
 
     with Session(engine) as session:
-        if not (project := retrieve_project_by_id(token, project_id, session)):
+        if not (project := get_project_by_id(token, project_id, session)):
             raise PreventUpdate
 
     return True, delete_project_modal_content(project)
@@ -108,7 +108,7 @@ def delete_project_confirmed(n_click: int,
         raise PreventUpdate
 
     with Session(engine) as session:
-        if (project := retrieve_project_by_id(token, project_id, session)) and \
+        if (project := get_project_by_id(token, project_id, session)) and \
                 confirmation_val == project.name:
             delete_project(token, project, session)  # type: ignore[arg-type]
             return MAIN_PAGE_URL

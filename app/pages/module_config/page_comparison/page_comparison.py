@@ -2,16 +2,17 @@
 Module implementing the module-1 page-1
 """
 import dash_mantine_components as dmc
-from dash import callback
 from dash import Input
 from dash import Output
+from dash import State
 from ecodev_front import basic_layout
 from ecodev_front import CHILDREN
 from ecodev_front import DATA
 from ecodev_front import Page
 from ecodev_front import TOKEN
 
-from app.pages.common.page_access import check_page_access
+from app.constants import PROJECT_ID_STORE
+from app.pages.common.custom_callback import safe_callback
 
 
 PAGE_COMPARISON = Page(
@@ -24,12 +25,13 @@ PAGE_COMPARISON = Page(
 )
 
 
-@callback(Output(PAGE_COMPARISON.id, CHILDREN),
-          Input(TOKEN, DATA),
-          prevent_initial_call=True)
-def render_page(token: dict):
+@safe_callback(Output(PAGE_COMPARISON.id, CHILDREN),
+               Input(TOKEN, DATA),
+               State(PROJECT_ID_STORE, DATA))
+def render_page(token: dict, project_id: int):
     """
-    Renders page component once token has been validated.
+    Renders page's initial layout / content.
+    NOTE: Page access is checked via the safe_callback decorator,
+    to disable this check, set check_access to False.
     """
-    page = dmc.Stack(['Hello world!'], align='center', gap='xs')
-    return check_page_access(token, page)
+    return dmc.Stack(['Hello world!'], align='center', gap='xs')

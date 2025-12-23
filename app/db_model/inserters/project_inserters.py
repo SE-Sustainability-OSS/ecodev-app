@@ -8,9 +8,9 @@ from ecodev_core import logger_get
 from sqlmodel import Session
 
 from app.db_model.project import Project
-from app.db_model.retrievers.access_retrievers import retrieve_license_rights
-from app.db_model.retrievers.commons import get_user
-from app.db_model.retrievers.project_retrievers import retrieve_project_by_id
+from app.db_model.retrievers.access_retrievers import get_app_rights
+from app.db_model.retrievers.commons import get_auth_user
+from app.db_model.retrievers.project_retrievers import get_project_by_id
 from app.db_model.retrievers.project_retrievers import verify_project_access
 from app.domain_model.role import Role
 from app.pages.module_project.page_rights.methodo.grant_access import grant_user_project_access
@@ -41,9 +41,9 @@ def create_project(auth: dict | AppUser, project: Project, session: Session) -> 
     session.commit()
     session.refresh(project)
 
-    user = get_user(auth)
-    license_rights = retrieve_license_rights(user, session)
-    grant_user_project_access(user, project.id, license_rights, Role.OWNER, session)
+    user = get_auth_user(auth)
+    app_rights = get_app_rights(user, session)
+    grant_user_project_access(user, project.id, app_rights, Role.OWNER, session)
     return project
 
 
@@ -54,7 +54,7 @@ def update_project(auth: dict | AppUser,
     """
     Updates a project, after ensuring user has access rights.
     """
-    if not (db_project := retrieve_project_by_id(auth, project_id, session)):
+    if not (db_project := get_project_by_id(auth, project_id, session)):
         log.warning(f'Project {project_id} not found')
         return None
 
@@ -64,7 +64,6 @@ def update_project(auth: dict | AppUser,
 
     project_data = project.model_dump(exclude_unset=True)
     db_project.sqlmodel_update(project_data)
-    session.add(db_project)
     session.commit()
     session.refresh(db_project)
     return db_project

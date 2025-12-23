@@ -9,7 +9,7 @@ from ecodev_core import logger_get
 from sqlmodel import Session
 
 from app.db_model.computation import Computation
-from app.db_model.retrievers.computation_retrievers import retrieve_computation
+from app.db_model.retrievers.computation_retrievers import get_computation
 
 log = logger_get(__name__)
 
@@ -24,7 +24,7 @@ def create_update_computation(user: AppUser,
     """
     Creates a computation step, or updates its completed status
     """
-    if computation := retrieve_computation(name, project_id, session):
+    if computation := get_computation(name, project_id, session):
         if completed:
             computation.completed = True
             computation.completed_at = datetime.now()

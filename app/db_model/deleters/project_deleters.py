@@ -6,8 +6,8 @@ from ecodev_core import logger_get
 from sqlmodel import Session
 
 from app.db_model.project import Project
-from app.db_model.retrievers.access_retrievers import retrieve_project_role
-from app.db_model.retrievers.commons import get_user
+from app.db_model.retrievers.access_retrievers import get_project_role
+from app.db_model.retrievers.commons import get_auth_user
 from app.domain_model import ADMIN_ROLES
 
 log = logger_get(__name__)
@@ -17,9 +17,9 @@ def delete_project(auth: dict | AppUser, project: Project, session: Session) -> 
     """
     Deletes a project, after checking that the user is allowed to delete the project.
     """
-    user = get_user(auth)
+    user = get_auth_user(auth)
 
-    if not ((role := retrieve_project_role(user, project.id, session)) in ADMIN_ROLES):
+    if not ((role := get_project_role(user, project.id, session)) in ADMIN_ROLES):
         log.warning(f'{user} ({role}) does not have permissions to delete project {project.id}')
         return None
 

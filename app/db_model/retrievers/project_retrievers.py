@@ -2,42 +2,39 @@
 Module containing all Project retrievers
 """
 from ecodev_core import AppUser
-from ecodev_core import logger_get
 from ecodev_core import Permission
 from sqlmodel import select
 from sqlmodel import Session
 
 from app.db_model.project import Project
 from app.db_model.project_access import ProjectAccess
-from app.db_model.retrievers.commons import get_user
-
-log = logger_get(__name__)
+from app.db_model.retrievers.commons import get_auth_user
 
 
-def retrieve_all_projects(auth: dict | AppUser, session: Session) -> list[Project]:
+def get_all_projects(auth: dict | AppUser, session: Session) -> list[Project]:
     """
     Retrieves all projects - To be used for project access management only.
     """
-    if get_user(auth).permission is Permission.ADMIN:
+    if get_auth_user(auth).permission == Permission.ADMIN:
         return session.exec(select(Project)).all()
-    return retrieve_user_projects(auth, Project, session)
+    return get_user_projects(auth, Project, session)
 
 
-def retrieve_user_projects(auth: dict | AppUser,
-                           session: Session) -> list[Project]:
+def get_user_projects(auth: dict | AppUser,
+                      session: Session) -> list[Project]:
     """
     Retrieves all projects accessible by the user / token.
     """
     return list(session.exec(select(Project)
                              .join(ProjectAccess, isouter=True)
-                             .where(ProjectAccess.user_id == get_user(auth).id)
+                             .where(ProjectAccess.user_id == get_auth_user(auth).id)
                              ).unique())
 
 
-def retrieve_project_by_id(auth: dict | AppUser,
-                           project_id: int,
-                           session: Session
-                           ) -> Project | None:
+def get_project_by_id(auth: dict | AppUser,
+                      project_id: int,
+                      session: Session
+                      ) -> Project:
     """
     Attempts to retrieve a project for the given id, and checks for user access rights.
     If found, returns the project requested.
@@ -45,7 +42,7 @@ def retrieve_project_by_id(auth: dict | AppUser,
     return session.exec(select(Project)
                         .join(ProjectAccess, isouter=True)
                         .where(Project.id == project_id,
-                               ProjectAccess.user_id == get_user(auth).id)
+                               ProjectAccess.user_id == get_auth_user(auth).id)
                         ).first()
 
 
@@ -55,5 +52,5 @@ def verify_project_access(token: dict,
     """
     Verifies that the user is allowed to interact with the project
     """
-    project_ids = [p.id for p in retrieve_user_projects(token, session)]
+    project_ids = [p.id for p in get_user_projects(token, session)]
     return True if project_id in project_ids else False

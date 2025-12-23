@@ -3,7 +3,8 @@ from dash import ctx
 from dash import Input
 from dash import no_update
 from dash import Output
-from ecodev_core import logger_get
+from dash import State
+from ecodev_core import engine
 from ecodev_core import safe_get_user
 from ecodev_front import APPSHELL
 from ecodev_front import ASIDE
@@ -18,25 +19,28 @@ from ecodev_front import SHOW
 from ecodev_front import STYLE
 from ecodev_front import TOKEN
 from ecodev_front import URL
+from sqlmodel import Session
 
+from app.constants import PROJECT_ID_STORE
 from app.pages.modules import MODULES
-
-log = logger_get(__name__)
 
 
 @callback(Output(APPSHELL, ASIDE),
           Output(ASIDE, CHILDREN),
           Output(CLOSE_ASIDE_BTN_ID, STYLE),
           Output(OPEN_ASIDE_BTN_ID, STYLE),
+          Input(TOKEN, DATA),
+          State(PROJECT_ID_STORE, DATA),
           Input(CLOSE_ASIDE_BTN_ID, N_CLICKS),
           Input(OPEN_ASIDE_BTN_ID, N_CLICKS),
-          Input(URL, PATHNAME),
-          Input(TOKEN, DATA))
-def show_asides(close_btn: int, open_btn: int, pathname: str, token: dict):
+          Input(URL, PATHNAME))
+def show_asides(token: dict, project_id: int, close_btn: int, open_btn: int, pathname: str):
     """
-    Callback displaying the main page navbar and aside (if any)
+    Callback displaying the main page navbar and aside (if any).
+
+    NOTE: This callback assumes all aside params are token, project_id and session.
     """
-    width_aside = {'width': '17%'}
+    width_aside = {'width': '275px'}
     width_none = {'width': 0}
     no_aside = (width_none, [], HIDE, HIDE)  # type: ignore[var-annotated]
 
@@ -50,7 +54,10 @@ def show_asides(close_btn: int, open_btn: int, pathname: str, token: dict):
                     return width_none, no_update, HIDE, SHOW
 
                 page_index = [page.url for page in module.pages].index(pathname)
-                page_aside = module.pages[page_index].aside
-                return (width_aside, page_aside(), SHOW, HIDE) if page_aside else no_aside
+                if not (page_aside := module.pages[page_index].aside):
+                    return no_aside
+
+                with Session(engine) as session:
+                    return width_aside, page_aside(token, project_id, session), SHOW, HIDE
 
     return no_aside

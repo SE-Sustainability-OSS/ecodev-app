@@ -65,6 +65,7 @@ IS_PM = 'is_pm'
 USER = 'user'
 
 # ModuleAccess #
+MODULE_ACCESS = 'module_access'
 MODULE_NAME = 'module_name'
 HAS_ACCESS = 'has_access'
 PROJECT_ACCESS_ID = 'project_access_id'

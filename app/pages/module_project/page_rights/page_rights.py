@@ -37,15 +37,14 @@ from app.constants import PROJECT_ID_STORE
 from app.constants import USER_ID
 from app.db_model.inserters.project_access_inserters import delete_project_access
 from app.db_model.inserters.project_access_inserters import upsert_project_access
-from app.db_model.retrievers.access_retrievers import get_project_accessible_modules
-from app.db_model.retrievers.access_retrievers import retrieve_license_rights
-from app.db_model.retrievers.app_user_retrievers import retrieve_user_by_id
-from app.db_model.retrievers.project_retrievers import retrieve_project_by_id
+from app.db_model.retrievers.access_retrievers import get_app_rights
+from app.db_model.retrievers.access_retrievers import verify_project_module_access
+from app.db_model.retrievers.app_user_retrievers import get_user_by_id
+from app.db_model.retrievers.project_retrievers import get_project_by_id
 from app.domain_model import ALL_MODULE_NAMES
 from app.domain_model import ProjectAccessData
 from app.domain_model import Role
 from app.pages.common.custom_callback import safe_callback
-from app.pages.common.page_access import check_page_access
 from app.pages.common.stores import USER_DELETION_STORE
 from app.pages.module_project.page_rights import ADD_BTN
 from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_CONFIRM_BTN_ID
@@ -83,19 +82,20 @@ PAGE_RIGHTS = Page(
 @safe_callback(Output(PAGE_RIGHTS.id, CHILDREN),
                Output({TYPE: PROJECT_HEADER_ID, INDEX: PAGE_RIGHTS.id}, CHILDREN),
                Input(TOKEN, DATA),
-               State(PROJECT_ID_STORE, DATA),
-               prevent_initial_call=True)
+               State(PROJECT_ID_STORE, DATA))
 def render_page(token: dict, project_id: int):
     """
-    Renders page component once token has been validated.
+    Renders page's initial layout / content.
+    NOTE: Page access is checked via the safe_callback decorator,
+    to disable this check, set check_access to False.
     """
     with Session(engine) as session:
-        project = retrieve_project_by_id(token, project_id, session)
-        user_modules = retrieve_license_rights(safe_get_user(token), session)
-        modules = get_project_accessible_modules(token, project_id, user_modules, session)
+        project = get_project_by_id(token, project_id, session)
+        user_modules = get_app_rights(safe_get_user(token), session)
+        modules = verify_project_module_access(token, project_id, user_modules, session)
     page = manage_rights_overview(project_id, modules, session)
-    return (check_page_access(token, page),
-            page_project_header(project.name, project.description) if project else None)
+    header = page_project_header(project.name, project.year) if project else None
+    return page, header
 
 
 @safe_callback(
@@ -119,9 +119,9 @@ def update_rights_callback(token: dict,
 
     with Session(engine) as session:
         for row in row_data:
-            user = retrieve_user_by_id(row[USER_ID], session)
-            user_modules = retrieve_license_rights(user, session)
-            modules = get_project_accessible_modules(user, project_id, user_modules, session)
+            user = get_user_by_id(row[USER_ID], session)
+            user_modules = get_app_rights(user, session)
+            modules = verify_project_module_access(user, project_id, user_modules, session)
             access_data = ProjectAccessData(
                 user_id=user.id,
                 role=Role.CLIENT if user.permission == Permission.CLIENT else Role.COLLABORATOR,
@@ -149,8 +149,8 @@ def open_rights_modal(token: dict, project_id: int, n_clicks: int):
 
     with Session(engine) as session:
         user = safe_get_user(token)
-        user_modules = retrieve_license_rights(safe_get_user(token), session)
-        modules = get_project_accessible_modules(token, project_id, user_modules, session)
+        user_modules = get_app_rights(safe_get_user(token), session)
+        modules = verify_project_module_access(token, project_id, user_modules, session)
         return True, manage_rights_modal(user, modules, session)
 
 
@@ -237,6 +237,7 @@ def remove_consultant(token: dict,
 
     if confirm_button:
         with Session(engine) as session:
-            delete_project_access(user_data[USER_ID], project_id, session)
+            user = get_user_by_id(user_data[USER_ID], session)
+            delete_project_access(user, project_id, session)
 
     return False, token

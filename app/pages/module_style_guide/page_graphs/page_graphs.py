@@ -3,9 +3,9 @@ Module implementing the buttons components page of the style-guide
 """
 import dash_mantine_components as dmc
 import plotly.express as px
-from dash import callback
 from dash import Input
 from dash import Output
+from dash import State
 from ecodev_core import logger_get
 from ecodev_front import CHILDREN
 from ecodev_front import DATA
@@ -14,7 +14,8 @@ from ecodev_front import header_layout
 from ecodev_front import Page
 from ecodev_front import TOKEN
 
-from app.pages.common.page_access import check_page_access
+from app.constants import PROJECT_ID_STORE
+from app.pages.common.custom_callback import safe_callback
 
 
 log = logger_get(__name__)
@@ -29,20 +30,21 @@ PAGE_GRAPHS = Page(
 )
 
 
-@callback(Output(PAGE_GRAPHS.id, CHILDREN),
-          Input(TOKEN, DATA),
-          prevent_initial_call=True)
-def render_page(token: dict):
+@safe_callback(Output(PAGE_GRAPHS.id, CHILDREN),
+               Input(TOKEN, DATA),
+               State(PROJECT_ID_STORE, DATA))
+def render_page(token: dict, project_id: int):
     """
-    Renders page component once token has been validated.
+    Renders page's initial layout / content.
+    NOTE: Page access is checked via the safe_callback decorator,
+    to disable this check, set check_access to False.
     """
-    page = dmc.Stack([
+    return dmc.Stack([
         bar_chart_example(),
         scatter_plot_example(),
         heatmap_example(),
         histogram_example()
     ], align='flext-start', gap='30px', w='95%', m='auto')
-    return check_page_access(token, page)
 
 
 def bar_chart_example() -> dmc.Stack:

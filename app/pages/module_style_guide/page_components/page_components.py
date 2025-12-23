@@ -2,7 +2,6 @@
 Module implementing the buttons components page of the style-guide
 """
 import dash_mantine_components as dmc
-from dash import callback
 from dash import Input
 from dash import Output
 from dash import State
@@ -16,7 +15,7 @@ from ecodev_front import TOKEN
 
 from app.constants import PROJECT_ID_STORE
 from app.pages.common.components.alert import custom_alert
-from app.pages.common.page_access import check_page_access
+from app.pages.common.custom_callback import safe_callback
 
 log = logger_get(__name__)
 
@@ -30,19 +29,19 @@ PAGE_COMPONENTS = Page(
 )
 
 
-@callback(Output(PAGE_COMPONENTS.id, CHILDREN),
-          Input(TOKEN, DATA),
-          State(PROJECT_ID_STORE, DATA),
-          prevent_initial_call=True)
+@safe_callback(Output(PAGE_COMPONENTS.id, CHILDREN),
+               Input(TOKEN, DATA),
+               State(PROJECT_ID_STORE, DATA))
 def render_page(token: dict, project_id: int):
     """
-    Renders page component once token has been validated.
+    Renders page's initial layout / content.
+    NOTE: Page access is checked via the safe_callback decorator,
+    to disable this check, set check_access to False.
     """
-    page = dmc.Stack([
+    return dmc.Stack([
         buttons_section(),
         alert_section()
     ], align='flext-start', gap='30px', w='95%', m='auto')
-    return check_page_access(token, page)
 
 
 def buttons_section() -> dmc.Stack:

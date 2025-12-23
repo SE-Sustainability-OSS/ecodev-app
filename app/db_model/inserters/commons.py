@@ -1,15 +1,18 @@
 from functools import partial
 
+from ecodev_core import upsert_data
 from ecodev_core import upsert_selector
 from ecodev_core.db_upsertion import upsert_updator
 from sqlalchemy.inspection import inspect
 from sqlmodel import Session
 from sqlmodel.main import SQLModelMetaclass
 
+upsert_data
 
-def upsert_dict(db_schema: SQLModelMetaclass, data: dict, session: Session):
+
+def upsert_dict(db_schema: SQLModelMetaclass, data: dict, session: Session) -> SQLModelMetaclass:
     """
-    TODO
+    Upserts the passed data dict into db_schema db, prior to returning it (if successfu).
     """
     selector = partial(upsert_selector, db_schema=db_schema)
     updator = partial(upsert_updator, db_schema=db_schema)

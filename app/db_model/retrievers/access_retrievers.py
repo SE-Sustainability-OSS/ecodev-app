@@ -12,14 +12,14 @@ from sqlmodel import Session
 from app.constants import USER_ID
 from app.db_model.module_access import ModuleAccess
 from app.db_model.project_access import ProjectAccess
-from app.db_model.retrievers.commons import get_user
-from app.db_model.retrievers.project_retrievers import retrieve_project_by_id
+from app.db_model.retrievers.commons import get_auth_user
+from app.db_model.retrievers.project_retrievers import get_project_by_id
 from app.domain_model import AppModule
 from app.domain_model.role import Role
 
 
-def retrieve_project_users(project_id: int,
-                           session: Session) -> list:
+def get_project_users(project_id: int,
+                      session: Session) -> list:
     """
     Returns a list of users that have access to a specific project
     """
@@ -31,34 +31,37 @@ def retrieve_project_users(project_id: int,
     return list_tuple_to_dict(session.exec(query).all())
 
 
-def retrieve_project_access(user_id: int, project_id: int, session: Session
-                            ) -> ProjectAccess | None:
+def get_project_access(auth: dict | AppUser,
+                       project_id: int,
+                       session: Session
+                       ) -> ProjectAccess | None:
     """
     Returns a ProjectAccess linked to a specific user and project_id
     """
-    query = select(ProjectAccess).where(ProjectAccess.user_id == user_id,
+    user = get_auth_user(auth)
+    query = select(ProjectAccess).where(ProjectAccess.user_id == user.id,
                                         ProjectAccess.project_id == project_id)
     return session.exec(query).first()
 
 
-def retrieve_project_role(auth: dict | AppUser,
-                          project_id: int,
-                          session: Session
-                          ) -> Role | None:
+def get_project_role(auth: dict | AppUser,
+                     project_id: int,
+                     session: Session
+                     ) -> Role:
     """
     Attempts to retrieve the user's access rights. If not found, it means user does not have access
     to the project. If found, returns role of user in that project.
     """
-
     return session.exec(select(ProjectAccess.role)
                         .where(ProjectAccess.project_id == project_id,
-                               ProjectAccess.user_id == get_user(auth).id)
+                               ProjectAccess.user_id == get_auth_user(auth).id)
                         ).first()
 
 
-def retrieve_license_rights(user: AppUser, session: Session) -> list[AppModule]:
+def get_app_rights(user: AppUser, session: Session) -> list[AppModule]:
     """
-    Retrieves the user's license (list of AppModules) rights.
+    Retrieves the user's app rights (list of AppModules), which can be used as
+    an app licensing purposes (e.g. module subscriptions categories).
     """
     if user.permission == Permission.ADMIN:
         return list(AppModule)
@@ -66,27 +69,27 @@ def retrieve_license_rights(user: AppUser, session: Session) -> list[AppModule]:
             session.exec(select(AppRight).where(AppRight.user_id == user.id)).all()]
 
 
-def get_project_accessible_modules(auth: dict | AppUser,
-                                   project_id: int,
-                                   modules: list[AppModule],
-                                   session: Session,
-                                   ) -> list[AppModule]:
+def verify_project_module_access(auth: dict | AppUser,
+                                 project_id: int,
+                                 modules: list[AppModule],
+                                 session: Session,
+                                 ) -> list[AppModule]:
     """
     Verifies user has access to the requested module.
     By default, internal staff have access to all of the app's modules.
     """
-    if not (user := get_user(auth)):
+    if not (user := get_auth_user(auth)):
         return []
 
-    role = retrieve_project_role(user, project_id, session)
+    role = get_project_role(user, project_id, session)
 
-    if (project := retrieve_project_by_id(user, project_id, session)):
+    if (project := get_project_by_id(user, project_id, session)):
         return modules
 
     if user.permission == Permission.ADMIN or role == Role.OWNER:
         return modules
 
-    accessible_modules = retrieve_project_accessible_modules(user, project_id, session)
+    accessible_modules = get_module_access(user, project_id, session)
     return [module for module in modules
             if module.name in [m.module_name for m in accessible_modules]]
 
@@ -99,20 +102,20 @@ def verify_module_access(auth: dict | AppUser,
     Verifies user has access to the requested module.
     By default, internal staff have access to all of the app's modules.
     """
-    if not (user := get_user(auth)):
+    if not (user := get_auth_user(auth)):
         return False
 
     if (user.permission == Permission.ADMIN or
-            retrieve_project_role(user, project_id, session) == Role.OWNER):
+            get_project_role(user, project_id, session) == Role.OWNER):
         return True
 
-    accessible_modules = retrieve_project_accessible_modules(user, project_id, session)
+    accessible_modules = get_module_access(user, project_id, session)
     return True if module_name in [a.module_name for a in accessible_modules] else False
 
 
-def retrieve_project_accessible_modules(auth: dict | AppUser,
-                                        project_id: int,
-                                        session: Session) -> list[ModuleAccess]:
+def get_module_access(auth: dict | AppUser,
+                      project_id: int,
+                      session: Session) -> list[ModuleAccess]:
     """
     Retrieves all modules the user has access to.
 
@@ -122,7 +125,7 @@ def retrieve_project_accessible_modules(auth: dict | AppUser,
     """
     return list(session.exec(select(ModuleAccess)
                              .join(ProjectAccess)
-                             .where(ProjectAccess.user_id == get_user(auth).id,
+                             .where(ProjectAccess.user_id == get_auth_user(auth).id,
                                     ProjectAccess.project_id == project_id,
                                     col(ModuleAccess.has_access).is_(True))
                              ).all())

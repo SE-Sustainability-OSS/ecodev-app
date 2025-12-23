@@ -12,7 +12,7 @@ from sqlmodel import Session
 
 from app.constants import ROLE
 from app.constants import USER
-from app.db_model.retrievers.access_retrievers import retrieve_project_users
+from app.db_model.retrievers.access_retrievers import get_project_users
 from app.db_model.retrievers.access_retrievers import verify_module_access
 from app.domain_model import ADMIN_ROLES
 from app.domain_model import AppModule
@@ -46,7 +46,7 @@ def manage_rights_table(project_id: int,
         [_dash_ag_grid_button(field='Remove', color=get_color('red.5'), variant='outline')]
     )
 
-    row_data = retrieve_project_users(project_id, session)
+    row_data = get_project_users(project_id, session)
     for row in row_data:
         row[OPTIONS] = ADMIN_ROLES if row[ROLE] in ADMIN_ROLES else RESTRICTED_ROLES
         for module in modules:

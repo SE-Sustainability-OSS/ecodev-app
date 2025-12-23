@@ -19,7 +19,7 @@ from sqlmodel import Session
 from app.constants import APP_NAME
 from app.constants import PROJECT_ID_STORE
 from app.db_model.project import Project
-from app.db_model.retrievers.project_retrievers import retrieve_user_projects
+from app.db_model.retrievers.project_retrievers import get_user_projects
 from app.pages.page_main.project_options import NEW_PROJECT_BUTTON_ID
 from app.pages.page_main.project_options import PROJECT_SELECT_ID
 
@@ -44,7 +44,7 @@ def project_loader(token: dict, project_id: int | None, session: Session) -> dmc
     Displays the project create / select component
     """
     project_select_data = [{VALUE: str(project.id), 'label': _create_project_label(project)}
-                           for project in retrieve_user_projects(token, session)]
+                           for project in get_user_projects(token, session)]
 
     return dmc.Container([background_card([
         card_title(f'{APP_NAME} | Project Loader', background_color='blue.6'),

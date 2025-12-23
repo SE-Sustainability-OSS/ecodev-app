@@ -27,9 +27,8 @@ from sqlmodel import Session
 
 from app.constants import PROJECT_ID_STORE
 from app.db_model.inserters.project_inserters import upsert_project
-from app.db_model.retrievers.project_retrievers import retrieve_project_by_id
+from app.db_model.retrievers.project_retrievers import get_project_by_id
 from app.pages.common.custom_callback import safe_callback
-from app.pages.common.page_access import check_page_access
 from app.pages.module_project.page_info import PROJECT_INFO_INPUT_ID
 from app.pages.module_project.page_info.common import PROJECT_INFO_SAVE_BTN_ID
 from app.pages.module_project.page_info.common.general_info import general_info_section
@@ -55,15 +54,16 @@ PAGE_INFO = Page(
 def render_project_info_page(token: dict, project_id: int) -> dmc.Stack:
     """
     Renders project information page.
+    NOTE: Page access is granted by default, to allow for project creation
+    (& no project ID is available during this step).
     """
     with Session(engine) as session:
-        project = retrieve_project_by_id(token, project_id, session)
-        page = dmc.Stack(
+        project = get_project_by_id(token, project_id, session)
+        return dmc.Stack(
             children=[
                 general_info_section(project),
                 SAVE_INFO_BUTTON
             ], w='100%', gap='ls', align='center', mb=50)
-        return check_page_access(token, page)
 
 
 @safe_callback(Output(PROJECT_ID_STORE, DATA, allow_duplicate=True),
