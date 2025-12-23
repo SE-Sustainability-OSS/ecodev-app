@@ -14,6 +14,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from sqladmin import Admin
 
+from app.admin import ProjectAdmin
+
 
 app = FastAPI()
 app.add_middleware(
@@ -31,7 +33,7 @@ app.add_middleware(
 
 # ADMIN #
 admin = Admin(app, engine, authentication_backend=JwtAuth(secret_key=AUTH.secret_key))
-# admin.add_view(ProductAdmin)
+admin.add_view(ProjectAdmin)
 # ROUTE GUIDANCE #
 
 # Add API App routes below via:
