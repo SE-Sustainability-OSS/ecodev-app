@@ -102,10 +102,6 @@ def update_header_footer_components(token: dict,
         if not (token := parse_qs(urlparse(href).query).get(TOKEN)) or is_banned(token[0]):
             return header_login_section(), None, {TOKEN: None}
 
-        # response = requests.get(
-        #     USER_URL, headers={'Authorization': f'Bearer {token[0]}'}
-        # )
-        # upsert_new_user(token[0], response.json())  # type: ignore[dict-item]
         token = {TOKEN: {'access_token': token[0], 'token_type': 'bearer'}}
         return display_app_header(pathname, token, project_id), main_footer(), token
 
@@ -139,7 +135,8 @@ def user_logout(n_clicks: int, token: dict):
 def verify_page_access(pathname: str, token: dict, project_id: int):
     """
     Ensure that the user has access to the page, else reroute to page 403 (access forbidden)
-    Add an exception if user has clicked on create new project for which
+    NOTE: Exception is made for the "create new project" page (MODULE_PROJECT.pages[0].url)
+    or if the user is an ADMIN.
     """
     if not (user := safe_get_user(token)):
         return PAGE_LOGIN.url

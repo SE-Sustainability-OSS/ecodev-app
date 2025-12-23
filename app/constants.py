@@ -24,8 +24,8 @@ MAIN_PAGE_URL = '/'
 """
 LINKS CONSTANTS
 """
-COMM_CHANNEL_URL = 'https://teams.microsoft.com/l/channel/19%3A4e561a8106124325a043fd3ce86acae1%40thread.tacv2/CDA%20Hotline?groupId=53fa0177-24a8-4119-bbce-5410193dc50d&tenantId=6e51e1ad-c54b-4b39-b598-0ffe9ae68fef'  # noqa: E501
-FEEDBACK_URL = 'https://forms.office.com/e/UwibxMamt8'
+COMM_CHANNEL_URL = 'https://ecosia.com'
+FEEDBACK_URL = 'https://ecosia.com'
 DOCUMENTATION_URL = 'https://ecosia.com'
 
 
@@ -41,7 +41,6 @@ DASH DATA STORES
 """
 ALERT_STORE = 'alert-store'
 PROJECT_ID_STORE = 'project-id-store'
-VALIDATION_STORE = 'validation-store'
 USER_DELETION_STORE = 'user-deletion-store'
 
 

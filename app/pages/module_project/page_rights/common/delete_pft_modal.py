@@ -25,8 +25,8 @@ from sqlmodel import Session
 from app.constants import MAIN_PAGE_URL
 from app.constants import PROJECT_ID_STORE
 from app.db_model import Project
-from app.db_model.inserters.project_inserters import delete_project
-from app.db_model.retrievers.project_retrievers import retrieve_project_by_id
+from app.db_model.deleters import delete_project
+from app.db_model.retrievers import retrieve_project_by_id
 from app.pages.module_project.page_rights import DELETE_PROJECT_BUTTON_ID
 from app.pages.module_project.page_rights import DELETE_PROJECT_CONFIRMATION_BUTTON_ID
 from app.pages.module_project.page_rights import DELETE_PROJECT_CONFIRMATION_MODAL_ID
