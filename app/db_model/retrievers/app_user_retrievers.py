@@ -25,3 +25,13 @@ def retrieve_all_users(session: Session) -> list[AppUser]:
     Retrieves a list of all users
     """
     return session.exec(select(AppUser)).all()
+
+
+def retrieve_users_by_client(client: str, session: Session) -> list[AppUser]:
+    """
+    Retrieves a list of users with the same 'client' attribute of the AppUser table.
+    NOTE: 'client' can be thought of as grouping of users (e.g. users from the same organisation).
+    """
+    return session.exec(select(AppUser)
+                        .where(AppUser.client == client)
+                        ).all()

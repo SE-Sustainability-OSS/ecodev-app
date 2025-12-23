@@ -2,6 +2,7 @@
 Module containing all Project retrievers
 """
 from ecodev_core import AppUser
+from ecodev_core import logger_get
 from ecodev_core import Permission
 from sqlmodel import select
 from sqlmodel import Session
@@ -9,6 +10,8 @@ from sqlmodel import Session
 from app.db_model.project import Project
 from app.db_model.project_access import ProjectAccess
 from app.db_model.retrievers.commons import get_user
+
+log = logger_get(__name__)
 
 
 def retrieve_all_projects(auth: dict | AppUser, session: Session) -> list[Project]:
@@ -52,4 +55,5 @@ def verify_project_access(token: dict,
     """
     Verifies that the user is allowed to interact with the project
     """
-    return True if project_id in [p.id for p in retrieve_user_projects(token, session)] else False
+    project_ids = [p.id for p in retrieve_user_projects(token, session)]
+    return True if project_id in project_ids else False

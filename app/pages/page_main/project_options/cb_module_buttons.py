@@ -23,7 +23,7 @@ from ecodev_front.ids import MODULE_BUTTON
 from sqlmodel import Session
 
 from app.constants import PROJECT_ID_STORE
-from app.db_model.retrievers.access_retrievers import get_accessible_modules
+from app.db_model.retrievers.access_retrievers import get_project_accessible_modules
 from app.pages.module_project.m_project import MODULE_PROJECT
 from app.pages.modules import MODULES
 from app.pages.page_main.project_options import NEW_PROJECT_BUTTON_ID
@@ -40,7 +40,7 @@ def module_buttons(token: dict, project_id: int | None, session: Session) -> dmc
         children=[
             dmc.Group([
                 module.render_main_page_button()
-                for module in get_accessible_modules(token, project_id, MODULES, session)
+                for module in get_project_accessible_modules(token, project_id, MODULES, session)
             ], justify='center', grow=True, w='100%'),
         ], style={'display': 'none'})
 

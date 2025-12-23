@@ -74,3 +74,8 @@ PROJECT_ACCESS_ID = 'project_access_id'
 """
 OTHER CALLBACK CONSTANTS
 """
+# Custom Callback #
+CHECK_ACCESS = 'check_access'
+COMPUTATION = 'computation'
+MONITORING = 'monitoring'
+MONITOR_DETAILS = 'monitor_details'

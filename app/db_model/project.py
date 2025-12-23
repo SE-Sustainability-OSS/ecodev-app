@@ -66,17 +66,3 @@ class Project(ProjectBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     users: list['ProjectAccess'] = Relationship(back_populates='project')
     computations: list['Computation'] = Relationship(back_populates='project')
-
-
-class ProjectCreate(ProjectBase):
-    pass
-
-
-class ProjectPublic(ProjectBase):
-    id: int
-
-
-class ProjectUpdate(SQLModel):
-    name: str | None = None
-    description: str | None = None
-    year: int | None = None

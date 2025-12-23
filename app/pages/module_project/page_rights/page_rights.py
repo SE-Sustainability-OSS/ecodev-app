@@ -4,7 +4,6 @@ Module implementing the page to manage project and module access rights
 NB: All internal roles have access to all modules by default.
 """
 import dash_mantine_components as dmc
-from dash import callback
 from dash import Input
 from dash import no_update
 from dash import Output
@@ -12,6 +11,7 @@ from dash import State
 from dash.exceptions import PreventUpdate
 from ecodev_core import engine
 from ecodev_core import logger_get
+from ecodev_core import Permission
 from ecodev_core import safe_get_user
 from ecodev_front import CELL_RENDERER_DATA
 from ecodev_front import CHILDREN
@@ -33,14 +33,18 @@ from ecodev_front import TYPE
 from ecodev_front import VALUE
 from sqlmodel import Session
 
-from app.constants import PROJECT_ID
 from app.constants import PROJECT_ID_STORE
 from app.constants import USER_ID
 from app.db_model.inserters.project_access_inserters import delete_project_access
 from app.db_model.inserters.project_access_inserters import upsert_project_access
-from app.db_model.retrievers.access_retrievers import get_accessible_modules
+from app.db_model.retrievers.access_retrievers import get_project_accessible_modules
+from app.db_model.retrievers.access_retrievers import retrieve_license_rights
 from app.db_model.retrievers.app_user_retrievers import retrieve_user_by_id
 from app.db_model.retrievers.project_retrievers import retrieve_project_by_id
+from app.domain_model import ALL_MODULE_NAMES
+from app.domain_model import ProjectAccessData
+from app.domain_model import Role
+from app.pages.common.custom_callback import safe_callback
 from app.pages.common.page_access import check_page_access
 from app.pages.common.stores import USER_DELETION_STORE
 from app.pages.module_project.page_rights import ADD_BTN
@@ -61,7 +65,7 @@ from app.pages.module_project.page_rights.common.overview import manage_rights_o
 from app.pages.module_project.page_rights.methodo.grant_access import check_email_validity
 from app.pages.module_project.page_rights.methodo.grant_access import get_new_project_users
 from app.pages.module_project.page_rights.methodo.grant_access import grant_user_project_access
-from app.pages.module_project.page_rights.methodo.grant_access import MODULES
+
 
 log = logger_get(__name__)
 
@@ -76,36 +80,37 @@ PAGE_RIGHTS = Page(
 )
 
 
-@callback(Output(PAGE_RIGHTS.id, CHILDREN),
-          Output({TYPE: PROJECT_HEADER_ID, INDEX: PAGE_RIGHTS.id}, CHILDREN),
-          Input(TOKEN, DATA),
-          State(PROJECT_ID_STORE, DATA),
-          prevent_initial_call=True)
+@safe_callback(Output(PAGE_RIGHTS.id, CHILDREN),
+               Output({TYPE: PROJECT_HEADER_ID, INDEX: PAGE_RIGHTS.id}, CHILDREN),
+               Input(TOKEN, DATA),
+               State(PROJECT_ID_STORE, DATA),
+               prevent_initial_call=True)
 def render_page(token: dict, project_id: int):
     """
     Renders page component once token has been validated.
     """
     with Session(engine) as session:
         project = retrieve_project_by_id(token, project_id, session)
-        modules = get_accessible_modules(token, MODULES, session)
+        user_modules = retrieve_license_rights(safe_get_user(token), session)
+        modules = get_project_accessible_modules(token, project_id, user_modules, session)
     page = manage_rights_overview(project_id, modules, session)
     return (check_page_access(token, page),
             page_project_header(project.name, project.description) if project else None)
 
 
-@callback(
+@safe_callback(
     Output(TOKEN, DATA, allow_duplicate=True),
     Output(UPDATE_RIGHTS_ALERT_ID, CHILDREN),
     State(TOKEN, DATA),
+    State(PROJECT_ID_STORE, DATA),
     Input({TYPE: MANAGE_RIGHTS, INDEX: UPDATE_BTN}, N_CLICKS),
     State({TYPE: MANAGE_RIGHTS, INDEX: TABLE}, ROW_DATA),
-    State(PROJECT_ID_STORE, DATA),
     prevent_initial_call=True
 )
 def update_rights_callback(token: dict,
+                           project_id: int,
                            n_clicks: int,
-                           row_data: list[dict],
-                           project_id: int):
+                           row_data: list[dict]) -> tuple[dict, dmc.Alert]:
     """
     Upserts both the project access and module accesses
     """
@@ -115,19 +120,27 @@ def update_rights_callback(token: dict,
     with Session(engine) as session:
         for row in row_data:
             user = retrieve_user_by_id(row[USER_ID], session)
-            modules = get_accessible_modules(user, MODULES, session)
-            upsert_project_access(project_id, row, modules, session)
+            user_modules = retrieve_license_rights(user, session)
+            modules = get_project_accessible_modules(user, project_id, user_modules, session)
+            access_data = ProjectAccessData(
+                user_id=user.id,
+                role=Role.CLIENT if user.permission == Permission.CLIENT else Role.COLLABORATOR,
+                project_id=project_id,
+                module_access={module: bool(module in modules) for module in ALL_MODULE_NAMES}
+            )
+            upsert_project_access(project_id, access_data, session)
 
     return token, dmc.Alert('Rights updated', title='Success', color='green')
 
 
-@callback(
+@safe_callback(
     Output(ADD_RIGHTS_MODAL_ID, OPENED),
     Output(ADD_RIGHTS_MODAL_ID, CHILDREN),
     State(TOKEN, DATA),
+    State(PROJECT_ID_STORE, DATA),
     Input({TYPE: MANAGE_RIGHTS, INDEX: ADD_BTN}, N_CLICKS)
 )
-def open_rights_modal(token: dict, n_clicks: int):
+def open_rights_modal(token: dict, project_id: int, n_clicks: int):
     """
     Opens the modal to add users and set their rights.
     """
@@ -136,27 +149,28 @@ def open_rights_modal(token: dict, n_clicks: int):
 
     with Session(engine) as session:
         user = safe_get_user(token)
-        modules = get_accessible_modules(token, MODULES, session)
+        user_modules = retrieve_license_rights(safe_get_user(token), session)
+        modules = get_project_accessible_modules(token, project_id, user_modules, session)
         return True, manage_rights_modal(user, modules, session)
 
 
-@callback(Output(TOKEN, DATA),
-          Output(ADD_RIGHTS_MODAL_ID, OPENED, allow_duplicate=True),
-          Output(ADD_RIGHTS_MODAL_ERROR_ID, CHILDREN),
-          Output(USERS_MULTISELECT_ID, ERROR),
-          Input(ADD_RIGHTS_MODAL_CONFIRM_BTN_ID, N_CLICKS),
-          State(USERS_MULTISELECT_ID, VALUE),
-          State(MODULE_MULTISELECT_ID, VALUE),
-          State(TOKEN, DATA),
-          State(PROJECT_ID_STORE, DATA),
-          prevent_initial_call=True,
-          running=[(Output(ADD_RIGHTS_MODAL_CONFIRM_BTN_ID, LOADING), True, False)]
-          )
-def add_rights(n_clicks: int,
+@safe_callback(Output(TOKEN, DATA),
+               Output(ADD_RIGHTS_MODAL_ID, OPENED, allow_duplicate=True),
+               Output(ADD_RIGHTS_MODAL_ERROR_ID, CHILDREN),
+               Output(USERS_MULTISELECT_ID, ERROR),
+               State(TOKEN, DATA),
+               State(PROJECT_ID_STORE, DATA),
+               Input(ADD_RIGHTS_MODAL_CONFIRM_BTN_ID, N_CLICKS),
+               State(USERS_MULTISELECT_ID, VALUE),
+               State(MODULE_MULTISELECT_ID, VALUE),
+               prevent_initial_call=True,
+               running=[(Output(ADD_RIGHTS_MODAL_CONFIRM_BTN_ID, LOADING), True, False)])
+def add_rights(token: dict,
+               project_id: int,
+               n_clicks: int,
                emails: list[str],
                modules: list[str],
-               token: dict,
-               project_id: int):
+               ) -> tuple[dict, bool, str, str]:
     """
     Callback used to add (in batch) users to a project, and set their rights.
     """
@@ -167,7 +181,7 @@ def add_rights(n_clicks: int,
         return no_update, True, no_update, 'Please enter at least one user'
 
     user = safe_get_user(token)
-    if invalid_emails := check_email_validity(emails, user):
+    if invalid_emails := check_email_validity(emails):
         return no_update, True, invalid_emails, no_update
 
     with Session(engine) as session:
@@ -177,13 +191,19 @@ def add_rights(n_clicks: int,
     return token, False, no_update, no_update
 
 
-@callback(
+@safe_callback(
     Output(REMOVE_USER_CONFIRMATION_MODAL_ID, OPENED),
     Output(USER_DELETION_STORE, DATA),
+    State(TOKEN, DATA),
+    State(PROJECT_ID_STORE, DATA),
     Input({TYPE: MANAGE_RIGHTS, INDEX: TABLE}, CELL_RENDERER_DATA),
     State({TYPE: MANAGE_RIGHTS, INDEX: TABLE}, ROW_DATA),
 )
-def open_remove_confirmation_modal(button_click: dict, row_data: list[dict]):
+def open_remove_confirmation_modal(token: dict,
+                                   project_id: int,
+                                   button_click: dict,
+                                   row_data: list[dict]
+                                   ) -> tuple[bool, dict]:
     """
     Opens the removal confirmation modal for a user and stores the infos linked to the user in a
     store
@@ -193,19 +213,22 @@ def open_remove_confirmation_modal(button_click: dict, row_data: list[dict]):
     raise PreventUpdate
 
 
-@callback(
+@safe_callback(
     Output(REMOVE_USER_CONFIRMATION_MODAL_ID, OPENED, allow_duplicate=True),
     Output(TOKEN, DATA, allow_duplicate=True),
+    State(TOKEN, DATA),
+    State(PROJECT_ID_STORE, DATA),
     Input(REMOVE_USER_CONFIRMATION_BUTTON_ID, N_CLICKS),
     Input(REMOVE_USER_CANCELLATION_BUTTON_ID, N_CLICKS),
     State(USER_DELETION_STORE, DATA),
-    State(TOKEN, DATA),
     prevent_initial_call=True
 )
-def remove_consultant(confirm_button: int,
+def remove_consultant(token: dict,
+                      project_id: int,
+                      confirm_button: int,
                       cancel_button: int,
                       user_data: dict,
-                      token: dict):
+                      ) -> tuple[bool, dict]:
     """
     Callback to edit a project, populating the main fields with the selected project info
     """
@@ -214,6 +237,6 @@ def remove_consultant(confirm_button: int,
 
     if confirm_button:
         with Session(engine) as session:
-            delete_project_access(user_data[USER_ID], user_data[PROJECT_ID], session)
+            delete_project_access(user_data[USER_ID], project_id, session)
 
     return False, token

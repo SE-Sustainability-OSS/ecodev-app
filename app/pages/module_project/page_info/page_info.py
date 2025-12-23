@@ -5,8 +5,6 @@ from functools import partial
 
 import dash_mantine_components as dmc
 from dash import ALL
-from dash import callback
-from dash import html
 from dash import Input
 from dash import Output
 from dash import State
@@ -30,7 +28,7 @@ from sqlmodel import Session
 from app.constants import PROJECT_ID_STORE
 from app.db_model.inserters.project_inserters import upsert_project
 from app.db_model.retrievers.project_retrievers import retrieve_project_by_id
-from app.pages.common.monitored_callback import monitored_callback
+from app.pages.common.custom_callback import safe_callback
 from app.pages.common.page_access import check_page_access
 from app.pages.module_project.page_info import PROJECT_INFO_INPUT_ID
 from app.pages.module_project.page_info.common import PROJECT_INFO_SAVE_BTN_ID
@@ -50,10 +48,11 @@ PAGE_INFO = Page(
 )
 
 
-@monitored_callback(Output(PAGE_INFO.id, CHILDREN),
-                    Input(TOKEN, DATA),
-                    Input(PROJECT_ID_STORE, DATA))
-def render_project_info_page(token: dict, project_id: int) -> html.Div:
+@safe_callback(Output(PAGE_INFO.id, CHILDREN),
+               Input(TOKEN, DATA),
+               Input(PROJECT_ID_STORE, DATA),
+               check_access=False)
+def render_project_info_page(token: dict, project_id: int) -> dmc.Stack:
     """
     Renders project information page.
     """
@@ -67,27 +66,28 @@ def render_project_info_page(token: dict, project_id: int) -> html.Div:
         return check_page_access(token, page)
 
 
-@callback(Output(PROJECT_ID_STORE, DATA, allow_duplicate=True),
-          Output(URL, PATHNAME, allow_duplicate=True),
-          State(TOKEN, DATA),
-          Input(PROJECT_INFO_SAVE_BTN_ID, N_CLICKS),
-          State(PROJECT_ID_STORE, DATA),
-          State({TYPE: PROJECT_INFO_INPUT_ID, INDEX: ALL}, VALUE),
-          State({TYPE: PROJECT_INFO_INPUT_ID, INDEX: ALL}, ID),
-          prevent_initial_call=True)
+@safe_callback(Output(PROJECT_ID_STORE, DATA, allow_duplicate=True),
+               Output(URL, PATHNAME, allow_duplicate=True),
+               State(TOKEN, DATA),
+               State(PROJECT_ID_STORE, DATA),
+               Input(PROJECT_INFO_SAVE_BTN_ID, N_CLICKS),
+               State({TYPE: PROJECT_INFO_INPUT_ID, INDEX: ALL}, VALUE),
+               State({TYPE: PROJECT_INFO_INPUT_ID, INDEX: ALL}, ID),
+               check_access=False,
+               prevent_initial_call=True)
 def save_basic_info(token: dict,
+                    project_id: int,
                     save_basic_info_btn: int,
-                    project_id: int | None,
                     info_values: list,
                     info_ids: list,
-                    ) -> tuple[int, html.Div]:
+                    ) -> tuple[int, str]:
     """
     Callback which saves new or edited project information fields
     """
     if not save_basic_info_btn:
         raise PreventUpdate
 
+    info_dict = {id[INDEX]: value for id, value in zip(info_ids, info_values)}
     with Session(engine) as session:
-        info_dict = {id[INDEX]: value for id, value in zip(info_ids, info_values)}
-        project = upsert_project(info_dict, token, session)
+        project = upsert_project(token, project_id, info_dict, session)
         return project.id, PAGE_RIGHTS.url  # type: ignore[return-value]

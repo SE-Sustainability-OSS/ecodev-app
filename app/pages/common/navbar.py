@@ -17,7 +17,7 @@ from ecodev_front import URL
 from sqlmodel import Session
 
 from app.constants import PROJECT_ID_STORE
-from app.db_model.retrievers.access_retrievers import get_accessible_modules
+from app.db_model.retrievers.access_retrievers import get_project_accessible_modules
 from app.pages.modules import MODULES
 
 
@@ -36,7 +36,7 @@ def show_navbar(pathname: str, token: dict, project_id: int):
         return {'width': 0}, []
 
     with Session(engine) as session:
-        for module in get_accessible_modules(user, project_id, MODULES, session):
+        for module in get_project_accessible_modules(user, project_id, MODULES, session):
             if pathname in [page.url for page in module.pages]:
                 active_page = [page.url for page in module.pages].index(pathname)
                 return navbar_width, module.render_navbar(pages=module.pages,

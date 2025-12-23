@@ -18,6 +18,7 @@ from app.db_model.retrievers.app_user_retrievers import retrieve_user_by_email
 
 def create_user_credentials(email: str,
                             permission: Permission,
+                            client: str,
                             session: Session) -> tuple[AppUser, str]:
     """
     Create user, auto-generated password and hashed-password.
@@ -25,7 +26,8 @@ def create_user_credentials(email: str,
     password = ''.join(random.choice(PWD_CHAR_CHOICES) for i in range(PASSWORD_LENGTH))
     user = AppUser(user=email,
                    password=_hash_password(password),
-                   permission=permission)
+                   permission=permission,
+                   client=client)
     session.add(user)
     session.flush()
     session.refresh(user)

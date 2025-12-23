@@ -1,53 +1,70 @@
 """
 Module containing all project table insertion and deletion methods.
 """
+from typing import Any
+
 from ecodev_core import AppUser
 from ecodev_core import logger_get
 from sqlmodel import Session
 
 from app.db_model.project import Project
 from app.db_model.project import ProjectBase
-from app.db_model.project import ProjectCreate
-from app.db_model.project import ProjectPublic
-from app.db_model.project import ProjectUpdate
+from app.db_model.retrievers.access_retrievers import retrieve_license_rights
 from app.db_model.retrievers.access_retrievers import retrieve_project_role
 from app.db_model.retrievers.commons import get_user
+from app.db_model.retrievers.project_retrievers import retrieve_project_by_id
+from app.db_model.retrievers.project_retrievers import verify_project_access
 from app.domain_model import ADMIN_ROLES
-# from app.db_model.inserters.project_access_inserters import create_project_access
+from app.domain_model.role import Role
+from app.pages.module_project.page_rights.methodo.grant_access import grant_user_project_access
 
 log = logger_get(__name__)
 
 
 def upsert_project(auth: dict | AppUser,
-                   project: ProjectCreate | ProjectUpdate,
-                   session: Session) -> ProjectPublic:
+                   project_id: int | None,
+                   data: dict[str, Any],
+                   session: Session) -> Project | None:
     """
-    Upserts a project, depending on whether or not the project already has an id.
+    Upserts a project, depending on whether or not the project already has an id,
+    and whether user has relevant rights.
     """
-    if isinstance(project, ProjectUpdate) and project.id:
-        return update_project(project.id, project, session)
+    project = Project(**data)
+    project.id = project_id
+    if project_id:
+        return update_project(project_id, project, session)
     return create_project(auth, project, session)
 
 
-def create_project(auth: dict | AppUser, project: ProjectCreate, session: Session) -> ProjectPublic:
+def create_project(auth: dict | AppUser, project: Project, session: Session) -> Project:
     """
-    Creates a new project.
+    Creates a new project and adds the creator as OWNER with full project & module access.
     """
-    project = Project(**project.model_dump())
     session.add(project)
     session.commit()
     session.refresh(project)
-    # create_project_access(AppUser, project.id, session)
+
+    user = get_user(auth)
+    license_rights = retrieve_license_rights(user, session)
+    grant_user_project_access(user, project.id, license_rights, Role.OWNER, session)
     return project
 
 
-def update_project(project_id: int | None, project: ProjectUpdate, session: Session) -> ProjectPublic:
+def update_project(auth: dict | AppUser,
+                   project_id: int | None,
+                   project: Project,
+                   session: Session) -> Project | None:
     """
-    Updates a project.
+    Updates a project, after ensuring user has access rights.
     """
-    if not (db_project := session.get(Project, project_id)):
+    if not (db_project := retrieve_project_by_id(auth, project_id, session)):
         log.warning(f'Project {project_id} not found')
         return None
+
+    if not verify_project_access(auth, project_id, session):
+        log.warning(f'User attempt to edit project {project_id} without access rights.')
+        return None
+
     project_data = project.model_dump(exclude_unset=True)
     db_project.sqlmodel_update(project_data)
     session.add(db_project)

@@ -40,7 +40,7 @@ from ecodev_front.constants import MAIN_PAGE_URL
 from sqlmodel import Session
 
 from app.constants import PROJECT_ID_STORE
-from app.db_model.retrievers.access_retrievers import get_accessible_modules
+from app.db_model.retrievers.access_retrievers import get_project_accessible_modules
 from app.pages.common.footer import main_footer
 from app.pages.common.header import display_app_header
 from app.pages.common.header import header_login_section
@@ -151,7 +151,7 @@ def verify_page_access(pathname: str, token: dict, project_id: int):
         return no_update
 
     with Session(engine) as session:
-        for module in get_accessible_modules(user, project_id, MODULES, session):
+        for module in get_project_accessible_modules(user, project_id, MODULES, session):
             if pathname in [page.url for page in module.pages]:
                 return no_update
     return PAGE_403.url

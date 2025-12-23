@@ -60,8 +60,7 @@ def _create_project_label(project: Project) -> str:
     """
     Helper function to extract the project label to be rendered in a dmc.Select
     """
-    label = f'{project.client} | '
-    label += f'{project.name} | ' if project.name else ''
+    label = f'{project.name} | ' if project.name else ''
     label += f'{project.year} | '
     label += f'{project.description}' if project.description else ''
     return label

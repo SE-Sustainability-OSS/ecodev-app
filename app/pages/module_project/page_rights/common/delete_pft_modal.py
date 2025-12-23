@@ -110,6 +110,6 @@ def delete_project_confirmed(n_click: int,
     with Session(engine) as session:
         if (project := retrieve_project_by_id(token, project_id, session)) and \
                 confirmation_val == project.name:
-            delete_project(token, project.id, session)  # type: ignore[arg-type]
+            delete_project(token, project, session)  # type: ignore[arg-type]
             return MAIN_PAGE_URL
     raise PreventUpdate
