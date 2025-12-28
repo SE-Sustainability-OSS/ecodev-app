@@ -130,6 +130,7 @@ def update_rights_callback(token: dict,
                 module_access={module: bool(module in modules) for module in AppModule}
             )
             upsert_project_access(project_id, access_data, session)
+            upsert_module_access()
 
     return token, dmc.Alert('Rights updated', title='Success', color='green')
 
