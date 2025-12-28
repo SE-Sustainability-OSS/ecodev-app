@@ -4,6 +4,7 @@ File containing definition of the style-guide module and its pages.
 from ecodev_front import icon_navbar
 from ecodev_front import Module
 
+from app.domain_model import AppModule
 from app.domain_model.color_utils import get_color
 from app.pages.module_style_guide.page_colors.page_colors import PAGE_COLORS
 from app.pages.module_style_guide.page_components.page_components import PAGE_COMPONENTS
@@ -13,7 +14,7 @@ from app.pages.module_style_guide.page_typography.page_typography import PAGE_TY
 
 MODULE_STYLE_GUIDE = Module(
     file=__name__,
-    name='style guide',
+    name=AppModule.STYLE_GUIDE.value,
     description='To provides uniformity in style and formatting within our apps.',
     icon='material-symbols:style',
     pages=[

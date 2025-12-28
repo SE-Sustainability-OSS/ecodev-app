@@ -81,17 +81,17 @@ def verify_project_module_access(auth: dict | AppUser,
     if not (user := get_auth_user(auth)):
         return []
 
-    role = get_project_role(user, project_id, session)
-
     if (project := get_project_by_id(user, project_id, session)):
         return modules
 
+    role = get_project_role(user, project_id, session)
     if user.permission == Permission.ADMIN or role == Role.OWNER:
         return modules
 
-    accessible_modules = get_module_access(user, project_id, session)
-    return [module for module in modules
-            if module.name in [m.module_name for m in accessible_modules]]
+    return [
+        module for module in modules if module.name in
+        [m.module_name for m in get_module_access(user, project_id, session)]
+    ]
 
 
 def verify_module_access(auth: dict | AppUser,

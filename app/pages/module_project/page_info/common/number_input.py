@@ -2,7 +2,7 @@ import dash_mantine_components as dmc
 from ecodev_front import INDEX
 from ecodev_front import TYPE
 
-from app.pages.module_project.page_info import PROJECT_INFO_INPUT_ID
+from app.pages.module_project.page_info import PROJECT_INFO_INPUT
 
 
 def number_input(id: str | dict, label: str, value: int | float | None) -> dmc.NumberInput:
@@ -10,7 +10,7 @@ def number_input(id: str | dict, label: str, value: int | float | None) -> dmc.N
     Number input component for the project info financial form
     """
     return dmc.NumberInput(
-        id={TYPE: PROJECT_INFO_INPUT_ID, INDEX: id},
+        id={TYPE: PROJECT_INFO_INPUT, INDEX: id},
         label=label,
         value=value,
         hideControls=True,

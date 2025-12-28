@@ -13,6 +13,8 @@ from ecodev_core import engine
 from ecodev_core import logger_get
 from ecodev_core import Permission
 from ecodev_core import safe_get_user
+from ecodev_front import ALERT
+from ecodev_front import BUTTON
 from ecodev_front import CELL_RENDERER_DATA
 from ecodev_front import CHILDREN
 from ecodev_front import COL_ID
@@ -21,6 +23,8 @@ from ecodev_front import ERROR
 from ecodev_front import header_layout
 from ecodev_front import INDEX
 from ecodev_front import LOADING
+from ecodev_front import MODAL
+from ecodev_front import MULTI_SELECT
 from ecodev_front import N_CLICKS
 from ecodev_front import OPENED
 from ecodev_front import Page
@@ -28,11 +32,13 @@ from ecodev_front import page_project_header
 from ecodev_front import PROJECT_HEADER_ID
 from ecodev_front import ROW_DATA
 from ecodev_front import ROW_ID
+from ecodev_front import TABLE
 from ecodev_front import TOKEN
 from ecodev_front import TYPE
 from ecodev_front import VALUE
 from sqlmodel import Session
 
+from app.constants import MODULE
 from app.constants import PROJECT_ID_STORE
 from app.constants import USER_ID
 from app.db_model.inserters.project_access_inserters import delete_project_access
@@ -41,24 +47,19 @@ from app.db_model.retrievers.access_retrievers import get_app_rights
 from app.db_model.retrievers.access_retrievers import verify_project_module_access
 from app.db_model.retrievers.app_user_retrievers import get_user_by_id
 from app.db_model.retrievers.project_retrievers import get_project_by_id
-from app.domain_model import ALL_MODULE_NAMES
+from app.domain_model import AppModule
 from app.domain_model import ProjectAccessData
 from app.domain_model import Role
 from app.pages.common.custom_callback import safe_callback
 from app.pages.common.stores import USER_DELETION_STORE
-from app.pages.module_project.page_rights import ADD_BTN
-from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_CONFIRM_BTN_ID
-from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_ERROR_ID
-from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_ID
+from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_CONFIRM
+from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_ERROR
+from app.pages.module_project.page_rights import ADD_USER_RIGHTS
 from app.pages.module_project.page_rights import MANAGE_RIGHTS
-from app.pages.module_project.page_rights import MODULE_MULTISELECT_ID
-from app.pages.module_project.page_rights import REMOVE_USER_CANCELLATION_BUTTON_ID
-from app.pages.module_project.page_rights import REMOVE_USER_CONFIRMATION_BUTTON_ID
-from app.pages.module_project.page_rights import REMOVE_USER_CONFIRMATION_MODAL_ID
-from app.pages.module_project.page_rights import TABLE
-from app.pages.module_project.page_rights import UPDATE_BTN
-from app.pages.module_project.page_rights import UPDATE_RIGHTS_ALERT_ID
-from app.pages.module_project.page_rights import USERS_MULTISELECT_ID
+from app.pages.module_project.page_rights import REMOVE_USER_CANCEL
+from app.pages.module_project.page_rights import REMOVE_USER_CONFIRM
+from app.pages.module_project.page_rights import UPDATE_RIGHTS
+from app.pages.module_project.page_rights import USERS
 from app.pages.module_project.page_rights.add_user_modal.add_user_modal import manage_rights_modal
 from app.pages.module_project.page_rights.common.overview import manage_rights_overview
 from app.pages.module_project.page_rights.methodo.grant_access import check_email_validity
@@ -100,11 +101,11 @@ def render_page(token: dict, project_id: int):
 
 @safe_callback(
     Output(TOKEN, DATA, allow_duplicate=True),
-    Output(UPDATE_RIGHTS_ALERT_ID, CHILDREN),
+    Output({TYPE: ALERT, INDEX: MANAGE_RIGHTS}, CHILDREN),
     State(TOKEN, DATA),
     State(PROJECT_ID_STORE, DATA),
-    Input({TYPE: MANAGE_RIGHTS, INDEX: UPDATE_BTN}, N_CLICKS),
-    State({TYPE: MANAGE_RIGHTS, INDEX: TABLE}, ROW_DATA),
+    Input({TYPE: BUTTON, INDEX: UPDATE_RIGHTS}, N_CLICKS),
+    State({TYPE: TABLE, INDEX: MANAGE_RIGHTS}, ROW_DATA),
     prevent_initial_call=True
 )
 def update_rights_callback(token: dict,
@@ -124,9 +125,9 @@ def update_rights_callback(token: dict,
             modules = verify_project_module_access(user, project_id, user_modules, session)
             access_data = ProjectAccessData(
                 user_id=user.id,
-                role=Role.CLIENT if user.permission == Permission.CLIENT else Role.COLLABORATOR,
+                role=Role.CLIENT if user.permission == Permission.Client else Role.COLLABORATOR,
                 project_id=project_id,
-                module_access={module: bool(module in modules) for module in ALL_MODULE_NAMES}
+                module_access={module: bool(module in modules) for module in AppModule}
             )
             upsert_project_access(project_id, access_data, session)
 
@@ -134,11 +135,11 @@ def update_rights_callback(token: dict,
 
 
 @safe_callback(
-    Output(ADD_RIGHTS_MODAL_ID, OPENED),
-    Output(ADD_RIGHTS_MODAL_ID, CHILDREN),
+    Output({TYPE: MODAL, INDEX: ADD_USER_RIGHTS}, OPENED),
+    Output({TYPE: MODAL, INDEX: ADD_USER_RIGHTS}, CHILDREN),
     State(TOKEN, DATA),
     State(PROJECT_ID_STORE, DATA),
-    Input({TYPE: MANAGE_RIGHTS, INDEX: ADD_BTN}, N_CLICKS)
+    Input({TYPE: BUTTON, INDEX: ADD_USER_RIGHTS}, N_CLICKS)
 )
 def open_rights_modal(token: dict, project_id: int, n_clicks: int):
     """
@@ -155,16 +156,16 @@ def open_rights_modal(token: dict, project_id: int, n_clicks: int):
 
 
 @safe_callback(Output(TOKEN, DATA),
-               Output(ADD_RIGHTS_MODAL_ID, OPENED, allow_duplicate=True),
-               Output(ADD_RIGHTS_MODAL_ERROR_ID, CHILDREN),
-               Output(USERS_MULTISELECT_ID, ERROR),
+               Output({TYPE: MODAL, INDEX: ADD_USER_RIGHTS}, OPENED, allow_duplicate=True),
+               Output({TYPE: ALERT, INDEX: ADD_RIGHTS_MODAL_ERROR}, CHILDREN),
+               Output({TYPE: MULTI_SELECT, INDEX: USERS}, ERROR),
                State(TOKEN, DATA),
                State(PROJECT_ID_STORE, DATA),
-               Input(ADD_RIGHTS_MODAL_CONFIRM_BTN_ID, N_CLICKS),
-               State(USERS_MULTISELECT_ID, VALUE),
-               State(MODULE_MULTISELECT_ID, VALUE),
+               Input({TYPE: BUTTON, INDEX: ADD_RIGHTS_MODAL_CONFIRM}, N_CLICKS),
+               State({TYPE: MULTI_SELECT, INDEX: USERS}, VALUE),
+               State({TYPE: MULTI_SELECT, INDEX: MODULE}, VALUE),
                prevent_initial_call=True,
-               running=[(Output(ADD_RIGHTS_MODAL_CONFIRM_BTN_ID, LOADING), True, False)])
+               running=[(Output({TYPE: BUTTON, INDEX: ADD_RIGHTS_MODAL_CONFIRM}, LOADING), True, False)])
 def add_rights(token: dict,
                project_id: int,
                n_clicks: int,
@@ -186,18 +187,19 @@ def add_rights(token: dict,
 
     with Session(engine) as session:
         for new_user in get_new_project_users(user, emails, session):
-            grant_user_project_access(new_user, project_id, modules, session)
+            role = Role.CLIENT if user.permission == Permission.Client else Role.COLLABORATOR
+            grant_user_project_access(new_user, project_id, modules, role, session)
 
     return token, False, no_update, no_update
 
 
 @safe_callback(
-    Output(REMOVE_USER_CONFIRMATION_MODAL_ID, OPENED),
+    Output({TYPE: MODAL, INDEX: REMOVE_USER_CONFIRM}, OPENED),
     Output(USER_DELETION_STORE, DATA),
     State(TOKEN, DATA),
     State(PROJECT_ID_STORE, DATA),
-    Input({TYPE: MANAGE_RIGHTS, INDEX: TABLE}, CELL_RENDERER_DATA),
-    State({TYPE: MANAGE_RIGHTS, INDEX: TABLE}, ROW_DATA),
+    Input({TYPE: TABLE, INDEX: MANAGE_RIGHTS}, CELL_RENDERER_DATA),
+    State({TYPE: TABLE, INDEX: MANAGE_RIGHTS}, ROW_DATA),
 )
 def open_remove_confirmation_modal(token: dict,
                                    project_id: int,
@@ -214,12 +216,12 @@ def open_remove_confirmation_modal(token: dict,
 
 
 @safe_callback(
-    Output(REMOVE_USER_CONFIRMATION_MODAL_ID, OPENED, allow_duplicate=True),
+    Output({TYPE: MODAL, INDEX: REMOVE_USER_CONFIRM}, OPENED, allow_duplicate=True),
     Output(TOKEN, DATA, allow_duplicate=True),
     State(TOKEN, DATA),
     State(PROJECT_ID_STORE, DATA),
-    Input(REMOVE_USER_CONFIRMATION_BUTTON_ID, N_CLICKS),
-    Input(REMOVE_USER_CANCELLATION_BUTTON_ID, N_CLICKS),
+    Input({TYPE: BUTTON, INDEX: REMOVE_USER_CONFIRM}, N_CLICKS),
+    Input({TYPE: BUTTON, INDEX: REMOVE_USER_CANCEL}, N_CLICKS),
     State(USER_DELETION_STORE, DATA),
     prevent_initial_call=True
 )

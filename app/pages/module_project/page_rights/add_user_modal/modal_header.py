@@ -13,13 +13,20 @@ def add_user_modal_header(user: AppUser) -> dmc.Stack:
     """
     return dmc.Stack([
         subtitle('It is possible to add multiple users at the same time.', ta='center'),
-        dmc.Stack([
+        guidance_external_user_restriction(user),
+        dmc.Divider(w='100%')
+    ])
+
+
+def guidance_external_user_restriction(user: AppUser) -> dmc.Stack | None:
+    """
+    Renders a guidance for external users.
+    """
+    if user.permission == Permission.Client:
+        return dmc.Stack([
             dmc.Group([
                 dmc.Text('Client restriction:', c='red', fw=700),
                 subtitle(f"""You may only invite any users the same domain name as yourself
-                         (@{user.client})""", ta='center'),
+                            (@{user.client})""", ta='center'),
             ], w='100%'),
-            subtitle('and any EcoActors accompanying you (@se.com).', ta='center')
-        ], gap=0, w='100%') if user.permission == Permission.Client else None,
-        dmc.Divider(w='100%')
-    ])
+        ], gap=0, w='100%')

@@ -11,7 +11,7 @@ from app.constants import DESCRIPTION
 from app.constants import NAME
 from app.constants import YEAR
 from app.db_model.project import Project
-from app.pages.module_project.page_info import PROJECT_INFO_INPUT_ID
+from app.pages.module_project.page_info import PROJECT_INFO_INPUT
 
 log = logger_get(__name__)
 
@@ -40,7 +40,7 @@ def _display_project_name(value: str | None = None) -> dmc.TextInput:
     Renders the project name input field
     """
     return dmc.TextInput(
-        id={TYPE: PROJECT_INFO_INPUT_ID, INDEX: NAME},
+        id={TYPE: PROJECT_INFO_INPUT, INDEX: NAME},
         label='Project Name',
         placeholder='Something recognisable',
         required=True,
@@ -54,7 +54,7 @@ def _display_description_field(value: str) -> dmc.Select:
     Renders the asset organisational unit select
     """
     return dmc.TextInput(
-        id={TYPE: PROJECT_INFO_INPUT_ID, INDEX: DESCRIPTION},
+        id={TYPE: PROJECT_INFO_INPUT, INDEX: DESCRIPTION},
         label='Description',
         placeholder='Description',
         value=value,
@@ -66,7 +66,7 @@ def _display_year_field(value: str) -> dmc.Select:
     Renders the asset organisational unit select
     """
     return dmc.NumberInput(
-        id={TYPE: PROJECT_INFO_INPUT_ID, INDEX: YEAR},
+        id={TYPE: PROJECT_INFO_INPUT, INDEX: YEAR},
         label='Year',
         placeholder='Year',
         value=value,

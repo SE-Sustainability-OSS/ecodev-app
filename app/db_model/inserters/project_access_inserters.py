@@ -30,7 +30,6 @@ def upsert_project_access(project_id: int,
     log.info(f"""User #{access_data.user_id} now has {access_data.role} access
              rights on project {project_id}""")
     upsert_module_access(access_data.module_access, project_access, session)
-    return None
 
 
 def delete_project_access(user: AppUser,
@@ -45,4 +44,3 @@ def delete_project_access(user: AppUser,
             session.delete(module)
         session.delete(project_access)
         session.commit()
-    return None

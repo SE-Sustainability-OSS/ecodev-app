@@ -5,6 +5,7 @@ from ecodev_core import logger_get
 from ecodev_core import select_user
 from ecodev_front import custom_column_def
 from ecodev_front import data_table
+from ecodev_front import TABLE
 from ecodev_front.constants import INDEX
 from ecodev_front.constants import OPTIONS
 from ecodev_front.constants import TYPE
@@ -19,7 +20,6 @@ from app.domain_model import AppModule
 from app.domain_model import RESTRICTED_ROLES
 from app.domain_model.color_utils import get_color
 from app.pages.module_project.page_rights import MANAGE_RIGHTS
-from app.pages.module_project.page_rights import TABLE
 
 USER_DEF = custom_column_def(field=USER)
 ROLE_DEF = custom_column_def(field=ROLE, editable=True, width=150,
@@ -53,7 +53,7 @@ def manage_rights_table(project_id: int,
             row[module.name] = verify_module_access(select_user(row[USER], session), project_id,
                                                     module.name, session)
 
-    return data_table(id={TYPE: MANAGE_RIGHTS, INDEX: TABLE},
+    return data_table(id={TYPE: TABLE, INDEX: MANAGE_RIGHTS},
                       row_data=row_data,
                       column_defs=column_defs,
                       default_col_def={'editable': False, 'resizable': True},

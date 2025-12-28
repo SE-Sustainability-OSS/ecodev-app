@@ -63,6 +63,7 @@ USER_ID = 'user_id'
 ROLE = 'role'
 IS_PM = 'is_pm'
 USER = 'user'
+MODULE = 'module'
 
 # ModuleAccess #
 MODULE_ACCESS = 'module_access'

@@ -14,39 +14,6 @@ from app.db_model.retrievers.computation_retrievers import get_computation
 log = logger_get(__name__)
 
 
-def create_update_computation(user: AppUser,
-                              name: str,
-                              project_id: int,
-                              completed: bool,
-                              session: Session,
-                              failed=False
-                              ) -> Computation:
-    """
-    Creates a computation step, or updates its completed status
-    """
-    if computation := get_computation(name, project_id, session):
-        if completed:
-            computation.completed = True
-            computation.completed_at = datetime.now()
-            failed = failed
-        else:
-            computation.launched = True
-            computation.launched_at = datetime.now()
-            computation.completed = False
-            computation.completed_at = None
-
-        computation.launched_by = user.id
-    else:
-        computation = Computation(name=name, project_id=project_id, launched_by=user.id)
-        session.add(computation)
-
-    session.commit()
-
-    log.info(f'Computation {name} (for project_id: {project_id}) '
-             f'{"completed" if completed else "launched"}!')
-    return computation  # type:ignore[return-value]
-
-
 def computation_step(step: str):
     """
     Decorator that adds a computation step status to the database.
@@ -88,3 +55,45 @@ def computation_step(step: str):
         return wrapper
 
     return decorator
+
+
+def create_update_computation(user: AppUser,
+                              name: str,
+                              project_id: int,
+                              completed: bool,
+                              session: Session,
+                              failed=False
+                              ) -> Computation:
+    """
+    Creates a computation step, or updates its completed status
+    """
+    if computation := get_computation(name, project_id, session):
+        _update_computation_status(computation, user, completed, failed)
+    else:
+        computation = Computation(name=name, project_id=project_id, launched_by=user.id)
+        session.add(computation)
+
+    session.commit()
+
+    log.info(f'Computation {name} (for project_id: {project_id}) '
+             f'{"completed" if completed else "launched"}!')
+    return computation  # type:ignore[return-value]
+
+
+def _update_computation_status(computation: Computation,
+                               completed: bool,
+                               failed: bool) -> None:
+    """
+    Helper function to update an existing computation status,
+    between ongoing and completed.
+    """
+    if completed or failed:
+        computation.completed = True
+        computation.completed_at = datetime.now()
+        computation.failed = failed
+        return
+
+    computation.launched = True
+    computation.launched_at = datetime.now()
+    computation.completed = False
+    computation.completed_at = None

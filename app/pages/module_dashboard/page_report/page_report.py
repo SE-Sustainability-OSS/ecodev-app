@@ -6,7 +6,6 @@ from dash import Input
 from dash import Output
 from dash import State
 from ecodev_core import engine
-from ecodev_core import logger_get
 from ecodev_front import CHILDREN
 from ecodev_front import DATA
 from ecodev_front import header_layout
@@ -22,8 +21,6 @@ from app.constants import PROJECT_ID_STORE
 from app.db_model.retrievers.project_retrievers import get_project_by_id
 from app.pages.common.custom_callback import safe_callback
 from app.pages.module_dashboard.common.aside import dashboard_aside_layout
-
-log = logger_get(__name__)
 
 
 PAGE_REPORT = Page(

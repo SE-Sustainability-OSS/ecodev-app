@@ -27,6 +27,7 @@ from sqlmodel import Session
 from app.constants import APP_NAME
 from app.constants import DOCUMENTATION_URL
 from app.db_model.retrievers.access_retrievers import verify_project_module_access
+from app.domain_model import AppModule
 from app.pages.modules import MODULES
 
 log = logger_get(__name__)
@@ -101,7 +102,7 @@ def header_app_pages(token: dict, project_id: int | None) -> dmc.Group:
         modules = verify_project_module_access(token, project_id, MODULES, session)
 
     if header_icons := [divider_icon
-                        for module in modules if module.name != 'project'
+                        for module in modules if module.name != AppModule.PROJECT.value
                         for divider_icon in (HEADER_DIVIDER, module.header_icon)]:
         header_icons.append(HEADER_DIVIDER)
 

@@ -1,6 +1,0 @@
-PROJECT_INFO_FORM_ID = 'project-info-form-id'
-PROJECT_REVENUE = 'project-info-revenue-input-id'
-PROJECT_REVENUE_COST = 'project-info-revenue_cost-input-id'
-PROJECT_OPEX = 'project-info-opex-input-id'
-PROJECT_DEPRECIATION = 'project-info-depreciation-input-id'
-PROJECT_INFO_SAVE_BTN_ID = 'project-info-basic-save-btn-id'

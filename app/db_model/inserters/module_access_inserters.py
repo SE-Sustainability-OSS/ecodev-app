@@ -26,7 +26,7 @@ def upsert_module_access(module_rights: dict[str, bool] | None,
     if not module_rights:
         user = get_user_by_id(project_access.user_id, session)
         license_rights = get_app_rights(user, session)
-        module_rights = {module.value: bool(module in license_rights) for module in AppModule}
+        module_rights = {module.name: bool(module in license_rights) for module in AppModule}
 
     for module_name, has_access in module_rights.items():
         upsert_dict(ModuleAccess,
@@ -35,4 +35,3 @@ def upsert_module_access(module_rights: dict[str, bool] | None,
                      PROJECT_ACCESS_ID: project_access.id},
                     session,
                     )
-    return None

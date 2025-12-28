@@ -41,7 +41,7 @@ def init_dash_app() -> Dash:
         server=Flask(__name__),
         use_pages=True,
         assets_folder=ASSETS_DIR,
-        suppress_callback_exceptions=False,
+        suppress_callback_exceptions=True,
     )
 
     dash_app.layout = dash_base_layout(stores=STORES, theme=DMC_THEME)

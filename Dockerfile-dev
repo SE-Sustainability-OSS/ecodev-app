@@ -7,16 +7,25 @@ FROM python:3.13-slim
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+# Install build dependencies (if any wheels need compiling)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 # Set up virtual environment
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Install packages
+# Upgrade pip
 RUN python3 -m pip install --upgrade pip
+
+# Copy requirements and install all required packages into venv
 COPY ./requirements.txt /requirements.txt
 COPY ./requirements-dev.txt /requirements-dev.txt
-RUN python3 -m pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt -r requirements-dev.txt
-
+RUN pip install --no-cache-dir -r /requirements.txt -r /requirements-dev.txt && \
+    pip install --upgrade --force-reinstall notebook
 
 #########
 # FINAL #

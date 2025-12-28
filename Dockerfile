@@ -7,6 +7,13 @@ FROM python:3.13-slim
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+# Install build dependencies (if any wheels need compiling)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 # Set up virtual environment
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
@@ -26,7 +33,7 @@ FROM python:3.13-slim
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Add and switch to non-root user
+# Switch to non-root user
 RUN adduser --disabled-password --gecos '' appuser
 USER appuser
 

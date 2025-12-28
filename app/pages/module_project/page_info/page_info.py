@@ -10,7 +10,7 @@ from dash import Output
 from dash import State
 from dash.exceptions import PreventUpdate
 from ecodev_core import engine
-from ecodev_core import logger_get
+from ecodev_front import BUTTON
 from ecodev_front import CHILDREN
 from ecodev_front import DATA
 from ecodev_front import header_layout
@@ -26,16 +26,15 @@ from ecodev_front import VALUE
 from sqlmodel import Session
 
 from app.constants import PROJECT_ID_STORE
-from app.db_model.inserters.project_inserters import upsert_project
-from app.db_model.retrievers.project_retrievers import get_project_by_id
+from app.db_model.inserters import upsert_project
+from app.db_model.retrievers import get_project_by_id
 from app.pages.common.custom_callback import safe_callback
-from app.pages.module_project.page_info import PROJECT_INFO_INPUT_ID
-from app.pages.module_project.page_info.common import PROJECT_INFO_SAVE_BTN_ID
+from app.pages.module_project.page_info import PROJECT_INFO_INPUT
+from app.pages.module_project.page_info import PROJECT_INFO_SAVE
 from app.pages.module_project.page_info.common.general_info import general_info_section
 from app.pages.module_project.page_info.common.save_button import SAVE_INFO_BUTTON
 from app.pages.module_project.page_rights.page_rights import PAGE_RIGHTS
 
-log = logger_get(__name__)
 
 PAGE_INFO = Page(
     module=__name__,
@@ -70,9 +69,9 @@ def render_project_info_page(token: dict, project_id: int) -> dmc.Stack:
                Output(URL, PATHNAME, allow_duplicate=True),
                State(TOKEN, DATA),
                State(PROJECT_ID_STORE, DATA),
-               Input(PROJECT_INFO_SAVE_BTN_ID, N_CLICKS),
-               State({TYPE: PROJECT_INFO_INPUT_ID, INDEX: ALL}, VALUE),
-               State({TYPE: PROJECT_INFO_INPUT_ID, INDEX: ALL}, ID),
+               Input({TYPE: BUTTON, INDEX: PROJECT_INFO_SAVE}, N_CLICKS),
+               State({TYPE: PROJECT_INFO_INPUT, INDEX: ALL}, VALUE),
+               State({TYPE: PROJECT_INFO_INPUT, INDEX: ALL}, ID),
                check_access=False,
                prevent_initial_call=True)
 def save_basic_info(token: dict,

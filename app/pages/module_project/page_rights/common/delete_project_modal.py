@@ -1,23 +1,27 @@
 """
-File containing the asset insertion methodo buttons (single or batch upload)
+File containing project deletion confirmation modal.
+Requires the user to confirm by entering the name of the project to delete.
 """
 import dash_mantine_components as dmc
 from dash import callback
-from dash import html
 from dash import Input
 from dash import Output
 from dash import State
 from dash.exceptions import PreventUpdate
 from dash_iconify import DashIconify
 from ecodev_core import engine
-from ecodev_core import logger_get
+from ecodev_front import BUTTON
 from ecodev_front import CHILDREN
 from ecodev_front import DATA
+from ecodev_front import INDEX
 from ecodev_front import LOADING
+from ecodev_front import MODAL
 from ecodev_front import N_CLICKS
 from ecodev_front import OPENED
 from ecodev_front import PATHNAME
+from ecodev_front import TEXT_INPUT
 from ecodev_front import TOKEN
+from ecodev_front import TYPE
 from ecodev_front import URL
 from ecodev_front import VALUE
 from sqlmodel import Session
@@ -27,16 +31,14 @@ from app.constants import PROJECT_ID_STORE
 from app.db_model import Project
 from app.db_model.deleters import delete_project
 from app.db_model.retrievers import get_project_by_id
-from app.pages.module_project.page_rights import DELETE_PROJECT_BUTTON_ID
-from app.pages.module_project.page_rights import DELETE_PROJECT_CONFIRMATION_BUTTON_ID
-from app.pages.module_project.page_rights import DELETE_PROJECT_CONFIRMATION_MODAL_ID
-from app.pages.module_project.page_rights import DELETE_PROJECT_CONFIRMATION_VALUE_ID
-
-log = logger_get(__name__)
+from app.pages.module_project.page_rights import DELETE_PROJECT
+from app.pages.module_project.page_rights import DELETE_PROJECT_CONFIRM
+from app.pages.module_project.page_rights import DELETE_PROJECT_CONFIRMATION
+from app.pages.module_project.page_rights import PROJECT_NAME
 
 
 DELETE_CONFIRMATION_MODAL = dmc.Modal(
-    id=DELETE_PROJECT_CONFIRMATION_MODAL_ID,
+    id={TYPE: MODAL, INDEX: DELETE_PROJECT_CONFIRMATION},
     title='Confirm project deletion',
     size='lg',
 )
@@ -53,12 +55,12 @@ def delete_project_modal_content(project: Project) -> dmc.Stack:
         dmc.Text("""Please confirm by entering the project's name:""", c='red'),
         dmc.Text(f'{project.name}', fw=800, c='red', ta='center'),
         dmc.TextInput(
-            id=DELETE_PROJECT_CONFIRMATION_VALUE_ID,
+            id={TYPE: TEXT_INPUT, INDEX: PROJECT_NAME},
             placeholder='Project name'
         ),
         dmc.Button(
             'Delete this project',
-            id=DELETE_PROJECT_CONFIRMATION_BUTTON_ID,
+            id={TYPE: BUTTON, INDEX: DELETE_PROJECT_CONFIRM},
             leftSection=DashIconify(icon='solar:trash-bin-trash-outline', width=24),
             size='md',
             radius='md',
@@ -67,15 +69,15 @@ def delete_project_modal_content(project: Project) -> dmc.Stack:
     ])
 
 
-@callback(Output(DELETE_PROJECT_CONFIRMATION_MODAL_ID, OPENED),
-          Output(DELETE_PROJECT_CONFIRMATION_MODAL_ID, CHILDREN),
-          Input(DELETE_PROJECT_BUTTON_ID, N_CLICKS),
+@callback(Output({TYPE: MODAL, INDEX: DELETE_PROJECT_CONFIRMATION}, OPENED),
+          Output({TYPE: MODAL, INDEX: DELETE_PROJECT_CONFIRMATION}, CHILDREN),
+          Input({TYPE: BUTTON, INDEX: DELETE_PROJECT}, N_CLICKS),
           State(TOKEN, DATA),
           State(PROJECT_ID_STORE, DATA))
 def open_delete_confirmation_modal(n_click: int,
                                    token: dict,
                                    project_id: int
-                                   ) -> tuple[bool, html.Div]:
+                                   ) -> tuple[bool, dmc.Stack]:
     """
     Method opening a model to possibly delete a project
     """
@@ -90,11 +92,11 @@ def open_delete_confirmation_modal(n_click: int,
 
 
 @callback(Output(URL, PATHNAME, allow_duplicate=True),
-          Input(DELETE_PROJECT_CONFIRMATION_BUTTON_ID, N_CLICKS),
-          State(DELETE_PROJECT_CONFIRMATION_VALUE_ID, VALUE),
+          Input({TYPE: BUTTON, INDEX: DELETE_PROJECT_CONFIRM}, N_CLICKS),
+          State({TYPE: TEXT_INPUT, INDEX: PROJECT_NAME}, VALUE),
           State(TOKEN, DATA),
           State(PROJECT_ID_STORE, DATA),
-          running=((Output(DELETE_PROJECT_CONFIRMATION_BUTTON_ID, LOADING), True, False)),
+          running=((Output({TYPE: BUTTON, INDEX: DELETE_PROJECT_CONFIRM}, LOADING), True, False)),
           prevent_initial_call=True)
 def delete_project_confirmed(n_click: int,
                              confirmation_val: str,

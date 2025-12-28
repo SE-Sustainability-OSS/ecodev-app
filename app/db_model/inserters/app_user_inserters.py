@@ -51,16 +51,6 @@ def update_user_module_rights(client: AppUser, modules: list[str], session: Sess
     return
 
 
-class UserExistsError(Exception):
-    """
-    Custom exception for email sending errors.
-    """
-
-    def __init__(self, message):
-        self.message = message
-        super().__init__(self.message)
-
-
 def upsert_user(email: str, app_rights: list[str], session: Session) -> AppUser:
     """
     Upserts a user and its module rights in the database.
@@ -70,7 +60,7 @@ def upsert_user(email: str, app_rights: list[str], session: Session) -> AppUser:
             user, password = create_user_credentials(email, Permission.Client, session)
         update_user_module_rights(user, app_rights, session)
         if user_exists:
-            raise UserExistsError('User already exists')
+            raise Exception('User already exists')
         return user
     except Exception as e:
         raise e

@@ -14,6 +14,8 @@ from sqlmodel import Field
 from sqlmodel import Relationship
 from sqlmodel import SQLModel
 
+from app.domain_model import AppModule
+
 if TYPE_CHECKING:
     from app.db_model.project_access import ProjectAccess
 
@@ -34,7 +36,7 @@ class ModuleAccessBase(SQLModel):  # type: ignore
         - module_name: the module or page url which will give user viewing rights.
         - has_access: determines if the user has access to the specific module
     """
-    module_name: str = sfield()
+    module_name: AppModule = sfield()
     has_access: bool = field(default=False)
 
 

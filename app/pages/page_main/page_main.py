@@ -39,11 +39,13 @@ PAGE_MAIN = Page(
 @safe_callback(Output(PAGE_MAIN.id, CHILDREN),
                Input(TOKEN, DATA),
                State(PROJECT_ID_STORE, DATA),
-               State(ALERT_STORE, DATA))
+               State(ALERT_STORE, DATA),
+               check_access=False)
 def get_main_page(token: dict, project_id: int | None, alert_store: dict[str, bool]) -> dmc.Box:
     """
     Renders the main / landing page, on which user either create an new project,
     or select a previous project which displays module buttons.
+    NOTE: No access check on this page, as user may not yet have any project.
     """
     with Session(engine) as session:
         return dmc.Box([

@@ -1,1 +1,2 @@
-PROJECT_INFO_INPUT_ID = 'project-info-input-id'
+PROJECT_INFO_INPUT = 'project-info-input'
+PROJECT_INFO_SAVE = 'project-info-save'

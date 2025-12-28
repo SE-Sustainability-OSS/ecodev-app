@@ -1,13 +1,10 @@
 from functools import partial
 
-from ecodev_core import upsert_data
 from ecodev_core import upsert_selector
 from ecodev_core.db_upsertion import upsert_updator
 from sqlalchemy.inspection import inspect
 from sqlmodel import Session
 from sqlmodel.main import SQLModelMetaclass
-
-upsert_data
 
 
 def upsert_dict(db_schema: SQLModelMetaclass, data: dict, session: Session) -> SQLModelMetaclass:

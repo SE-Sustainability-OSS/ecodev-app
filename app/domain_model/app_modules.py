@@ -10,10 +10,10 @@ class AppModule(str, Enum):
     """
     List of the app's modules
     """
-    PROJECT = 'Project'
-    CONFIG = 'Configuration'
-    DASHBOARD = 'Dashboard'
-    STYLE_GUIDE = 'Style-Guide'
+    PROJECT = 'project'
+    CONFIG = 'configuration'
+    DASHBOARD = 'dashboard'
+    STYLE_GUIDE = 'style-guide'
 
 
-ALL_MODULE_NAMES = [module.value for module in AppModule]
+ALL_MODULE_NAMES = [module.name for module in AppModule]
