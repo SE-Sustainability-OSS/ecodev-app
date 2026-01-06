@@ -9,6 +9,7 @@ from dash import no_update
 from dash import Output
 from dash import State
 from dash.exceptions import PreventUpdate
+from ecodev_core import AppUser
 from ecodev_core import engine
 from ecodev_core import logger_get
 from ecodev_core import Permission
@@ -40,15 +41,14 @@ from sqlmodel import Session
 
 from app.constants import MODULE
 from app.constants import PROJECT_ID_STORE
+from app.constants import ROLE
 from app.constants import USER_ID
-from app.db_model.inserters.project_access_inserters import delete_project_access
-from app.db_model.inserters.project_access_inserters import upsert_project_access
-from app.db_model.retrievers.access_retrievers import get_app_rights
-from app.db_model.retrievers.access_retrievers import verify_project_module_access
-from app.db_model.retrievers.app_user_retrievers import get_user_by_id
-from app.db_model.retrievers.project_retrievers import get_project_by_id
+from app.db_model.deleters import delete_project_access
+from app.db_model.retrievers import get_app_rights
+from app.db_model.retrievers import get_project_by_id
+from app.db_model.retrievers import get_user_by_id
+from app.db_model.retrievers import verify_project_module_access
 from app.domain_model import AppModule
-from app.domain_model import ProjectAccessData
 from app.domain_model import Role
 from app.pages.common.custom_callback import safe_callback
 from app.pages.common.stores import USER_DELETION_STORE
@@ -113,26 +113,33 @@ def update_rights_callback(token: dict,
                            n_clicks: int,
                            row_data: list[dict]) -> tuple[dict, dmc.Alert]:
     """
-    Upserts both the project access and module accesses
+    Updates project access and module accesses for existing users based on table edits.
+    Reads the role and module checkboxes from each row and updates the database accordingly.
     """
     if not n_clicks:
         raise PreventUpdate
 
     with Session(engine) as session:
+        inviting_user = safe_get_user(token)
+
         for row in row_data:
             user = get_user_by_id(row[USER_ID], session)
-            user_modules = get_app_rights(user, session)
-            modules = verify_project_module_access(user, project_id, user_modules, session)
-            access_data = ProjectAccessData(
-                user_id=user.id,
-                role=Role.CLIENT if user.permission == Permission.Client else Role.COLLABORATOR,
-                project_id=project_id,
-                module_access={module: bool(module in modules) for module in AppModule}
-            )
-            upsert_project_access(project_id, access_data, session)
-            upsert_module_access()
+            role = Role(row[ROLE]) if row[ROLE] else _assign_project_role(user)
+            checked_modules = [module.name for module in AppModule if row.get(module.name, False)]
+            grant_user_project_access(user, project_id, checked_modules,
+                                      role, session, inviting_user)
 
     return token, dmc.Alert('Rights updated', title='Success', color='green')
+
+
+def _assign_project_role(user: AppUser, role: Role | None = None) -> Role:
+    """
+    Assigns a project role to a user.
+    If no role is provided, the role is assigned based on the user's permission.
+    """
+    if not role:
+        return Role.CLIENT if user.permission == Permission.Client else Role.COLLABORATOR
+    return Role(role)
 
 
 @safe_callback(
@@ -174,7 +181,14 @@ def add_rights(token: dict,
                modules: list[str],
                ) -> tuple[dict, bool, str, str]:
     """
-    Callback used to add (in batch) users to a project, and set their rights.
+    Adds users to a project and sets their rights.
+
+    For existing users: Adds them to the project with specified modules.
+    For new users: Creates them in AppUser/AppRight tables with app-wide license rights
+    restricted to the inviting user's modules, then adds them to the project.
+
+    NOTE: If Role is set to None, it will be auto-assigned: first user becomes OWNER, subsequent users
+    become COLLABORATOR or CLIENT.
     """
     if not n_clicks:
         raise PreventUpdate
@@ -182,14 +196,13 @@ def add_rights(token: dict,
     if not emails:
         return no_update, True, no_update, 'Please enter at least one user'
 
-    user = safe_get_user(token)
+    inviting_user = safe_get_user(token)
     if invalid_emails := check_email_validity(emails):
         return no_update, True, invalid_emails, no_update
 
     with Session(engine) as session:
-        for new_user in get_new_project_users(user, emails, session):
-            role = Role.CLIENT if user.permission == Permission.Client else Role.COLLABORATOR
-            grant_user_project_access(new_user, project_id, modules, role, session)
+        for user in get_new_project_users(inviting_user, emails, session):
+            grant_user_project_access(user, project_id, modules, None, session, inviting_user)
 
     return token, False, no_update, no_update
 

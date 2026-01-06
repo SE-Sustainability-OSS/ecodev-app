@@ -15,6 +15,7 @@ from ecodev_front import OPENED
 from ecodev_front import TYPE
 from sqlmodel import Session
 
+from app.domain_model import AppModule
 from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_CANCEL
 from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_ERROR
 from app.pages.module_project.page_rights import ADD_USER_RIGHTS
@@ -30,7 +31,7 @@ ADD_USERS_MODAL = dmc.Modal(
 )
 
 
-def manage_rights_modal(user: AppUser, modules: list[Module], session: Session) -> dmc.Stack:
+def manage_rights_modal(user: AppUser, modules: list[AppModule], session: Session) -> dmc.Stack:
     """
     Renders the add rights modal
     """

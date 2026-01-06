@@ -51,13 +51,19 @@ def update_user_module_rights(client: AppUser, modules: list[str], session: Sess
     return
 
 
-def upsert_user(email: str, app_rights: list[str], session: Session) -> AppUser:
+def upsert_user(email: str, app_rights: list[str], session: Session, client: str = '') -> AppUser:
     """
     Upserts a user and its module rights in the database.
+
+    Args:
+        email: User's email address
+        app_rights: List of module rights to grant
+        session: Database session
+        client: Optional client name to associate with the user
     """
     try:
         if not (user_exists := bool(user := get_user_by_email(email, session))):
-            user, password = create_user_credentials(email, Permission.Client, session)
+            user, password = create_user_credentials(email, Permission.Client, session, client)
         update_user_module_rights(user, app_rights, session)
         if user_exists:
             raise Exception('User already exists')

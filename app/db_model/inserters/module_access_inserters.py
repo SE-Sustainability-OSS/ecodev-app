@@ -1,6 +1,7 @@
 """
 Module containing all module access table insertion and deletion methods.
 """
+from ecodev_core import logger_get
 from sqlmodel import Session
 
 from app.constants import HAS_ACCESS
@@ -13,8 +14,10 @@ from app.db_model.retrievers.access_retrievers import get_app_rights
 from app.db_model.retrievers.app_user_retrievers import get_user_by_id
 from app.domain_model import AppModule
 
+log = logger_get(__name__)
 
-def upsert_module_access(module_rights: dict[str, bool] | None,
+
+def upsert_module_access(module_rights: dict[AppModule, bool] | None,
                          project_access: ProjectAccess,
                          session: Session
                          ) -> None:
@@ -26,9 +29,10 @@ def upsert_module_access(module_rights: dict[str, bool] | None,
     if not module_rights:
         user = get_user_by_id(project_access.user_id, session)
         license_rights = get_app_rights(user, session)
-        module_rights = {module.name: bool(module in license_rights) for module in AppModule}
+        module_rights = {module: bool(module in license_rights) for module in AppModule}
 
     for module_name, has_access in module_rights.items():
+        log.info(f'Upserting module access for {module_name.value} with access {has_access}')
         upsert_dict(ModuleAccess,
                     {MODULE_NAME: module_name,
                      HAS_ACCESS: has_access,

@@ -6,7 +6,6 @@ models.
 """
 from app.domain_model.app_modules import ALL_MODULE_NAMES
 from app.domain_model.app_modules import AppModule
-from app.domain_model.project_access_data import ProjectAccessData
 from app.domain_model.role import ADMIN_ROLES
 from app.domain_model.role import RESTRICTED_ROLES
 from app.domain_model.role import Role
@@ -17,5 +16,4 @@ __all__ = [
     'RESTRICTED_ROLES',
     'AppModule',
     'ALL_MODULE_NAMES',
-    'ProjectAccessData',
 ]

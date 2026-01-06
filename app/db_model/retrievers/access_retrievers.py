@@ -90,7 +90,7 @@ def verify_project_module_access(auth: dict | AppUser,
 
     return [
         module for module in modules if module.name in
-        [m.module_name for m in get_module_access(user, project_id, session)]
+        [AppModule(m.module_name) for m in get_module_access(user, project_id, session)]
     ]
 
 
@@ -110,7 +110,7 @@ def verify_module_access(auth: dict | AppUser,
         return True
 
     accessible_modules = get_module_access(user, project_id, session)
-    return True if module_name in [a.module_name for a in accessible_modules] else False
+    return module_name in [a.module_name.name for a in accessible_modules]
 
 
 def get_module_access(auth: dict | AppUser,
