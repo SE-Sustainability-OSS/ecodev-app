@@ -1,8 +1,7 @@
 """
 Module implementing the page to manage project and module access rights
-
-NB: All internal roles have access to all modules by default.
 """
+import dash_mantine_components as dmc
 from dash import Input
 from dash import no_update
 from dash import Output
@@ -83,7 +82,7 @@ PAGE_RIGHTS = Page(
                Output({TYPE: PROJECT_HEADER_ID, INDEX: PAGE_RIGHTS.id}, CHILDREN),
                Input(TOKEN, DATA),
                State(PROJECT_ID_STORE, DATA))
-def render_page(token: dict, project_id: int):
+def render_page(token: dict, project_id: int) -> tuple[dmc.Stack, dmc.Stack]:
     """
     Renders page's initial layout / content.
     NOTE: Page access is checked via the safe_callback decorator,

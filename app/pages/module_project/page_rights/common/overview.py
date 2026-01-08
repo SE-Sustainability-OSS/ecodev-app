@@ -12,7 +12,7 @@ from app.pages.module_project.page_rights.common.remove_user_modal import REMOVE
 from app.pages.module_project.page_rights.common.table import manage_rights_table
 
 
-def manage_rights_overview(project_id: int, modules: list[Module], session: Session):
+def manage_rights_overview(project_id: int, modules: list[Module], session: Session) -> dmc.Stack:
     """
     Renders a table with all the existing users of the project
     """

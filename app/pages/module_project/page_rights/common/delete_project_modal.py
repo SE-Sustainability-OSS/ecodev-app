@@ -3,7 +3,6 @@ File containing project deletion confirmation modal.
 Requires the user to confirm by entering the name of the project to delete.
 """
 import dash_mantine_components as dmc
-from dash import callback
 from dash import Input
 from dash import Output
 from dash import State
@@ -31,6 +30,7 @@ from app.constants import PROJECT_ID_STORE
 from app.db_model import Project
 from app.db_model.deleters import delete_project
 from app.db_model.retrievers import get_project_by_id
+from app.pages.common.custom_callback import safe_callback
 from app.pages.module_project.page_rights import DELETE_PROJECT
 from app.pages.module_project.page_rights import DELETE_PROJECT_CONFIRM
 from app.pages.module_project.page_rights import DELETE_PROJECT_CONFIRMATION
@@ -69,14 +69,14 @@ def delete_project_modal_content(project: Project) -> dmc.Stack:
     ])
 
 
-@callback(Output({TYPE: MODAL, INDEX: DELETE_PROJECT_CONFIRMATION}, OPENED),
-          Output({TYPE: MODAL, INDEX: DELETE_PROJECT_CONFIRMATION}, CHILDREN),
-          Input({TYPE: BUTTON, INDEX: DELETE_PROJECT}, N_CLICKS),
-          State(TOKEN, DATA),
-          State(PROJECT_ID_STORE, DATA))
-def open_delete_confirmation_modal(n_click: int,
-                                   token: dict,
-                                   project_id: int
+@safe_callback(Output({TYPE: MODAL, INDEX: DELETE_PROJECT_CONFIRMATION}, OPENED),
+               Output({TYPE: MODAL, INDEX: DELETE_PROJECT_CONFIRMATION}, CHILDREN),
+               State(TOKEN, DATA),
+               State(PROJECT_ID_STORE, DATA),
+               Input({TYPE: BUTTON, INDEX: DELETE_PROJECT}, N_CLICKS),)
+def open_delete_confirmation_modal(token: dict,
+                                   project_id: int,
+                                   n_click: int,
                                    ) -> tuple[bool, dmc.Stack]:
     """
     Method opening a model to possibly delete a project
@@ -91,17 +91,18 @@ def open_delete_confirmation_modal(n_click: int,
     return True, delete_project_modal_content(project)
 
 
-@callback(Output(URL, PATHNAME, allow_duplicate=True),
-          Input({TYPE: BUTTON, INDEX: DELETE_PROJECT_CONFIRM}, N_CLICKS),
-          State({TYPE: TEXT_INPUT, INDEX: PROJECT_NAME}, VALUE),
-          State(TOKEN, DATA),
-          State(PROJECT_ID_STORE, DATA),
-          running=((Output({TYPE: BUTTON, INDEX: DELETE_PROJECT_CONFIRM}, LOADING), True, False)),
-          prevent_initial_call=True)
-def delete_project_confirmed(n_click: int,
+@safe_callback(Output(URL, PATHNAME, allow_duplicate=True),
+               State(TOKEN, DATA),
+               State(PROJECT_ID_STORE, DATA),
+               Input({TYPE: BUTTON, INDEX: DELETE_PROJECT_CONFIRM}, N_CLICKS),
+               State({TYPE: TEXT_INPUT, INDEX: PROJECT_NAME}, VALUE),
+               running=(
+                   (Output({TYPE: BUTTON, INDEX: DELETE_PROJECT_CONFIRM}, LOADING), True, False)),
+               prevent_initial_call=True)
+def delete_project_confirmed(token: dict,
+                             project_id: int,
+                             n_click: int,
                              confirmation_val: str,
-                             token: dict,
-                             project_id: int
                              ) -> str:
     """
     Method to confirm the deletion of a project

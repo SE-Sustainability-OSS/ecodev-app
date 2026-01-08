@@ -1,7 +1,6 @@
 from typing import Any
 
 import dash_ag_grid as dag
-from ecodev_core import logger_get
 from ecodev_core import select_user
 from ecodev_front import custom_column_def
 from ecodev_front import data_table
@@ -25,8 +24,6 @@ USER_DEF = custom_column_def(field=USER)
 ROLE_DEF = custom_column_def(field=ROLE, editable=True, width=150,
                              cell_editor='agRichSelectCellEditor',
                              cell_editor_params={'function': 'getOptions(params.data.options)'})
-
-log = logger_get(__name__)
 
 
 def manage_rights_table(project_id: int,

@@ -8,7 +8,6 @@ import re
 
 from ecodev_core import AppUser
 from ecodev_core import get_app_services
-from ecodev_core import logger_get
 from ecodev_core import Permission
 from sqlmodel import Session
 
@@ -21,8 +20,6 @@ from app.db_model.retrievers import get_user_by_email
 from app.db_model.retrievers import get_users_by_client
 from app.domain_model import Role
 from app.pages.module_registry import get_registered_modules
-
-log = logger_get(__name__)
 
 
 def get_new_project_users(inviting_user: AppUser,
