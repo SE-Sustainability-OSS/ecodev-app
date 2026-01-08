@@ -34,7 +34,6 @@ def upsert_module_access(module_rights: dict[str, bool] | None,
                          for module in all_modules}
 
     for module_name, has_access in module_rights.items():
-        log.info(f'Upserting module access for {module_name} with access {has_access}')
         upsert_dict(
             ModuleAccess,
             {MODULE_NAME: module_name,

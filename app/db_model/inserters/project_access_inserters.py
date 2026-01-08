@@ -24,8 +24,8 @@ def upsert_project_access(project_id: int,
         project_access.model_dump(exclude_unset=True),
         session
     )
-    log.info(f"""User #{project_access.user_id} now has {project_access.role} access
-             rights on project {project_id}""")
+    log.info(f'User #{project_access.user_id} now has {project_access.role} access '
+             f'rights on project {project_id}')
     session.refresh(project_access)
     return project_access
 

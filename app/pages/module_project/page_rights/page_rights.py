@@ -3,7 +3,6 @@ Module implementing the page to manage project and module access rights
 
 NB: All internal roles have access to all modules by default.
 """
-import dash_mantine_components as dmc
 from dash import Input
 from dash import no_update
 from dash import Output
@@ -14,7 +13,6 @@ from ecodev_core import engine
 from ecodev_core import logger_get
 from ecodev_core import Permission
 from ecodev_core import safe_get_user
-from ecodev_front import ALERT
 from ecodev_front import BUTTON
 from ecodev_front import CELL_RENDERER_DATA
 from ecodev_front import CHILDREN
@@ -27,12 +25,15 @@ from ecodev_front import LOADING
 from ecodev_front import MODAL
 from ecodev_front import MULTI_SELECT
 from ecodev_front import N_CLICKS
+from ecodev_front import NOTIFICATION
 from ecodev_front import OPENED
 from ecodev_front import Page
 from ecodev_front import page_project_header
 from ecodev_front import PROJECT_HEADER_ID
 from ecodev_front import ROW_DATA
 from ecodev_front import ROW_ID
+from ecodev_front import send_notification
+from ecodev_front import SEND_NOTIFICATIONS
 from ecodev_front import TABLE
 from ecodev_front import TOKEN
 from ecodev_front import TYPE
@@ -51,7 +52,6 @@ from app.domain_model import Role
 from app.pages.common.custom_callback import safe_callback
 from app.pages.common.stores import USER_DELETION_STORE
 from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_CONFIRM
-from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_ERROR
 from app.pages.module_project.page_rights import ADD_USER_RIGHTS
 from app.pages.module_project.page_rights import MANAGE_RIGHTS
 from app.pages.module_project.page_rights import REMOVE_USER_CANCEL
@@ -100,7 +100,7 @@ def render_page(token: dict, project_id: int):
 
 @safe_callback(
     Output(TOKEN, DATA, allow_duplicate=True),
-    Output({TYPE: ALERT, INDEX: MANAGE_RIGHTS}, CHILDREN),
+    Output(NOTIFICATION, SEND_NOTIFICATIONS),
     State(TOKEN, DATA),
     State(PROJECT_ID_STORE, DATA),
     Input({TYPE: BUTTON, INDEX: UPDATE_RIGHTS}, N_CLICKS),
@@ -110,7 +110,7 @@ def render_page(token: dict, project_id: int):
 def update_rights_callback(token: dict,
                            project_id: int,
                            n_clicks: int,
-                           row_data: list[dict]) -> tuple[dict, dmc.Alert]:
+                           row_data: list[dict]) -> tuple[dict, list[dict]]:
     """
     Updates project access and module accesses for existing users based on table edits.
     Reads the role and module checkboxes from each row and updates the database accordingly.
@@ -118,18 +118,24 @@ def update_rights_callback(token: dict,
     if not n_clicks:
         raise PreventUpdate
 
-    with Session(engine) as session:
-        inviting_user = safe_get_user(token)
+    try:
+        with Session(engine) as session:
+            inviting_user = safe_get_user(token)
 
-        for row in row_data:
-            user = get_user_by_id(row[USER_ID], session)
-            role = Role(row[ROLE]) if row[ROLE] else _assign_project_role(user)
-            checked_modules = [module.name for module in get_registered_modules()
-                               if row.get(module.name, False)]
-            grant_user_project_access(user, project_id, checked_modules,
-                                      role, session, inviting_user)
+            for row in row_data:
+                user = get_user_by_id(row[USER_ID], session)
+                role = Role(row[ROLE]) if row[ROLE] else _assign_project_role(user)
+                checked_modules = [module.name for module in get_registered_modules()
+                                   if row.get(module.name, False)]
+                grant_user_project_access(user, project_id, checked_modules,
+                                          role, session, inviting_user)
 
-    return token, dmc.Alert('Rights updated', title='Success', color='green')
+        return token, send_notification('Success', 'Rights updated',
+                                        autoClose=5000, with_close_button=True)
+    except Exception as e:
+        logger_get(__name__).error(f'Error updating rights: {e}')
+        return token, send_notification('Failure', f'Error updating rights: {str(e)}',
+                                        autoClose=False, with_close_button=True)
 
 
 def _assign_project_role(user: AppUser, role: Role | None = None) -> Role:
@@ -165,7 +171,7 @@ def open_rights_modal(token: dict, project_id: int, n_clicks: int):
 
 @safe_callback(Output(TOKEN, DATA),
                Output({TYPE: MODAL, INDEX: ADD_USER_RIGHTS}, OPENED, allow_duplicate=True),
-               Output({TYPE: ALERT, INDEX: ADD_RIGHTS_MODAL_ERROR}, CHILDREN),
+               Output(NOTIFICATION, SEND_NOTIFICATIONS, allow_duplicate=True),
                Output({TYPE: MULTI_SELECT, INDEX: USERS}, ERROR),
                State(TOKEN, DATA),
                State(PROJECT_ID_STORE, DATA),
@@ -179,7 +185,7 @@ def add_rights(token: dict,
                n_clicks: int,
                emails: list[str],
                modules: list[str],
-               ) -> tuple[dict, bool, str, str]:
+               ) -> tuple[dict, bool, list[dict], str]:
     """
     Adds users to a project and sets their rights.
 
@@ -194,17 +200,30 @@ def add_rights(token: dict,
         raise PreventUpdate
 
     if not emails:
-        return no_update, True, no_update, 'Please enter at least one user'
+        no_email_notif = send_notification('Failure', 'Please enter at least one user',
+                                           autoClose=False, with_close_button=True)
+        select_error_msg = 'Please enter at least one user'
+        return no_update, True, no_email_notif, select_error_msg
 
     inviting_user = safe_get_user(token)
     if invalid_emails := check_email_validity(emails):
-        return no_update, True, invalid_emails, no_update
+        invalid_emails_notif = send_notification('Invalid emails:', invalid_emails,
+                                                 autoClose=False, with_close_button=True)
+        select_error_msg = 'Please enter a valid email address'
+        return no_update, True, invalid_emails_notif, select_error_msg
 
-    with Session(engine) as session:
-        for user in get_new_project_users(inviting_user, emails, session):
-            grant_user_project_access(user, project_id, modules, None, session, inviting_user)
+    try:
+        with Session(engine) as session:
+            for user in get_new_project_users(inviting_user, emails, session):
+                grant_user_project_access(user, project_id, modules, None, session, inviting_user)
 
-    return token, False, no_update, no_update
+        success_notif = send_notification('Success', 'Users added successfully',
+                                          autoClose=2000, with_close_button=True)
+        return token, False, success_notif, no_update
+    except Exception as e:
+        error_notif = send_notification('Failure', f'Error adding users: {str(e)}',
+                                        autoClose=False, with_close_button=True)
+        return no_update, True, error_notif, no_update
 
 
 @safe_callback(

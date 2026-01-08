@@ -21,19 +21,22 @@ from ecodev_core import log_critical
 from ecodev_core import logger_get
 from ecodev_core import Permission
 from ecodev_core import safe_get_user
+from ecodev_front import BUTTON
 from ecodev_front import CHILDREN
 from ecodev_front import DATA
 from ecodev_front import FOOTER_ID
 from ecodev_front import HEADER_ID
 from ecodev_front import HREF
-from ecodev_front import LOGIN_BTN_ID
-from ecodev_front import LOGIN_PASSWORD_INPUT_ID
-from ecodev_front import LOGIN_USERNAME_INPUT_ID
+from ecodev_front import INDEX
+from ecodev_front import LOGIN
 from ecodev_front import LOGOUT_BTN_ID
 from ecodev_front import N_CLICKS
+from ecodev_front import PASSWORD
 from ecodev_front import PATHNAME
 from ecodev_front import TOKEN
+from ecodev_front import TYPE
 from ecodev_front import URL
+from ecodev_front import USERNAME
 from ecodev_front import VALUE
 from ecodev_front.constants import LOGIN_PAGE_URL
 from ecodev_front.constants import MAIN_PAGE_URL
@@ -56,9 +59,9 @@ log = logger_get(__name__)
 @callback(
     Output(TOKEN, DATA, allow_duplicate=True),
     Output(URL, PATHNAME, allow_duplicate=True),
-    Input(LOGIN_BTN_ID, N_CLICKS),
-    State(LOGIN_USERNAME_INPUT_ID, VALUE),
-    State(LOGIN_PASSWORD_INPUT_ID, VALUE),
+    Input({TYPE: LOGIN, INDEX: BUTTON}, N_CLICKS),
+    State({TYPE: LOGIN, INDEX: USERNAME}, VALUE),
+    State({TYPE: LOGIN, INDEX: PASSWORD}, VALUE),
     prevent_initial_call=True,
 )
 def user_login(n_clicks: int, username: str, password: str):

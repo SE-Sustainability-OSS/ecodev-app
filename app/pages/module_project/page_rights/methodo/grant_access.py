@@ -6,7 +6,6 @@ for this exact purpose of granting module rights in this page.
 """
 import re
 
-import dash_mantine_components as dmc
 from ecodev_core import AppUser
 from ecodev_core import get_app_services
 from ecodev_core import logger_get
@@ -173,15 +172,11 @@ def restrict_to_user_module_rights(user: AppUser,
     return [module for module in filtered_modules if module in inviting_user_rights]
 
 
-def check_email_validity(emails: list[str]) -> dmc.Alert | None:
+def check_email_validity(emails: list[str]) -> list[str]:
     """
     Checks email validity of a list of emails and send an alert if it's the case.
     """
-    alerts = []
-    if invalid_emails := {email for email in emails if not validate_email(email)}:
-        alerts.extend([dmc.Text(email, ta='center') for email in invalid_emails])
-
-    return None if not alerts else dmc.Alert(alerts, title='Incorrect emails:', color='red')
+    return [email for email in emails if not validate_email(email)]
 
 
 def validate_email(email: str) -> bool:

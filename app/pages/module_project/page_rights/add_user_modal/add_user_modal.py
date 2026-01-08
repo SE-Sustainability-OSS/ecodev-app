@@ -4,7 +4,6 @@ from dash import Input
 from dash import Output
 from dash.exceptions import PreventUpdate
 from ecodev_core import AppUser
-from ecodev_front import ALERT
 from ecodev_front import BUTTON
 from ecodev_front import INDEX
 from ecodev_front import MODAL
@@ -15,7 +14,6 @@ from ecodev_front import TYPE
 from sqlmodel import Session
 
 from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_CANCEL
-from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_ERROR
 from app.pages.module_project.page_rights import ADD_USER_RIGHTS
 from app.pages.module_project.page_rights.add_user_modal.field_email import email_field
 from app.pages.module_project.page_rights.add_user_modal.field_modules import module_access_field
@@ -35,7 +33,6 @@ def manage_rights_modal(user: AppUser, modules: list[Module], session: Session) 
     """
     return dmc.Stack([
         add_user_modal_header(user),
-        dmc.Box(id={TYPE: ALERT, INDEX: ADD_RIGHTS_MODAL_ERROR}),
         email_field(user, session),
         module_access_field(modules),
         MODAL_BUTTONS
