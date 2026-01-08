@@ -44,11 +44,9 @@ from app.constants import PROJECT_ID_STORE
 from app.constants import ROLE
 from app.constants import USER_ID
 from app.db_model.deleters import delete_project_access
-from app.db_model.retrievers import get_app_rights
 from app.db_model.retrievers import get_project_by_id
 from app.db_model.retrievers import get_user_by_id
 from app.db_model.retrievers import verify_project_module_access
-from app.domain_model import AppModule
 from app.domain_model import Role
 from app.pages.common.custom_callback import safe_callback
 from app.pages.common.stores import USER_DELETION_STORE
@@ -65,6 +63,7 @@ from app.pages.module_project.page_rights.common.overview import manage_rights_o
 from app.pages.module_project.page_rights.methodo.grant_access import check_email_validity
 from app.pages.module_project.page_rights.methodo.grant_access import get_new_project_users
 from app.pages.module_project.page_rights.methodo.grant_access import grant_user_project_access
+from app.pages.module_registry import get_registered_modules
 
 
 log = logger_get(__name__)
@@ -92,8 +91,8 @@ def render_page(token: dict, project_id: int):
     """
     with Session(engine) as session:
         project = get_project_by_id(token, project_id, session)
-        user_modules = get_app_rights(safe_get_user(token), session)
-        modules = verify_project_module_access(token, project_id, user_modules, session)
+        all_modules = get_registered_modules()
+        modules = verify_project_module_access(token, project_id, all_modules, session)
     page = manage_rights_overview(project_id, modules, session)
     header = page_project_header(project.name, project.year) if project else None
     return page, header
@@ -125,7 +124,8 @@ def update_rights_callback(token: dict,
         for row in row_data:
             user = get_user_by_id(row[USER_ID], session)
             role = Role(row[ROLE]) if row[ROLE] else _assign_project_role(user)
-            checked_modules = [module.name for module in AppModule if row.get(module.name, False)]
+            checked_modules = [module.name for module in get_registered_modules()
+                               if row.get(module.name, False)]
             grant_user_project_access(user, project_id, checked_modules,
                                       role, session, inviting_user)
 
@@ -158,8 +158,8 @@ def open_rights_modal(token: dict, project_id: int, n_clicks: int):
 
     with Session(engine) as session:
         user = safe_get_user(token)
-        user_modules = get_app_rights(safe_get_user(token), session)
-        modules = verify_project_module_access(token, project_id, user_modules, session)
+        all_modules = get_registered_modules()
+        modules = verify_project_module_access(token, project_id, all_modules, session)
         return True, manage_rights_modal(user, modules, session)
 
 

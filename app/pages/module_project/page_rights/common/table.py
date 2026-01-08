@@ -5,6 +5,7 @@ from ecodev_core import logger_get
 from ecodev_core import select_user
 from ecodev_front import custom_column_def
 from ecodev_front import data_table
+from ecodev_front import Module
 from ecodev_front import TABLE
 from ecodev_front.constants import INDEX
 from ecodev_front.constants import OPTIONS
@@ -13,10 +14,9 @@ from sqlmodel import Session
 
 from app.constants import ROLE
 from app.constants import USER
-from app.db_model.retrievers.access_retrievers import get_project_users
-from app.db_model.retrievers.access_retrievers import verify_module_access
+from app.db_model.retrievers import get_project_users
+from app.db_model.retrievers import verify_module_access
 from app.domain_model import ADMIN_ROLES
-from app.domain_model import AppModule
 from app.domain_model import RESTRICTED_ROLES
 from app.domain_model.color_utils import get_color
 from app.pages.module_project.page_rights import MANAGE_RIGHTS
@@ -30,7 +30,7 @@ log = logger_get(__name__)
 
 
 def manage_rights_table(project_id: int,
-                        modules: list[AppModule],
+                        modules: list[Module],
                         session: Session) -> dag.AgGrid:
     """
     Return a grid allowing to manage a project user rights
@@ -38,7 +38,7 @@ def manage_rights_table(project_id: int,
     column_defs = (
         [USER_DEF, ROLE_DEF] +
         [custom_column_def(field=module.name,
-                           header_name=f'Module {module.value.capitalize()}',
+                           header_name=f'Module {module.name.capitalize()}',
                            editable=False,
                            cell_renderer='Checkbox',
                            width='100px') | {'wrapHeaderText': True}

@@ -20,8 +20,8 @@ from app.db_model.inserters import upsert_user
 from app.db_model.retrievers import get_project_users
 from app.db_model.retrievers import get_user_by_email
 from app.db_model.retrievers import get_users_by_client
-from app.domain_model import AppModule
 from app.domain_model import Role
+from app.pages.module_registry import get_registered_modules
 
 log = logger_get(__name__)
 
@@ -127,7 +127,8 @@ def grant_user_project_access(user: AppUser,
     project_access = upsert_project_access(project_id, access_data, session)
 
     filtered_modules = restrict_to_user_module_rights(user, modules, session, inviting_user)
-    module_rights = {module: bool(module.name in filtered_modules) for module in AppModule}
+    module_rights = {module.name: bool(module.name in filtered_modules)
+                     for module in get_registered_modules()}
     upsert_module_access(module_rights, project_access, session)
 
 
@@ -148,7 +149,7 @@ def restrict_to_user_module_rights(user: AppUser,
     NOTE: Expects get_app_services to return enum names (e.g., "PROJECT")
     """
     if user.permission == Permission.ADMIN:
-        return [module.name for module in AppModule]
+        return [module.name for module in get_registered_modules()]
 
     if not (user_module_rights := get_app_services(user, session)):
         user_module_rights = (

@@ -5,17 +5,18 @@ from ecodev_core import AppRight
 from ecodev_core import AppUser
 from ecodev_core import Permission
 from ecodev_core.list_utils import list_tuple_to_dict
+from ecodev_front import Module
 from sqlmodel import col
 from sqlmodel import select
 from sqlmodel import Session
 
 from app.constants import USER_ID
-from app.db_model.module_access import ModuleAccess
-from app.db_model.project_access import ProjectAccess
+from app.db_model import ModuleAccess
+from app.db_model import ProjectAccess
 from app.db_model.retrievers.commons import get_auth_user
 from app.db_model.retrievers.project_retrievers import get_project_by_id
-from app.domain_model import AppModule
-from app.domain_model.role import Role
+from app.domain_model import Role
+from app.pages.module_registry import get_registered_modules
 
 
 def get_project_users(project_id: int,
@@ -58,22 +59,22 @@ def get_project_role(auth: dict | AppUser,
                         ).first()
 
 
-def get_app_rights(user: AppUser, session: Session) -> list[AppModule]:
+def get_app_rights(user: AppUser, session: Session) -> list[Module]:
     """
-    Retrieves the user's app rights (list of AppModules), which can be used as
+    Retrieves the user's app rights (list of app Modules), which can be used as
     an app licensing purposes (e.g. module subscriptions categories).
     """
     if user.permission == Permission.ADMIN:
-        return list(AppModule)
-    return [AppModule(rights.app_service) for rights in
+        return get_registered_modules()
+    return [get_registered_modules(rights.app_service) for rights in
             session.exec(select(AppRight).where(AppRight.user_id == user.id)).all()]
 
 
 def verify_project_module_access(auth: dict | AppUser,
                                  project_id: int,
-                                 modules: list[AppModule],
+                                 modules: list[Module],
                                  session: Session,
-                                 ) -> list[AppModule]:
+                                 ) -> list[Module]:
     """
     Verifies user has access to the requested module.
     By default, internal staff have access to all of the app's modules.
@@ -89,8 +90,8 @@ def verify_project_module_access(auth: dict | AppUser,
         return modules
 
     return [
-        module for module in modules if module.name in
-        [AppModule(m.module_name) for m in get_module_access(user, project_id, session)]
+        module for module in get_registered_modules() if module.name in
+        [m.module_name for m in get_module_access(user, project_id, session)]
     ]
 
 
@@ -110,7 +111,7 @@ def verify_module_access(auth: dict | AppUser,
         return True
 
     accessible_modules = get_module_access(user, project_id, session)
-    return module_name in [a.module_name.name for a in accessible_modules]
+    return module_name in [a.module_name for a in accessible_modules]
 
 
 def get_module_access(auth: dict | AppUser,

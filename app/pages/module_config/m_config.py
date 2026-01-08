@@ -4,14 +4,13 @@ File containing definition of the module and its pages.
 from ecodev_front import icon_navbar
 from ecodev_front import Module
 
-from app.domain_model import AppModule
 from app.pages.module_config.page_comparison.page_comparison import PAGE_COMPARISON
 from app.pages.module_config.page_config.page_config import PAGE_CONFIG
 
 
 MODULE_CONFIG = Module(
     file=__name__,
-    name=AppModule.CONFIG.value,
+    name='configuration',
     icon='mdi:cog',
     pages=[
         PAGE_CONFIG,

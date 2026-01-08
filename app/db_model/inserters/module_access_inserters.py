@@ -10,14 +10,14 @@ from app.constants import PROJECT_ACCESS_ID
 from app.db_model.inserters.commons import upsert_dict
 from app.db_model.module_access import ModuleAccess
 from app.db_model.project_access import ProjectAccess
-from app.db_model.retrievers.access_retrievers import get_app_rights
-from app.db_model.retrievers.app_user_retrievers import get_user_by_id
-from app.domain_model import AppModule
+from app.db_model.retrievers import get_app_rights
+from app.db_model.retrievers import get_user_by_id
+from app.pages.module_registry import get_registered_modules
 
 log = logger_get(__name__)
 
 
-def upsert_module_access(module_rights: dict[AppModule, bool] | None,
+def upsert_module_access(module_rights: dict[str, bool] | None,
                          project_access: ProjectAccess,
                          session: Session
                          ) -> None:
@@ -29,13 +29,16 @@ def upsert_module_access(module_rights: dict[AppModule, bool] | None,
     if not module_rights:
         user = get_user_by_id(project_access.user_id, session)
         license_rights = get_app_rights(user, session)
-        module_rights = {module: bool(module in license_rights) for module in AppModule}
+        all_modules = get_registered_modules()
+        module_rights = {module.name: bool(module.name in license_rights)
+                         for module in all_modules}
 
     for module_name, has_access in module_rights.items():
-        log.info(f'Upserting module access for {module_name.value} with access {has_access}')
-        upsert_dict(ModuleAccess,
-                    {MODULE_NAME: module_name,
-                     HAS_ACCESS: has_access,
-                     PROJECT_ACCESS_ID: project_access.id},
-                    session,
-                    )
+        log.info(f'Upserting module access for {module_name} with access {has_access}')
+        upsert_dict(
+            ModuleAccess,
+            {MODULE_NAME: module_name,
+             HAS_ACCESS: has_access,
+             PROJECT_ACCESS_ID: project_access.id},
+            session,
+        )

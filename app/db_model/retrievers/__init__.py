@@ -3,6 +3,7 @@ This is the recoupment of modules where to implement all db retrievals.
 """
 from app.db_model.retrievers.access_retrievers import get_app_rights
 from app.db_model.retrievers.access_retrievers import get_project_users
+from app.db_model.retrievers.access_retrievers import verify_module_access
 from app.db_model.retrievers.access_retrievers import verify_project_module_access
 from app.db_model.retrievers.app_user_retrievers import get_user_by_email
 from app.db_model.retrievers.app_user_retrievers import get_user_by_id
@@ -24,4 +25,5 @@ __all__ = [
     'get_user_by_id',
     'get_user_by_email',
     'get_project_users',
+    'verify_module_access',
 ]

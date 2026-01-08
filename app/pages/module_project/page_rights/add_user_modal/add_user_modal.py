@@ -1,5 +1,3 @@
-from ast import Module
-
 import dash_mantine_components as dmc
 from dash import callback
 from dash import Input
@@ -10,12 +8,12 @@ from ecodev_front import ALERT
 from ecodev_front import BUTTON
 from ecodev_front import INDEX
 from ecodev_front import MODAL
+from ecodev_front import Module
 from ecodev_front import N_CLICKS
 from ecodev_front import OPENED
 from ecodev_front import TYPE
 from sqlmodel import Session
 
-from app.domain_model import AppModule
 from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_CANCEL
 from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_ERROR
 from app.pages.module_project.page_rights import ADD_USER_RIGHTS
@@ -31,7 +29,7 @@ ADD_USERS_MODAL = dmc.Modal(
 )
 
 
-def manage_rights_modal(user: AppUser, modules: list[AppModule], session: Session) -> dmc.Stack:
+def manage_rights_modal(user: AppUser, modules: list[Module], session: Session) -> dmc.Stack:
     """
     Renders the add rights modal
     """

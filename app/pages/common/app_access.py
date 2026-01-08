@@ -44,11 +44,11 @@ from app.db_model.retrievers.access_retrievers import verify_project_module_acce
 from app.pages.common.footer import main_footer
 from app.pages.common.header import display_app_header
 from app.pages.common.header import header_login_section
-from app.pages.module_project.m_project import MODULE_PROJECT
-from app.pages.modules import MODULES
+from app.pages.module_registry import get_registered_modules
 from app.pages.page_forbidden.not_forbidden_403 import PAGE_403
 from app.pages.page_login.page_login import PAGE_LOGIN
 from app.pages.page_main.page_main import PAGE_MAIN
+from app.pages.pages_account.page_pwd_reset.page_pwd_reset import PAGE_RESET_PWD
 
 log = logger_get(__name__)
 
@@ -138,17 +138,24 @@ def verify_page_access(pathname: str, token: dict, project_id: int):
     NOTE: Exception is made for the "create new project" page (MODULE_PROJECT.pages[0].url)
     or if the user is an ADMIN.
     """
+    all_access_pages = [
+        PAGE_MAIN.url,
+        PAGE_RESET_PWD.url,
+    ]
+
     if not (user := safe_get_user(token)):
         return PAGE_LOGIN.url
 
-    if pathname == PAGE_MAIN.url or user.permission == Permission.ADMIN:
+    if pathname in all_access_pages or user.permission == Permission.ADMIN:
         return no_update
 
-    if pathname == MODULE_PROJECT.pages[0].url and project_id is None:
+    project_module = get_registered_modules('project')
+    if pathname == project_module.pages[0].url and project_id is None:
         return no_update
 
     with Session(engine) as session:
-        for module in verify_project_module_access(user, project_id, MODULES, session):
+        all_modules = get_registered_modules()
+        for module in verify_project_module_access(user, project_id, all_modules, session):
             if pathname in [page.url for page in module.pages]:
                 return no_update
     return PAGE_403.url

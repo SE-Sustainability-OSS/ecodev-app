@@ -9,6 +9,7 @@ from dash import Input
 from dash import Output
 from dash import State
 from dash.exceptions import PreventUpdate
+from ecodev_core import logger_get
 from ecodev_front import DATA
 from ecodev_front import INDEX
 from ecodev_front import N_CLICKS
@@ -23,24 +24,26 @@ from ecodev_front.ids import MODULE_BUTTON
 from sqlmodel import Session
 
 from app.constants import PROJECT_ID_STORE
-from app.db_model.retrievers.access_retrievers import verify_project_module_access
-from app.pages.module_project.m_project import MODULE_PROJECT
-from app.pages.modules import MODULES
+from app.db_model.retrievers import verify_project_module_access
+from app.pages.module_registry import get_registered_modules
 from app.pages.page_main.project_options import NEW_PROJECT_BUTTON_ID
 from app.pages.page_main.project_options import PROJECT_BUTTONS_PLACEHOLER_ID
 from app.pages.page_main.project_options import PROJECT_SELECT_ID
+
+log = logger_get(__name__)
 
 
 def module_buttons(token: dict, project_id: int | None, session: Session) -> dmc.Stack:
     """
     Renders the various user options when a project is selected
     """
+    all_modules = get_registered_modules()
     return dmc.Stack(
         id=PROJECT_BUTTONS_PLACEHOLER_ID,
         children=[
             dmc.Group([
                 module.render_main_page_button()
-                for module in verify_project_module_access(token, project_id, MODULES, session)
+                for module in verify_project_module_access(token, project_id, all_modules, session)
             ], justify='center', grow=True, w='100%'),
         ], style={'display': 'none'})
 
@@ -59,11 +62,12 @@ def reroute_to_project_page(n_clicks: list[int], pathname: str, project_id: int)
         raise PreventUpdate
 
     if (module_id := ctx.triggered_id[INDEX]) == NEW_PROJECT_BUTTON_ID:
-        return MODULE_PROJECT.pages[0].url, None
+        project_module = get_registered_modules('project')
+        return project_module.pages[0].url, None
 
     url_mapping = {
         module.id: module.pages[0].url
-        for module in MODULES
+        for module in get_registered_modules()
     }
 
     return url_mapping.get(module_id), project_id
