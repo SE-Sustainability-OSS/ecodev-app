@@ -15,7 +15,6 @@ from ecodev_front import action_item
 from ecodev_front import app_header_name
 from ecodev_front import app_logo
 from ecodev_front import dash_icon
-from ecodev_front import login
 from ecodev_front import LOGOUT_BTN_ID
 from ecodev_front import menu
 from ecodev_front import menu_item
@@ -87,7 +86,7 @@ def header_login_section() -> html.Div:
     Login navbar components
     """
     return html.Div([
-        dmc.Group(children=[app_logo(width='120px'), login()],
+        dmc.Group(children=[app_logo(width='120px')],
                   justify='space-between',
                   align='center',
                   c='white',
