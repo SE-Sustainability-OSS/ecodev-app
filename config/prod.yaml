@@ -12,6 +12,7 @@ database:
   db_host: null
   db_username: null
   db_password: null
+  db_test_name: null
 
 backup:
   backup_username: null
@@ -27,3 +28,10 @@ smtp:
 dash_settings:
   debug: false
   gunicorn_setup: true
+
+fernet_key: null
+
+api:
+  host: null
+  user: null
+  password: null

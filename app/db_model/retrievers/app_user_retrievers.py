@@ -35,3 +35,11 @@ def get_users_by_client(client: str, session: Session) -> list[AppUser]:
     return session.exec(select(AppUser)
                         .where(AppUser.client == client)
                         ).all()
+
+
+def get_all_clients(session: Session) -> list[str]:
+    """
+    Retrieves a list of all unique client organizations from the AppUser table.
+    """
+    clients = session.exec(select(AppUser.client).distinct()).all()
+    return [client for client in clients if client]

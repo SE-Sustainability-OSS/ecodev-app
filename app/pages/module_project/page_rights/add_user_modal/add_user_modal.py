@@ -13,8 +13,8 @@ from ecodev_front import OPENED
 from ecodev_front import TYPE
 from sqlmodel import Session
 
-from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_CANCEL
-from app.pages.module_project.page_rights import ADD_USER_RIGHTS
+from app.pages.module_project.page_rights import ADD_PROJECT_RIGHTS_MODAL_CANCEL
+from app.pages.module_project.page_rights import ADD_PROJECT_USER_RIGHTS
 from app.pages.module_project.page_rights.add_user_modal.field_email import email_field
 from app.pages.module_project.page_rights.add_user_modal.field_modules import module_access_field
 from app.pages.module_project.page_rights.add_user_modal.modal_buttons import MODAL_BUTTONS
@@ -22,7 +22,7 @@ from app.pages.module_project.page_rights.add_user_modal.modal_header import add
 
 
 ADD_USERS_MODAL = dmc.Modal(
-    id={TYPE: MODAL, INDEX: ADD_USER_RIGHTS},
+    id={TYPE: MODAL, INDEX: ADD_PROJECT_USER_RIGHTS},
     size='80%', closeOnClickOutside=False,
 )
 
@@ -39,8 +39,8 @@ def manage_rights_modal(user: AppUser, modules: list[Module], session: Session) 
     ], align='center', gap='lg', w='100%', justify='center', mt=10, mb=20)
 
 
-@callback(Output({TYPE: MODAL, INDEX: ADD_USER_RIGHTS}, OPENED, allow_duplicate=True),
-          Input({TYPE: BUTTON, INDEX: ADD_RIGHTS_MODAL_CANCEL}, N_CLICKS),
+@callback(Output({TYPE: MODAL, INDEX: ADD_PROJECT_USER_RIGHTS}, OPENED, allow_duplicate=True),
+          Input({TYPE: BUTTON, INDEX: ADD_PROJECT_RIGHTS_MODAL_CANCEL}, N_CLICKS),
           prevent_initial_call=True)
 def close_add_user_modal(n_clicks: int) -> bool:
     """

@@ -2,39 +2,6 @@ var dagfuncs = (window.dashAgGridFunctions = window.dashAgGridFunctions || {});
 
 var dagcomponentfuncs = window.dashAgGridComponentFunctions = window.dashAgGridComponentFunctions || {};
 
-dagcomponentfuncs.versionChangeCellRendererSelector = (params) => {
-    const fieldGenerator = (icon, iconColor) => React.createElement('div',
-        {
-        style: {
-            gap: '8px',
-            paddingTop:'5px'
-        }
-    },
-    [
-        React.createElement(
-            window.dash_iconify.DashIconify,
-            {
-                icon: icon,
-                color: iconColor,
-                height: '20px',
-                style: {},
-            },
-        ),
-    ]);
-
-
-    if (params.value === 'updated') {
-        return fieldGenerator('ph:tilde-fill', '#D19E21');
-    }
-    if (params.value === 'deleted') {
-        return fieldGenerator('ph:minus-fill', '#bc4429');
-    }
-    if (params.value === 'inserted') {
-        return fieldGenerator('ph:plus-fill', '#6d8e51');
-    }
-    return params.value;
-}
-
 dagcomponentfuncs.DMC_Button = function (props) {
     const {setData, data} = props;
 

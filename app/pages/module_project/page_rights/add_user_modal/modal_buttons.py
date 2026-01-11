@@ -6,15 +6,15 @@ from ecodev_front import BUTTON
 from ecodev_front import INDEX
 from ecodev_front import TYPE
 
-from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_CANCEL
-from app.pages.module_project.page_rights import ADD_RIGHTS_MODAL_CONFIRM
+from app.pages.module_project.page_rights import ADD_PROJECT_RIGHTS_MODAL_CANCEL
+from app.pages.module_project.page_rights import ADD_PROJECT_RIGHTS_MODAL_CONFIRM
 
 ADD_RIGHTS_MODAL_CONFIRM_BTN = dmc.Button('Add Users',
-                                          id={TYPE: BUTTON, INDEX: ADD_RIGHTS_MODAL_CONFIRM},
+                                          id={TYPE: BUTTON, INDEX: ADD_PROJECT_RIGHTS_MODAL_CONFIRM},
                                           color='blue')
 
 ADD_RIGHTS_MODAL_CANCEL_BTN = dmc.Button('Cancel',
-                                         id={TYPE: BUTTON, INDEX: ADD_RIGHTS_MODAL_CANCEL},
+                                         id={TYPE: BUTTON, INDEX: ADD_PROJECT_RIGHTS_MODAL_CANCEL},
                                          color='red', variant='outline')
 
 MODAL_BUTTONS = dmc.Stack([

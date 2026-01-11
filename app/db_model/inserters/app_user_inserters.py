@@ -61,15 +61,10 @@ def upsert_user(email: str, app_rights: list[str], session: Session, client: str
         session: Database session
         client: Optional client name to associate with the user
     """
-    try:
-        if not (user_exists := bool(user := get_user_by_email(email, session))):
-            user, password = create_user_credentials(email, Permission.Client, session, client)
-        update_user_module_rights(user, app_rights, session)
-        if user_exists:
-            raise Exception('User already exists')
-        return user
-    except Exception as e:
-        raise e
+    if not (user := get_user_by_email(email, session)):
+        user, password = create_user_credentials(email, Permission.Client, session, client)
+    update_user_module_rights(user, app_rights, session)
+    return user
 
 
 def add_user(user_id: int, email: str, hashed_password: str, session: Session) -> None:

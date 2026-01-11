@@ -30,7 +30,7 @@ from app.constants import APP_NAME
 from app.constants import DOCUMENTATION_URL
 from app.db_model.retrievers import verify_project_module_access
 from app.pages.module_registry import get_registered_modules
-from app.pages.pages_account.page_create_user.page_create_user import PAGE_CREATE_USER
+from app.pages.pages_account.page_manage_user.page_manage_user import PAGE_MANAGE_USERS
 from app.pages.pages_account.page_pwd_reset.page_pwd_reset import PAGE_RESET_PWD
 
 log = logger_get(__name__)
@@ -125,7 +125,8 @@ def header_generic_section(is_admin: bool) -> dmc.Group:
                           href=DOCUMENTATION_URL, in_new_tab=True)
 
     admin_options = [
-        menu_item('Create User', PAGE_CREATE_USER.url, PAGE_CREATE_USER.icon) if is_admin else None,
+        menu_item('Manage Users', PAGE_MANAGE_USERS.url,
+                  PAGE_MANAGE_USERS.icon) if is_admin else None,
         menu_item('Reset Password', PAGE_RESET_PWD.url, PAGE_RESET_PWD.icon),
     ]
     admin_menu = menu(label='ADMIN' if is_admin else 'ACCOUNT',

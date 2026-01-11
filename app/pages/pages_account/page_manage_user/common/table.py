@@ -1,56 +1,62 @@
 from typing import Any
 
 import dash_ag_grid as dag
-from ecodev_core import select_user
+from ecodev_core import Permission
 from ecodev_front import custom_column_def
 from ecodev_front import data_table
-from ecodev_front import Module
+from ecodev_front import OPTIONS
 from ecodev_front import TABLE
 from ecodev_front.constants import INDEX
-from ecodev_front.constants import OPTIONS
 from ecodev_front.constants import TYPE
 from sqlmodel import Session
 
-from app.constants import ROLE
 from app.constants import USER
-from app.db_model.retrievers import get_project_users
-from app.db_model.retrievers import verify_module_access
-from app.domain_model import ADMIN_ROLES
-from app.domain_model import RESTRICTED_ROLES
+from app.constants import USER_ID
+from app.db_model.retrievers import get_all_users
+from app.db_model.retrievers import get_app_rights
 from app.domain_model.color_utils import get_color
-from app.pages.module_project.page_rights import MANAGE_PROJECT_RIGHTS
+from app.pages.module_registry import get_registered_modules
+from app.pages.pages_account.page_manage_user import MANAGE_USERS
 
+PERMISSION = 'permission'
 USER_DEF = custom_column_def(field=USER)
-ROLE_DEF = custom_column_def(field=ROLE, editable=True, width=150,
-                             cell_editor='agRichSelectCellEditor',
-                             cell_editor_params={'function': 'getOptions(params.data.options)'})
+PERMISSION_DEF = custom_column_def(field=PERMISSION, editable=True, width=150,
+                                   cell_editor='agRichSelectCellEditor',
+                                   cell_editor_params={'function': 'getOptions(params.data.options)'})
 
 
-def manage_rights_table(project_id: int,
-                        modules: list[Module],
-                        session: Session) -> dag.AgGrid:
+def manage_users_table(session: Session) -> dag.AgGrid:
     """
-    Return a grid allowing to manage a project user rights
+    Return a grid allowing to manage app user rights
     """
+    all_modules = get_registered_modules()
     column_defs = (
-        [USER_DEF, ROLE_DEF] +
+        [_dash_ag_grid_button(field='Remove', color=get_color('red.5'), variant='outline')] +
+        [USER_DEF, PERMISSION_DEF] +
         [custom_column_def(field=module.name,
                            header_name=f'Module {module.name.capitalize()}',
                            editable=False,
                            cell_renderer='Checkbox',
                            width='100px') | {'wrapHeaderText': True}
-         for module in modules] +
-        [_dash_ag_grid_button(field='Remove', color=get_color('red.5'), variant='outline')]
+         for module in all_modules]
     )
 
-    row_data = get_project_users(project_id, session)
-    for row in row_data:
-        row[OPTIONS] = ADMIN_ROLES if row[ROLE] in ADMIN_ROLES else RESTRICTED_ROLES
-        for module in modules:
-            row[module.name] = verify_module_access(select_user(row[USER], session), project_id,
-                                                    module.name, session)
+    all_users = get_all_users(session)
+    row_data = []
+    for user in all_users:
 
-    return data_table(id={TYPE: TABLE, INDEX: MANAGE_PROJECT_RIGHTS},
+        user_app_rights = get_app_rights(user, session)
+        row = {
+            USER_ID: user.id,
+            USER: user.user,
+            PERMISSION: user.permission.capitalize(),
+            OPTIONS: [p.capitalize() for p in Permission]
+        }
+        for module in all_modules:
+            row[module.name] = any(right.name == module.name for right in user_app_rights)
+        row_data.append(row)
+
+    return data_table(id={TYPE: TABLE, INDEX: MANAGE_USERS},
                       row_data=row_data,
                       column_defs=column_defs,
                       default_col_def={'editable': False, 'resizable': True},
@@ -68,6 +74,7 @@ def _dash_ag_grid_button(field: str,
         'field': field,
         'headerName': '',
         'editable': False,
+        'width': 75,
         'cellRenderer': 'DMC_Button',
         'cellRendererParams': {
             'color': color,
