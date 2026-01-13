@@ -3,7 +3,6 @@ File containing the user selection component / addition for the add user modal i
 """
 import dash_mantine_components as dmc
 from ecodev_core import AppUser
-from ecodev_core import logger_get
 from ecodev_front import INDEX
 from ecodev_front import MULTI_SELECT
 from ecodev_front import section_title
@@ -12,10 +11,7 @@ from ecodev_front import TYPE
 from sqlmodel import Session
 
 from app.db_model.retrievers.app_user_retrievers import get_users_by_client
-from app.pages.module_project.page_rights import USERS
-
-log = logger_get(__name__)
-
+from app.pages.module_project.page_rights import PROJECT_USERS
 
 def email_field(user: AppUser, session: Session) -> dmc.Stack:
     """
@@ -28,7 +24,7 @@ def email_field(user: AppUser, session: Session) -> dmc.Stack:
         section_title('User email addresses :'),
         subtext('Press Enter to submit an email address not in list.'),
         dmc.TagsInput(
-            id={TYPE: MULTI_SELECT, INDEX: USERS},
+            id={TYPE: MULTI_SELECT, INDEX: PROJECT_USERS},
             placeholder='Search from list or add new email addresses.',
             data=client_user_group)
     ], gap=3, w='80%')

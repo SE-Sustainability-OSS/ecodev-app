@@ -4,25 +4,23 @@ Add/update rights buttons
 import dash_mantine_components as dmc
 from dash import html
 from dash_iconify import DashIconify
-from ecodev_core import logger_get
 from ecodev_front import BUTTON
 from ecodev_front import centered_div
 from ecodev_front import dash_icon
 from ecodev_front import INDEX
 from ecodev_front import TYPE
 
-from app.pages.module_project.page_rights import ADD_USER_RIGHTS
+from app.pages.module_project.page_rights import ADD_PROJECT_USER_RIGHTS
 from app.pages.module_project.page_rights import DELETE_PROJECT
-from app.pages.module_project.page_rights import UPDATE_RIGHTS
+from app.pages.module_project.page_rights import UPDATE_PROJECT_RIGHTS
 from app.pages.module_project.page_rights.common.delete_project_modal import DELETE_CONFIRMATION_MODAL
 
-log = logger_get(__name__)
 
-ADD_USERS_BTN = dmc.Button('Add Users', id={TYPE: BUTTON, INDEX: ADD_USER_RIGHTS},
+ADD_USERS_BTN = dmc.Button('Add Users', id={TYPE: BUTTON, INDEX: ADD_PROJECT_USER_RIGHTS},
                            color='blue',
                            leftSection=dash_icon('material-symbols-light:group-add-rounded'))
 
-UPDATE_RIGHTS_BTN = dmc.Button('Update Rights', id={TYPE: BUTTON, INDEX: UPDATE_RIGHTS},
+UPDATE_RIGHTS_BTN = dmc.Button('Update Rights', id={TYPE: BUTTON, INDEX: UPDATE_PROJECT_RIGHTS},
                                color='green', variant='outline',
                                leftSection=dash_icon('hugeicons:location-update-01'))
 

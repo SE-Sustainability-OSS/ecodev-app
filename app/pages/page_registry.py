@@ -14,7 +14,7 @@ from app.pages.page_forbidden.not_forbidden_403 import PAGE_403
 from app.pages.page_login.page_login import PAGE_LOGIN
 from app.pages.page_main.page_main import PAGE_MAIN
 from app.pages.page_not_found.not_found_404 import PAGE_404
-from app.pages.pages_account.page_create_user.page_create_user import PAGE_CREATE_USER
+from app.pages.pages_account.page_manage_user.page_manage_user import PAGE_MANAGE_USERS
 from app.pages.pages_account.page_pwd_reset.page_pwd_reset import PAGE_RESET_PWD
 
 
@@ -35,7 +35,7 @@ def register_pages() -> None:
     PAGE_404.register()
     PAGE_403.register()
     PAGE_RESET_PWD.register()
-    PAGE_CREATE_USER.register()
+    PAGE_MANAGE_USERS.register()
 
     for module in MODULES:
         for page in module.pages:
