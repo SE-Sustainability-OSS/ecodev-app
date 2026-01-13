@@ -1,0 +1,20 @@
+MANAGE_RIGHTS = 'manage-rights'
+UPDATE_RIGHTS = 'update-rights'
+
+ADD_RIGHTS_MODAL_CONFIRM = 'add-rights-modal-confirm'
+ADD_RIGHTS_MODAL_CANCEL = 'add-rights-modal-cancel'
+ADD_USER_RIGHTS = 'add-user-rights'
+INTERNAL_EXTERNAL = 'internal-external'
+USERS = 'users'
+ROLE_SELECT_ID = 'role-select-id'
+ADD_RIGHTS_MODAL_ERROR = 'add-rights-modal-error'
+UPDATE_RIGHTS_ALERT = 'update-rights-alert'
+
+REMOVE_USER_CONFIRM = 'remove-user-confirm'
+REMOVE_USER_CANCEL = 'remove-user-cancel'
+
+DELETE_PROJECT = 'delete-project-button-id'
+DELETE_PROJECT_CONFIRMATION = 'delete-project-confirmation-modal-id'
+DELETE_PROJECT_CONFIRM = 'delete-project-confirmation-button-id'
+PROJECT_NAME = 'delete-project-confirmation-valude-id'
+DELETE_PROJECT_CANCELLATION_BUTTON_ID = 'delete-project-cancellation-button-id'

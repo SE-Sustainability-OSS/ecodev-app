@@ -34,10 +34,10 @@ prod-launch:            ##@docker Launch production containers
 	docker compose -f docker-compose.yml up -d
 
 prod-build:            ##@docker build production image
-	docker build --tag ecodev_app .
+	docker build --build-arg BUILDKIT=1 --tag ecodev_app . -
 
 dev-build:            ##@docker build development image
-	docker build --tag ecodev_app . -f Dockerfile-dev --no-cache
+	docker build --build-arg BUILDKIT=1 --tag ecodev_app . -f Dockerfile-dev --no-cache
 
 all-tests:		##@tests Run all the tests
 	docker exec ecodev_app python3 -m unittest discover tests

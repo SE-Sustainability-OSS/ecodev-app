@@ -7,6 +7,18 @@ from ecodev_core import AppActivity
 from ecodev_core import AppRight
 from ecodev_core import AppUser
 
-from app.db_model.product import Product
+from app.db_model.computation import Computation
+from app.db_model.module_access import ModuleAccess
+from app.db_model.project import Project
+from app.db_model.project_access import ProjectAccess
 
-__all__ = ['AppUser', 'AppRight', 'AppActivity', 'Product']
+
+__all__ = [
+    'AppUser',
+    'AppRight',
+    'AppActivity',
+    'Project',
+    'ProjectAccess',
+    'Computation',
+    'ModuleAccess',
+]

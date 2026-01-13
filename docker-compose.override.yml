@@ -7,6 +7,7 @@ services:
       - ${jupyter_port:-5000}:5000
     volumes:
       - ./tests:/app/tests
+      - ../ecodev-front/ecodev_front/:/app/ecodev_front/
 
   ecodev_app_backend:
     ports:
