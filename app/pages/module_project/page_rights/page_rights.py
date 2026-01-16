@@ -62,7 +62,7 @@ from app.pages.module_project.page_rights.common.overview import manage_rights_o
 from app.pages.module_project.page_rights.methodo.grant_access import check_email_validity
 from app.pages.module_project.page_rights.methodo.grant_access import get_new_project_users
 from app.pages.module_project.page_rights.methodo.grant_access import grant_user_project_access
-from app.pages.module_registry import get_registered_modules
+from app.pages.registry import get_modules
 
 
 log = logger_get(__name__)
@@ -90,7 +90,7 @@ def render_page(token: dict, project_id: int) -> tuple[dmc.Stack, dmc.Stack]:
     """
     with Session(engine) as session:
         project = get_project_by_id(token, project_id, session)
-        all_modules = get_registered_modules()
+        all_modules = get_modules()
         modules = verify_project_module_access(token, project_id, all_modules, session)
     page = manage_rights_overview(project_id, modules, session)
     header = page_project_header(project.name, project.year) if project else None
@@ -124,7 +124,7 @@ def update_rights_callback(token: dict,
             for row in row_data:
                 user = get_user_by_id(row[USER_ID], session)
                 role = Role(row[ROLE]) if row[ROLE] else _assign_project_role(user)
-                checked_modules = [module.name for module in get_registered_modules()
+                checked_modules = [module.name for module in get_modules()
                                    if row.get(module.name, False)]
                 grant_user_project_access(user, project_id, checked_modules,
                                           role, session, inviting_user)
@@ -163,7 +163,7 @@ def open_rights_modal(token: dict, project_id: int, n_clicks: int):
 
     with Session(engine) as session:
         user = safe_get_user(token)
-        all_modules = get_registered_modules()
+        all_modules = get_modules()
         modules = verify_project_module_access(token, project_id, all_modules, session)
         return True, manage_rights_modal(user, modules, session)
 

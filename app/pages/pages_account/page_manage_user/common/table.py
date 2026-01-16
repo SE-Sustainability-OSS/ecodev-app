@@ -15,8 +15,8 @@ from app.constants import USER_ID
 from app.db_model.retrievers import get_all_users
 from app.db_model.retrievers import get_app_rights
 from app.domain_model.color_utils import get_color
-from app.pages.module_registry import get_registered_modules
 from app.pages.pages_account.page_manage_user import MANAGE_USERS
+from app.pages.registry import get_modules
 
 PERMISSION = 'permission'
 USER_DEF = custom_column_def(field=USER)
@@ -29,7 +29,7 @@ def manage_users_table(session: Session) -> dag.AgGrid:
     """
     Return a grid allowing to manage app user rights
     """
-    all_modules = get_registered_modules()
+    all_modules = get_modules()
     column_defs = (
         [_dash_ag_grid_button(field='Remove', color=get_color('red.5'), variant='outline')] +
         [USER_DEF, PERMISSION_DEF] +

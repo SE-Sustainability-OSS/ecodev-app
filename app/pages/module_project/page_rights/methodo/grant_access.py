@@ -19,7 +19,7 @@ from app.db_model.retrievers import get_project_users
 from app.db_model.retrievers import get_user_by_email
 from app.db_model.retrievers import get_users_by_client
 from app.domain_model import Role
-from app.pages.module_registry import get_registered_modules
+from app.pages.registry import get_modules
 
 
 def get_new_project_users(inviting_user: AppUser,
@@ -124,7 +124,7 @@ def grant_user_project_access(user: AppUser,
 
     filtered_modules = restrict_to_user_module_rights(user, modules, session, inviting_user)
     module_rights = {module.name: bool(module.name in filtered_modules)
-                     for module in get_registered_modules()}
+                     for module in get_modules()}
     upsert_module_access(module_rights, project_access, session)
 
 
@@ -145,7 +145,7 @@ def restrict_to_user_module_rights(user: AppUser,
     NOTE: Expects get_app_services to return enum names (e.g., "PROJECT")
     """
     if user.permission == Permission.ADMIN:
-        return [module.name for module in get_registered_modules()]
+        return [module.name for module in get_modules()]
 
     if not (user_module_rights := get_app_services(user, session)):
         user_module_rights = (

@@ -18,7 +18,7 @@ from sqlmodel import Session
 
 from app.constants import PROJECT_ID_STORE
 from app.db_model.retrievers.access_retrievers import verify_project_module_access
-from app.pages.module_registry import get_registered_modules
+from app.pages.registry import get_modules
 
 
 @callback(Output(APPSHELL, NAVBAR,),
@@ -36,7 +36,7 @@ def show_navbar(pathname: str, token: dict, project_id: int):
         return {'width': 0}, []
 
     with Session(engine) as session:
-        all_modules = get_registered_modules()
+        all_modules = get_modules()
         for module in verify_project_module_access(user, project_id, all_modules, session):
             if pathname in [page.url for page in module.pages]:
                 active_page = [page.url for page in module.pages].index(pathname)

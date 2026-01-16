@@ -26,9 +26,9 @@ PAGE_403 = Page(
 
 @callback(Output(PAGE_403.id, CHILDREN),
           Input(TOKEN, DATA))
-def render_404_page(token: dict) -> dmc.Stack:
+def render_403_page(token: dict) -> dmc.Stack:
     """
-    Renders 404 page.
+    Renders 403 page.
     """
     page = dmc.Stack([
         section_title('Forbidden.', fz=28, mb=20),

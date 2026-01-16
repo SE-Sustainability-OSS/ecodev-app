@@ -22,7 +22,7 @@ from ecodev_front import URL
 from sqlmodel import Session
 
 from app.constants import PROJECT_ID_STORE
-from app.pages.module_registry import get_registered_modules
+from app.pages.registry import get_modules
 
 
 @callback(Output(APPSHELL, ASIDE),
@@ -45,7 +45,7 @@ def show_asides(token: dict, project_id: int, close_btn: int, open_btn: int, pat
     no_aside = (width_none, [], HIDE, HIDE)  # type: ignore[var-annotated]
 
     if safe_get_user(token):
-        for module in get_registered_modules():
+        for module in get_modules():
             if pathname in [page.url for page in module.pages]:
                 if open_btn and ctx.triggered_id == OPEN_ASIDE_BTN_ID:
                     return width_aside, no_update, SHOW, HIDE

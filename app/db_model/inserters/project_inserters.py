@@ -65,7 +65,6 @@ def update_project(auth: dict | AppUser,
     if not verify_project_access(auth, project_id, session):
         log.warning(f'User attempt to edit project {project_id} without access rights.')
         return None
-
     project_data = project.model_dump(exclude_unset=True)
     db_project.sqlmodel_update(project_data)
     session.commit()

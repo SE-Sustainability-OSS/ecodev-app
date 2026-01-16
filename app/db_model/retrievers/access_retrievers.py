@@ -16,7 +16,7 @@ from app.db_model import ProjectAccess
 from app.db_model.retrievers.commons import get_auth_user
 from app.db_model.retrievers.project_retrievers import get_project_by_id
 from app.domain_model import Role
-from app.pages.module_registry import get_registered_modules
+from app.pages.registry import get_modules
 
 
 def get_project_users(project_id: int,
@@ -65,8 +65,8 @@ def get_app_rights(user: AppUser, session: Session) -> list[Module]:
     an app licensing purposes (e.g. module subscriptions categories).
     """
     if user.permission == Permission.ADMIN:
-        return get_registered_modules()
-    return [get_registered_modules(rights.app_service) for rights in
+        return get_modules()
+    return [get_modules(rights.app_service) for rights in
             session.exec(select(AppRight).where(AppRight.user_id == user.id)).all()]
 
 
@@ -90,7 +90,7 @@ def verify_project_module_access(auth: dict | AppUser,
         return modules
 
     return [
-        module for module in get_registered_modules() if module.name in
+        module for module in get_modules() if module.name in
         [m.module_name for m in get_module_access(user, project_id, session)]
     ]
 

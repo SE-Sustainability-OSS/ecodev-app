@@ -4,7 +4,6 @@ Add/update rights buttons
 import dash_mantine_components as dmc
 from dash import html
 from dash_iconify import DashIconify
-from ecodev_core import logger_get
 from ecodev_front import BUTTON
 from ecodev_front import centered_div
 from ecodev_front import dash_icon
@@ -16,7 +15,6 @@ from app.pages.module_project.page_rights import DELETE_PROJECT
 from app.pages.module_project.page_rights import UPDATE_PROJECT_RIGHTS
 from app.pages.module_project.page_rights.common.delete_project_modal import DELETE_CONFIRMATION_MODAL
 
-log = logger_get(__name__)
 
 ADD_USERS_BTN = dmc.Button('Add Users', id={TYPE: BUTTON, INDEX: ADD_PROJECT_USER_RIGHTS},
                            color='blue',

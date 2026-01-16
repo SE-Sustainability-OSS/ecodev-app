@@ -1,11 +1,11 @@
 """
-File containing AppUser inserters
-NOTE: Includes methods for insertion of both internal and external users.
+File containing AppUser inserters.
 """
 import random
 
 from ecodev_core import AppRight
 from ecodev_core import AppUser
+from ecodev_core import logger_get
 from ecodev_core import Permission
 from ecodev_core.authentication import _hash_password
 from sqlmodel import Session
@@ -13,6 +13,8 @@ from sqlmodel import Session
 from app.constants import PASSWORD_LENGTH
 from app.constants import PWD_CHAR_CHOICES
 from app.db_model.retrievers.app_user_retrievers import get_user_by_email
+
+log = logger_get(__name__)
 
 
 def create_user_credentials(email: str,
@@ -51,7 +53,12 @@ def update_user_module_rights(client: AppUser, modules: list[str], session: Sess
     return
 
 
-def upsert_user(email: str, app_rights: list[str], session: Session, client: str = '') -> AppUser:
+def upsert_user(email: str,
+                app_rights: list[str],
+                session: Session,
+                client: str = '',
+                permission: Permission = Permission.USER
+                ) -> AppUser:
     """
     Upserts a user and its module rights in the database.
 
@@ -60,19 +67,26 @@ def upsert_user(email: str, app_rights: list[str], session: Session, client: str
         app_rights: List of module rights to grant
         session: Database session
         client: Optional client name to associate with the user
+    TODO: Add permission input parameter.
+    TODO: Update so that user app access and project access are de-coupled.
+          Users will only be able to add users to their projects if they already have access to the app.
     """
-    if not (user := get_user_by_email(email, session)):
-        user, password = create_user_credentials(email, Permission.Client, session, client)
-    update_user_module_rights(user, app_rights, session)
-    return user
+    try:
+        if not (user := get_user_by_email(email, session)):
+            user, password = create_user_credentials(email, permission, session, client)
+        update_user_module_rights(user, app_rights, session)
+        return user
+    except Exception as e:
+        log.error(f'Error upserting user {email}: {e}')
+        raise e
 
 
 def add_user(user_id: int, email: str, hashed_password: str, session: Session) -> None:
     """
-    Adds a user / consultant to the database
+    Adds a user to the database
     """
     session.add(AppUser(id=user_id,
                         user=email,
                         password=hashed_password,
-                        permission=Permission.Consultant))
+                        permission=Permission.USER))
     session.commit()

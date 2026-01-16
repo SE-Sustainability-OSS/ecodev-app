@@ -8,3 +8,6 @@ dash_url= # Dash app web url.  Fill only in production.
 
 # Jupyter app
 jupyter_port=5000 # Jupyter notebook port number. Remove this entry in production
+
+# By default, if using ecodev-infra, network is named "app-network"
+app_network='app-network'

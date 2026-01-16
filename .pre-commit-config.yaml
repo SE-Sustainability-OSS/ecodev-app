@@ -56,6 +56,6 @@ repos:
     hooks:
     -   id: check_dependencies
         name: check_dependencies
-        entry: docker exec ecodev_app python3.11 -c "from ecodev_core import check_dependencies; from pathlib import Path;
+        entry: docker exec ecodev_app python3.13 -c "from ecodev_core import check_dependencies; from pathlib import Path;
             exit(not check_dependencies(Path('/app/app'), Path('/app/app/assets/dependencies.txt')))"
         language: system

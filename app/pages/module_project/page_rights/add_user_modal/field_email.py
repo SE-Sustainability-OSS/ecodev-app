@@ -3,7 +3,6 @@ File containing the user selection component / addition for the add user modal i
 """
 import dash_mantine_components as dmc
 from ecodev_core import AppUser
-from ecodev_core import logger_get
 from ecodev_front import INDEX
 from ecodev_front import MULTI_SELECT
 from ecodev_front import section_title
@@ -13,8 +12,6 @@ from sqlmodel import Session
 
 from app.db_model.retrievers.app_user_retrievers import get_users_by_client
 from app.pages.module_project.page_rights import PROJECT_USERS
-
-log = logger_get(__name__)
 
 
 def email_field(user: AppUser, session: Session) -> dmc.Stack:

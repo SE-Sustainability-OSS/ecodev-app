@@ -12,7 +12,7 @@ from app.db_model.module_access import ModuleAccess
 from app.db_model.project_access import ProjectAccess
 from app.db_model.retrievers import get_app_rights
 from app.db_model.retrievers import get_user_by_id
-from app.pages.module_registry import get_registered_modules
+from app.pages.registry import get_modules
 
 log = logger_get(__name__)
 
@@ -29,7 +29,7 @@ def upsert_module_access(module_rights: dict[str, bool] | None,
     if not module_rights:
         user = get_user_by_id(project_access.user_id, session)
         license_rights = get_app_rights(user, session)
-        all_modules = get_registered_modules()
+        all_modules = get_modules()
         module_rights = {module.name: bool(module.name in license_rights)
                          for module in all_modules}
 

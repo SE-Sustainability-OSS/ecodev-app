@@ -88,7 +88,7 @@ services:
 # NETWORKS
 networks:
   app-network:
-   name: app-network
+   name: ${app_network:-app-network}
    external: true
   traefik-network:
     external: true

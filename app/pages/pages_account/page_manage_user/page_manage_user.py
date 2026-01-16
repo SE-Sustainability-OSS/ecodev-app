@@ -47,7 +47,6 @@ from app.db_model.retrievers import get_user_by_email
 from app.db_model.retrievers import get_user_by_id
 from app.pages.common.custom_callback import safe_callback
 from app.pages.common.stores import USER_DELETION_STORE
-from app.pages.module_registry import get_registered_modules
 from app.pages.pages_account.page_manage_user import ADD_USER
 from app.pages.pages_account.page_manage_user import ADD_USER_MODAL_CONFIRM
 from app.pages.pages_account.page_manage_user import MANAGE_USERS
@@ -63,6 +62,7 @@ from app.pages.pages_account.page_manage_user.common.overview import manage_user
 from app.pages.pages_account.page_manage_user.common.table import PERMISSION
 from app.pages.pages_account.page_manage_user.methodo.grant_app_rights import check_email_validity
 from app.pages.pages_account.page_manage_user.methodo.grant_app_rights import grant_user_app_rights
+from app.pages.registry import get_modules
 
 
 log = logger_get(__name__)
@@ -123,7 +123,7 @@ def update_users_callback(token: dict,
             for row in row_data:
                 user = get_user_by_id(row[USER_ID], session)
                 permission = Permission(row[PERMISSION])
-                checked_modules = [module.name for module in get_registered_modules()
+                checked_modules = [module.name for module in get_modules()
                                    if row.get(module.name, False)]
                 grant_user_app_rights(user, checked_modules, session, permission)
 
@@ -150,7 +150,7 @@ def open_add_user_modal(token: dict, n_clicks: int):
         raise PreventUpdate
 
     with Session(engine) as session:
-        all_modules = get_registered_modules()
+        all_modules = get_modules()
         return True, manage_users_modal(all_modules, session)
 
 

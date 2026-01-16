@@ -25,10 +25,10 @@ from sqlmodel import Session
 
 from app.constants import PROJECT_ID_STORE
 from app.db_model.retrievers import verify_project_module_access
-from app.pages.module_registry import get_registered_modules
 from app.pages.page_main.project_options import NEW_PROJECT_BUTTON_ID
 from app.pages.page_main.project_options import PROJECT_BUTTONS_PLACEHOLER_ID
 from app.pages.page_main.project_options import PROJECT_SELECT_ID
+from app.pages.registry import get_modules
 
 log = logger_get(__name__)
 
@@ -37,7 +37,7 @@ def module_buttons(token: dict, project_id: int | None, session: Session) -> dmc
     """
     Renders the various user options when a project is selected
     """
-    all_modules = get_registered_modules()
+    all_modules = get_modules()
     return dmc.Stack(
         id=PROJECT_BUTTONS_PLACEHOLER_ID,
         children=[
@@ -62,12 +62,12 @@ def reroute_to_project_page(n_clicks: list[int], pathname: str, project_id: int)
         raise PreventUpdate
 
     if (module_id := ctx.triggered_id[INDEX]) == NEW_PROJECT_BUTTON_ID:
-        project_module = get_registered_modules('project')
+        project_module = get_modules('project')
         return project_module.pages[0].url, None
 
     url_mapping = {
         module.id: module.pages[0].url
-        for module in get_registered_modules()
+        for module in get_modules()
     }
 
     return url_mapping.get(module_id), project_id

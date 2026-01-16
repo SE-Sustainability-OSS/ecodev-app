@@ -29,9 +29,9 @@ from sqlmodel import Session
 from app.constants import APP_NAME
 from app.constants import DOCUMENTATION_URL
 from app.db_model.retrievers import verify_project_module_access
-from app.pages.module_registry import get_registered_modules
 from app.pages.pages_account.page_manage_user.page_manage_user import PAGE_MANAGE_USERS
 from app.pages.pages_account.page_pwd_reset.page_pwd_reset import PAGE_RESET_PWD
+from app.pages.registry import get_modules
 
 log = logger_get(__name__)
 
@@ -103,7 +103,7 @@ def header_app_pages(token: dict, project_id: int | None) -> dmc.Group:
         return dmc.Group(justify='space-around', gap=0)
 
     with Session(engine) as session:
-        all_modules = get_registered_modules()
+        all_modules = get_modules()
         user_modules = verify_project_module_access(token, project_id, all_modules, session)
 
     if header_icons := [divider_icon for module in user_modules
