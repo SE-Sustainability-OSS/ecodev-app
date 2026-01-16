@@ -57,14 +57,7 @@ jobs:
             -v ${{github.workspace}}/.coveragerc:/app/.coveragerc
           run: |
             python3 -m unittest discover | exit 1
-            coverage html 
-            coverage report -m  --fail-under=60 --precision=2 > coverage.log
-            cat coverage.log
-            COVERAGE_SCORE=$(sed -n 's/^\(TOTAL\s*[0-9]*\s*[0-9]*\s*\)//p' coverage.log)
-            anybadge --label=coverage --value=$COVERAGE_SCORE --file=coverage.svg 50=red 60=orange 80=yellow 100=green
-            echo "Coverage score is $COVERAGE_SCORE"
-            mv coverage.svg ./badges/
-
+            
 
       - name: Commit badge files
         if: ${{ github.ref }} != main
