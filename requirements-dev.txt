@@ -1,2 +1,4 @@
 # Add only additional dependencies for dev-mode
 notebook==6.*
+selenium
+requests

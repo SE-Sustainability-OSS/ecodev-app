@@ -29,7 +29,7 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          docker build . --file Dockerfile --tag ecodev_app:latest
+          docker build . --file Dockerfile-dev --tag ecodev_app:latest
 
       - name: Test with UnitTest
         uses: addnab/docker-run-action@v3
@@ -38,66 +38,37 @@ jobs:
         with:
           image: ecodev_app:latest
           options:
-            -e algorithm=HS256
-            -e access_token_expire_minutes=1440
-            -e admin_user=postgres
-            -e db_username=postgres
-            -e db_password=postgres
-            -e app_username=postgres
-            -e app_password=postgres
-            -e db_host=postgres
-            -e db_name=postgres
-            -e db_port=${{ job.services.postgres.ports[5432] }}
-            -e test_password=postgres
-            -e hashed_admin_password=$2b$12$NIgWF4eEAFZGXfNw7IN1f.JH0zESPVSdQ.nEUcOLhp/rQmo6y9l5e
-            -e secret_key=totototototototototototototototototototo
+            -e secret_key=${{ secrets.SECRET_KEY }}
+            -e USERAPI_user=${{ secrets.ECOAUTH_API_USER }}
+            -e USERAPI_password=${{ secrets.ECOAUTH_API_PWD }}
+            -e environment=preprod
             -v ${{github.workspace}}/tests:/app/tests
             -v ${{github.workspace}}/app:/app/app
-            -v ${{github.workspace}}:/app/
             -v ${{github.workspace}}/.coveragerc:/app/.coveragerc
+            -v ${{github.workspace}}/config:/app/config
           run: |
-            python3 -m pip install coverage anybadge
-            python3 -m coverage run --omit */dist-packages/*,*tests/* -m unittest discover
-            coverage html
-            coverage report -m  --fail-under=60 --precision=2 > coverage.log
-            cat coverage.log
-            COVERAGE_SCORE=$(sed -n 's/^\(TOTAL\s*[0-9]*\s*[0-9]*\s*\)//p' coverage.log)
-            anybadge --label=coverage --value=$COVERAGE_SCORE --file=coverage.svg 50=red 60=orange 80=yellow 100=green
-            echo "Coverage score is $COVERAGE_SCORE"
-            mv coverage.svg ./badges/
+            python3 -m unittest discover 
 
-      - name: Analysing the code with pylint
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ecodev_app:latest
-          options: -v ${{github.workspace}}:/app/
-          run: |
-            python3 -m pip install pylint anybadge
-            find app/ -type f -name "*.py" | xargs python3 -m pylint --exit-zero --output-format=text | tee pylint.log
-            PYLINT_SCORE=$(sed -n 's/^Your code has been rated at \([-0-9.]*\)\/.*/\1/p' pylint.log)
-            anybadge -l pylint -f pylint.svg -v $PYLINT_SCORE --prefix=' ' --suffix='/10 ' 2=red 4=orange 8=yellow 10=green
-            echo "Pylint score is $PYLINT_SCORE"
-            mv pylint.svg ./badges/
-
-      - name: Commit badge files
-        if: ${{ github.ref }} != main
+      - name: build front end stack
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          date > badges/date.log
-          git add badges/coverage.svg
-          git add badges/pylint.svg
-          git add badges/date.log
-          git commit -m "Add badges" -n
+          touch .env
+          echo environment=preprod > .env
+          docker network create test
+          docker compose -f docker-compose-test.yml up -d
 
-      - name: Push badge files
-        if: ${{ github.ref }} != main
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: ${{github.workspace}}/htmlcov
+      - name:
+        run: |
+          # ensure the postgres container created for the backend test is reachable for frontend test
+          docker rename $(docker ps --format '{{.Names}}' | grep post ) postgres
+          docker network connect test postgres
+
+
+      - name: run frontend test
+        run: docker exec ecodev_app python3 tests_frontend/test_selenium.py
+
+
+      - name: Setup tmate session # allow to ssh into runner for debug purpose
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15

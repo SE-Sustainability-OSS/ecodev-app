@@ -1,0 +1,10 @@
+[
+    {
+        "id": null,
+        "user": "test_user",
+        "password": "$2b$12$mjSnDjCr8a4ju472cT.FP.fH9/pAaRAUxxI250rbtvrq.g3Oc7bh2",
+        "permission": "Consultant",
+        "client": "project_name",
+        "application": "application_name"
+    }
+]
