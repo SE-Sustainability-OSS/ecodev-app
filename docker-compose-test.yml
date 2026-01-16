@@ -1,0 +1,62 @@
+services:
+# BEGIN ecodev_app
+  ecodev_app:
+    image: ecodev_app:latest
+    restart: always
+    container_name: ecodev_app
+    command: uvicorn app.dash_app:server  --host 0.0.0.0 --port 80 --reload
+    environment:
+      TZ: Europe/Paris
+    volumes:
+      - ./data:/app/data
+      - ./app:/app/app
+      - ./config:/app/config
+      - ./secrets:/app/secrets
+      - ./tests_frontend/:/app/tests_frontend
+    ports:
+      - ${dash_app_port:-8050}:80
+    env_file:
+      - ./.env
+    networks:
+      - app-network
+# END ecodev_app
+# BEGIN ecodev_app_backend
+  ecodev_app_backend:
+    image: ecodev_app:latest
+    restart: always
+    container_name: ecodev_app_backend
+    command: uvicorn app.dash_app:server  --host 0.0.0.0 --port 80 --reload
+    environment:
+      TZ: Europe/Paris
+    volumes:
+      - ./data:/app/data
+      - ./app:/app/app
+      - ./config:/app/config
+      - ./secrets:/app/secrets
+    env_file:
+      - ./.env
+    networks:
+      - app-network
+# END ecodev_app_backend
+# BEGIN selenium
+  selenium:
+    image: selenium/standalone-chrome:latest
+    restart: always
+    container_name: selenium
+    environment:
+      TZ: Europe/Paris
+    ports:
+      - 4444:4444
+      - 7900:7900
+    volumes:
+      - ./data:/app/data
+      - ./tests_frontend:/tests_frontend
+    networks:
+      - app-network
+# END selenium
+
+# NETWORKS
+networks:
+  app-network:
+   name: app-network
+   external: true
