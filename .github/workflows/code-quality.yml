@@ -101,3 +101,26 @@ jobs:
         with:
           name: coverage-report
           path: ${{github.workspace}}/htmlcov
+
+      - name: build front end stack
+        run: docker compose -f docker-compose-test.yml up -d
+
+      - name: install selenium
+        run: docker exec seed pip install selenium
+
+      - name:
+        run: |
+          docker rename $(docker ps --format '{{.Names}}' | grep elast) es-db
+          docker rename $(docker ps --format '{{.Names}}' grep post ) postgres
+          docker network connect test postgres
+          docker network connect test es-db
+
+
+      - name: run frontend test
+        run: docker exec seed python3 tests_frontend/test_selenium.py
+
+      
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15
