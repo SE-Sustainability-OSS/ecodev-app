@@ -38,24 +38,15 @@ jobs:
         with:
           image: ecodev_app:latest
           options:
-            -e algorithm=HS256
-            -e access_token_expire_minutes=1440
-            -e admin_user=postgres
-            -e db_username=postgres
-            -e db_password=postgres
-            -e app_username=postgres
-            -e app_password=postgres
-            -e db_host=postgres
-            -e db_name=postgres
-            -e db_port=${{ job.services.postgres.ports[5432] }}
-            -e test_password=postgres
-            -e hashed_admin_password=$2b$12$NIgWF4eEAFZGXfNw7IN1f.JH0zESPVSdQ.nEUcOLhp/rQmo6y9l5e
-            -e secret_key=totototototototototototototototototototo
+            -e secret_key=${{ secrets.SECRET_KEY }}
+            -e USERAPI_user=${{ secrets.ECOAUTH_API_USER }}
+            -e USERAPI_password=${{ secrets.ECOAUTH_API_PWD }}
             -v ${{github.workspace}}/tests:/app/tests
             -v ${{github.workspace}}/app:/app/app
             -v ${{github.workspace}}:/app/
             -v ${{github.workspace}}/.coveragerc:/app/.coveragerc
           run: |
+            python3 -m pip freeze
             python3 -m unittest discover | exit 1
             
 
