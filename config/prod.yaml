@@ -12,12 +12,6 @@ database:
   db_host: null
   db_username: null
   db_password: null
-  db_test_name: null
-
-backup:
-  backup_username: null
-  backup_password: null
-  backup_url: null
 
 smtp:
   email_smtp: smtp-mail.outlook.com
@@ -28,10 +22,3 @@ smtp:
 dash_settings:
   debug: false
   gunicorn_setup: true
-
-fernet_key: null
-
-api:
-  host: null
-  user: null
-  password: null

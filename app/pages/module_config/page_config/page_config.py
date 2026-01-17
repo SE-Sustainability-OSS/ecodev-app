@@ -38,8 +38,6 @@ PAGE_CONFIG = Page(
 def render_page(token: dict, project_id: int):
     """
     Renders page's initial layout / content.
-    NOTE: Page access is checked via the safe_callback decorator,
-    to disable this check, set check_access to False.
     """
     with Session(engine) as session:
         project = get_project_by_id(token, project_id, session)

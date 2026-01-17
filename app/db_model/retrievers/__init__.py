@@ -13,7 +13,6 @@ from app.db_model.retrievers.app_user_retrievers import get_users_by_client
 from app.db_model.retrievers.commons import get_auth_user
 from app.db_model.retrievers.project_retrievers import get_project_by_id
 from app.db_model.retrievers.project_retrievers import get_user_projects
-from app.db_model.retrievers.project_retrievers import verify_project_access
 
 
 __all__ = [
@@ -23,7 +22,6 @@ __all__ = [
     'get_project_by_id',
     'get_app_rights',
     'get_user_projects',
-    'verify_project_access',
     'verify_project_module_access',
     'get_users_by_client',
     'get_user_by_id',

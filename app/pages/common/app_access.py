@@ -52,6 +52,7 @@ from app.pages.page_login.page_login import PAGE_LOGIN
 from app.pages.page_main.page_main import PAGE_MAIN
 from app.pages.pages_account.page_pwd_reset.page_pwd_reset import PAGE_RESET_PWD
 from app.pages.registry import get_modules
+from app.pages.registry import get_pages
 
 log = logger_get(__name__)
 
@@ -152,8 +153,8 @@ def verify_page_access(pathname: str, token: dict, project_id: int):
     if pathname in all_access_pages or user.permission == Permission.ADMIN:
         return no_update
 
-    project_module = get_modules('project')
-    if pathname == project_module.pages[0].url and project_id is None:
+    project_info_page = get_pages('information')
+    if pathname == project_info_page.url and project_id is None:
         return no_update
 
     with Session(engine) as session:

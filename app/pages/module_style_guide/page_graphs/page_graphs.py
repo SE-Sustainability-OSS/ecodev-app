@@ -5,7 +5,6 @@ import dash_mantine_components as dmc
 import plotly.express as px
 from dash import Input
 from dash import Output
-from dash import State
 from ecodev_core import logger_get
 from ecodev_front import CHILDREN
 from ecodev_front import DATA
@@ -14,7 +13,6 @@ from ecodev_front import header_layout
 from ecodev_front import Page
 from ecodev_front import TOKEN
 
-from app.constants import PROJECT_ID_STORE
 from app.pages.common.custom_callback import safe_callback
 
 
@@ -31,13 +29,10 @@ PAGE_GRAPHS = Page(
 
 
 @safe_callback(Output(PAGE_GRAPHS.id, CHILDREN),
-               Input(TOKEN, DATA),
-               State(PROJECT_ID_STORE, DATA))
-def render_page(token: dict, project_id: int):
+               Input(TOKEN, DATA))
+def render_page(token: dict):
     """
     Renders page's initial layout / content.
-    NOTE: Page access is checked via the safe_callback decorator,
-    to disable this check, set check_access to False.
     """
     return dmc.Stack([
         bar_chart_example(),

@@ -20,19 +20,19 @@ from dash import callback
 from dash.exceptions import PreventUpdate
 from ecodev_core import dash_monitor
 from ecodev_core import engine
+from ecodev_core import intify
 from ecodev_core import log_critical
 from ecodev_core import logger_get
 from ecodev_core import SETTINGS
 from ecodev_front import TOKEN
 from sqlmodel import Session
 
-from app.constants import CHECK_ACCESS
+from app.constants import CHECKS
 from app.constants import COMPUTATION
 from app.constants import MONITOR_DETAILS
 from app.constants import MONITORING
-from app.constants import PROJECT
 from app.db_model.inserters.computation_inserters import create_update_computation
-from app.db_model.retrievers.project_retrievers import verify_project_access
+from app.pages.common.custom_checks import verify_token
 
 
 log = logger_get(__name__)
@@ -54,9 +54,10 @@ def safe_callback(*args: Any,
     - monitor_details (str):
         Additional monitoring log details to pass to the db logger.
         None by default.
-    - project (SQLModelMetaclass):
-        Project model class to use for access verification.
-        ProjectBase by default.
+    - checks (list): List of check functions to run before executing the callback. Each check function
+        should accept (token, project_id, session) as parameters and return a
+        boolean (True if passed, False if failed). All checks are run and failures are
+        logged. Default is [verify_token].
 
     NOTE: User TOKEN and the project ID must be the first two args of this callback.
 
@@ -78,11 +79,10 @@ def safe_callback(*args: Any,
     NOTE: Must remove our custom kwargs from the list of kwargs that would be provided to Dash,
     else this results in a TypeError: custom_callback() got multiple values for argument ...
     """
-    check_access = kwargs.pop(CHECK_ACCESS, True)
+    checks = kwargs.pop(CHECKS, [verify_token])
     computation = kwargs.pop(COMPUTATION, None)
     monitoring = kwargs.pop(MONITORING, False)
     monito_details = kwargs.pop(MONITOR_DETAILS, None)
-    kwargs.pop(PROJECT, None)
 
     def create_custom_dash_callback(func: Callable[..., Any]) -> Callable[..., Any]:
         """
@@ -115,12 +115,19 @@ def safe_callback(*args: Any,
             positional arguments (token as dict with 'access_token', project_id as int).
             """
             try:
-                token, project_id = _extract_token_and_project_id(func_args, check_access)
-
+                token, project_id = _extract_token_and_project_id(func_args)
                 with Session(engine) as session:
-                    if check_access is True or project_id is not None:
-                        if not verify_project_access(token, int(project_id), session):
-                            raise ValueError('User does not have access to the requested project')
+                    failed_checks = []
+                    for check in checks:
+                        try:
+                            if not check(token, project_id, session):
+                                failed_checks.append(check.__name__)
+                        except Exception:
+                            failed_checks.append(check.__name__)
+
+                    if failed_checks:
+                        raise ValueError(
+                            f'The following checks have failed: {", ".join(failed_checks)}')
 
                     if monitoring:
                         dash_monitor(func.__name__, token, SETTINGS.app_name, monito_details)
@@ -188,8 +195,7 @@ def _execute_with_computation_tracking(
         raise e
 
 
-def _extract_token_and_project_id(func_args: tuple[Any, ...],
-                                  check_access: bool) -> tuple[dict[str, Any], int | None]:
+def _extract_token_and_project_id(func_args: tuple[Any, ...]) -> tuple[dict[str, Any], int | None]:
     """
     Extract token and project_id from callback positional arguments.
 
@@ -207,9 +213,9 @@ def _extract_token_and_project_id(func_args: tuple[Any, ...],
             '''Token not found in callback arguments.
             Token should be a dict with "access_token" key''')
 
-    project_id = None
-    if check_access and not (project_id := int(func_args[1])):
-        raise ValueError(
-            'Project ID not found in callback arguments. Project ID should be an integer ')
+    try:
+        project_id = intify(func_args[1])
+    except (ValueError, TypeError, IndexError):
+        project_id = None
 
     return token, project_id

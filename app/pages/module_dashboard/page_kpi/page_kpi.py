@@ -13,6 +13,7 @@ from ecodev_front import TOKEN
 
 from app.constants import PROJECT_ID_STORE
 from app.pages.common.custom_callback import safe_callback
+from app.pages.common.custom_checks import verify_project_access
 from app.pages.module_dashboard.common.aside import dashboard_aside_layout
 
 
@@ -29,7 +30,8 @@ PAGE_KPI = Page(
 
 @safe_callback(Output(PAGE_KPI.id, CHILDREN),
                Input(TOKEN, DATA),
-               State(PROJECT_ID_STORE, DATA))
+               State(PROJECT_ID_STORE, DATA),
+               checks=[verify_project_access])
 def render_page(token: dict, project_id: int):
     """
     Renders page's initial layout / content.

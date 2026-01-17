@@ -48,13 +48,10 @@ PAGE_INFO = Page(
 
 @safe_callback(Output(PAGE_INFO.id, CHILDREN),
                Input(TOKEN, DATA),
-               Input(PROJECT_ID_STORE, DATA),
-               check_access=False)
+               Input(PROJECT_ID_STORE, DATA))
 def render_project_info_page(token: dict, project_id: int) -> dmc.Stack:
     """
-    Renders project information page.
-    NOTE: Page access is granted by default, to allow for project creation
-    (& no project ID is available during this step).
+    Renders project information / creation page.
     """
     with Session(engine) as session:
         project = get_project_by_id(token, project_id, session)
@@ -72,7 +69,6 @@ def render_project_info_page(token: dict, project_id: int) -> dmc.Stack:
                Input({TYPE: BUTTON, INDEX: PROJECT_INFO_SAVE}, N_CLICKS),
                State({TYPE: PROJECT_INFO_INPUT, INDEX: ALL}, VALUE),
                State({TYPE: PROJECT_INFO_INPUT, INDEX: ALL}, ID),
-               check_access=False,
                prevent_initial_call=True)
 def save_basic_info(token: dict,
                     project_id: int,

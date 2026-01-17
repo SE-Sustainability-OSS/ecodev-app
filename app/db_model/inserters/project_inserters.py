@@ -11,9 +11,9 @@ from app.db_model.project import Project
 from app.db_model.retrievers import get_app_rights
 from app.db_model.retrievers import get_auth_user
 from app.db_model.retrievers import get_project_by_id
-from app.db_model.retrievers import verify_project_access
 from app.domain_model.role import Role
-from app.pages.module_project.page_rights.methodo.grant_access import grant_user_project_access
+from app.methodo.grant_access import grant_user_project_access
+from app.pages.common.custom_checks import verify_project_access
 
 log = logger_get(__name__)
 

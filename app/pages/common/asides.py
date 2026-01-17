@@ -22,6 +22,7 @@ from ecodev_front import URL
 from sqlmodel import Session
 
 from app.constants import PROJECT_ID_STORE
+from app.pages.common.custom_checks import verify_project_access
 from app.pages.registry import get_modules
 
 
@@ -33,7 +34,8 @@ from app.pages.registry import get_modules
           State(PROJECT_ID_STORE, DATA),
           Input(CLOSE_ASIDE_BTN_ID, N_CLICKS),
           Input(OPEN_ASIDE_BTN_ID, N_CLICKS),
-          Input(URL, PATHNAME))
+          Input(URL, PATHNAME),
+          checks=[verify_project_access])
 def show_asides(token: dict, project_id: int, close_btn: int, open_btn: int, pathname: str):
     """
     Callback displaying the main page navbar and aside (if any).

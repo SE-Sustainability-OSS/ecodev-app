@@ -11,7 +11,6 @@ from dash.exceptions import PreventUpdate
 from ecodev_core import engine
 from ecodev_core import logger_get
 from ecodev_core import Permission
-from ecodev_core import safe_get_user
 from ecodev_front import BUTTON
 from ecodev_front import CELL_RENDERER_DATA
 from ecodev_front import CHILDREN
@@ -46,6 +45,7 @@ from app.db_model.deleters import delete_user
 from app.db_model.retrievers import get_user_by_email
 from app.db_model.retrievers import get_user_by_id
 from app.pages.common.custom_callback import safe_callback
+from app.pages.common.custom_checks import verify_admin
 from app.pages.common.stores import USER_DELETION_STORE
 from app.pages.pages_account.page_manage_user import ADD_USER
 from app.pages.pages_account.page_manage_user import ADD_USER_MODAL_CONFIRM
@@ -81,16 +81,11 @@ PAGE_MANAGE_USERS = Page(
 @safe_callback(Output(PAGE_MANAGE_USERS.id, CHILDREN),
                Output({TYPE: PROJECT_HEADER_ID, INDEX: PAGE_MANAGE_USERS.id}, CHILDREN),
                Input(TOKEN, DATA),
-               check_access=False)
-def render_page(token: dict) -> dmc.Stack:
+               checks=[verify_admin])
+def render_page(token: dict, ) -> dmc.Stack:
     """
     Renders page's initial layout / content.
-    NOTE: Page access is checked via the safe_callback decorator (admin=True in Page definition).
     """
-    user = safe_get_user(token)
-    if not user.permission == Permission.ADMIN:
-        raise PreventUpdate
-
     with Session(engine) as session:
         page = dmc.Stack([
             manage_users_overview(session)
@@ -106,7 +101,7 @@ def render_page(token: dict) -> dmc.Stack:
     Input({TYPE: BUTTON, INDEX: UPDATE_USERS}, N_CLICKS),
     State({TYPE: TABLE, INDEX: MANAGE_USERS}, ROW_DATA),
     prevent_initial_call=True,
-    check_access=False
+    checks=[verify_admin]
 )
 def update_users_callback(token: dict,
                           n_clicks: int,
@@ -140,8 +135,7 @@ def update_users_callback(token: dict,
     Output({TYPE: MODAL, INDEX: ADD_USER}, CHILDREN),
     State(TOKEN, DATA),
     Input({TYPE: BUTTON, INDEX: ADD_USER}, N_CLICKS),
-    check_access=False
-)
+    checks=[verify_admin])
 def open_add_user_modal(token: dict, n_clicks: int):
     """
     Opens the modal to add users and set their app-wide rights.
@@ -165,7 +159,7 @@ def open_add_user_modal(token: dict, n_clicks: int):
                State({TYPE: MULTI_SELECT, INDEX: USER_CLIENT}, VALUE),
                State({TYPE: MULTI_SELECT, INDEX: MODULE}, VALUE),
                prevent_initial_call=True,
-               check_access=False,
+               checks=[verify_admin],
                running=[(Output({TYPE: BUTTON, INDEX: ADD_USER_MODAL_CONFIRM}, LOADING), True, False)])
 def add_user(token: dict,
              n_clicks: int,
@@ -227,7 +221,7 @@ def add_user(token: dict,
     State(TOKEN, DATA),
     Input({TYPE: TABLE, INDEX: MANAGE_USERS}, CELL_RENDERER_DATA),
     State({TYPE: TABLE, INDEX: MANAGE_USERS}, ROW_DATA),
-    check_access=False
+    checks=[verify_admin]
 )
 def open_remove_confirmation_modal(token: dict,
                                    button_click: dict,
@@ -249,7 +243,7 @@ def open_remove_confirmation_modal(token: dict,
     Input({TYPE: BUTTON, INDEX: REMOVE_USER_CANCEL}, N_CLICKS),
     State(USER_DELETION_STORE, DATA),
     prevent_initial_call=True,
-    check_access=False
+    checks=[verify_admin]
 )
 def remove_user_callback(token: dict,
                          confirm_button: int,

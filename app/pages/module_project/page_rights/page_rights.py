@@ -48,7 +48,11 @@ from app.db_model.retrievers import get_project_by_id
 from app.db_model.retrievers import get_user_by_id
 from app.db_model.retrievers import verify_project_module_access
 from app.domain_model import Role
+from app.methodo.grant_access import check_email_validity
+from app.methodo.grant_access import get_new_project_users
+from app.methodo.grant_access import grant_user_project_access
 from app.pages.common.custom_callback import safe_callback
+from app.pages.common.custom_checks import verify_project_access
 from app.pages.common.stores import USER_DELETION_STORE
 from app.pages.module_project.page_rights import ADD_PROJECT_RIGHTS_MODAL_CONFIRM
 from app.pages.module_project.page_rights import ADD_PROJECT_USER_RIGHTS
@@ -59,9 +63,6 @@ from app.pages.module_project.page_rights import REMOVE_PROJECT_USER_CONFIRM
 from app.pages.module_project.page_rights import UPDATE_PROJECT_RIGHTS
 from app.pages.module_project.page_rights.add_user_modal.add_user_modal import manage_rights_modal
 from app.pages.module_project.page_rights.common.overview import manage_rights_overview
-from app.pages.module_project.page_rights.methodo.grant_access import check_email_validity
-from app.pages.module_project.page_rights.methodo.grant_access import get_new_project_users
-from app.pages.module_project.page_rights.methodo.grant_access import grant_user_project_access
 from app.pages.registry import get_modules
 
 
@@ -71,7 +72,7 @@ PAGE_RIGHTS = Page(
     module=__name__,
     name='rights',
     icon='hugeicons:access',
-    title='Manage Portfolio',
+    title='Manage Access',
     description='Add & remove users. Delete project.',
     admin=True,
     layout=header_layout
@@ -81,7 +82,8 @@ PAGE_RIGHTS = Page(
 @safe_callback(Output(PAGE_RIGHTS.id, CHILDREN),
                Output({TYPE: PROJECT_HEADER_ID, INDEX: PAGE_RIGHTS.id}, CHILDREN),
                Input(TOKEN, DATA),
-               State(PROJECT_ID_STORE, DATA))
+               State(PROJECT_ID_STORE, DATA),
+               checks=[verify_project_access])
 def render_page(token: dict, project_id: int) -> tuple[dmc.Stack, dmc.Stack]:
     """
     Renders page's initial layout / content.
@@ -104,6 +106,7 @@ def render_page(token: dict, project_id: int) -> tuple[dmc.Stack, dmc.Stack]:
     State(PROJECT_ID_STORE, DATA),
     Input({TYPE: BUTTON, INDEX: UPDATE_PROJECT_RIGHTS}, N_CLICKS),
     State({TYPE: TABLE, INDEX: MANAGE_PROJECT_RIGHTS}, ROW_DATA),
+    checks=[verify_project_access],
     prevent_initial_call=True
 )
 def update_rights_callback(token: dict,
@@ -152,7 +155,8 @@ def _assign_project_role(user: AppUser, role: Role | None = None) -> Role:
     Output({TYPE: MODAL, INDEX: ADD_PROJECT_USER_RIGHTS}, CHILDREN),
     State(TOKEN, DATA),
     State(PROJECT_ID_STORE, DATA),
-    Input({TYPE: BUTTON, INDEX: ADD_PROJECT_USER_RIGHTS}, N_CLICKS)
+    Input({TYPE: BUTTON, INDEX: ADD_PROJECT_USER_RIGHTS}, N_CLICKS),
+    checks=[verify_project_access],
 )
 def open_rights_modal(token: dict, project_id: int, n_clicks: int):
     """
@@ -178,6 +182,7 @@ def open_rights_modal(token: dict, project_id: int, n_clicks: int):
                State({TYPE: MULTI_SELECT, INDEX: PROJECT_USERS}, VALUE),
                State({TYPE: MULTI_SELECT, INDEX: MODULE}, VALUE),
                prevent_initial_call=True,
+               checks=[verify_project_access],
                running=[(Output({TYPE: BUTTON, INDEX: ADD_PROJECT_RIGHTS_MODAL_CONFIRM}, LOADING), True, False)])
 def add_rights(token: dict,
                project_id: int,
@@ -233,6 +238,7 @@ def add_rights(token: dict,
     Input({TYPE: TABLE, INDEX: MANAGE_PROJECT_RIGHTS}, CELL_RENDERER_DATA),
     State({TYPE: TABLE, INDEX: MANAGE_PROJECT_RIGHTS}, ROW_DATA),
     prevent_initial_call=True,
+    checks=[verify_project_access],
 )
 def open_remove_confirmation_modal(token: dict,
                                    project_id: int,
@@ -256,7 +262,8 @@ def open_remove_confirmation_modal(token: dict,
     Input({TYPE: BUTTON, INDEX: REMOVE_PROJECT_USER_CONFIRM}, N_CLICKS),
     Input({TYPE: BUTTON, INDEX: REMOVE_PROJECT_USER_CANCEL}, N_CLICKS),
     State(USER_DELETION_STORE, DATA),
-    prevent_initial_call=True
+    prevent_initial_call=True,
+    checks=[verify_project_access],
 )
 def remove_consultant(token: dict,
                       project_id: int,

@@ -20,7 +20,6 @@ from ecodev_front import Page
 from ecodev_front import TOKEN
 from ecodev_front import TYPE
 
-from app.constants import PROJECT_ID_STORE
 from app.pages.common.custom_callback import safe_callback
 from app.pages.module_style_guide.page_colors import COLOR_PALETTE_CLIPBOARD
 from app.pages.module_style_guide.page_colors import COLOR_PALETTE_HEX_BUTTON
@@ -46,9 +45,8 @@ PAGE_COLORS = Page(
 
 
 @safe_callback(Output(PAGE_COLORS.id, CHILDREN),
-               Input(TOKEN, DATA),
-               State(PROJECT_ID_STORE, DATA))
-def render_page(token: dict, project_id: int):
+               Input(TOKEN, DATA))
+def render_page(token: dict):
     """
     Renders page's initial layout / content.
     NOTE: Page access is checked via the safe_callback decorator,

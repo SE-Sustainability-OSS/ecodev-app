@@ -13,6 +13,7 @@ from ecodev_front import TOKEN
 
 from app.constants import PROJECT_ID_STORE
 from app.pages.common.custom_callback import safe_callback
+from app.pages.common.custom_checks import verify_project_access
 
 
 PAGE_COMPARISON = Page(
@@ -27,11 +28,10 @@ PAGE_COMPARISON = Page(
 
 @safe_callback(Output(PAGE_COMPARISON.id, CHILDREN),
                Input(TOKEN, DATA),
-               State(PROJECT_ID_STORE, DATA))
+               State(PROJECT_ID_STORE, DATA),
+               checks=[verify_project_access])
 def render_page(token: dict, project_id: int):
     """
     Renders page's initial layout / content.
-    NOTE: Page access is checked via the safe_callback decorator,
-    to disable this check, set check_access to False.
     """
     return dmc.Stack(['Hello world!'], align='center', gap='xs')

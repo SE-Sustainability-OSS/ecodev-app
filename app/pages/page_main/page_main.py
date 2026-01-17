@@ -39,8 +39,7 @@ PAGE_MAIN = Page(
 @safe_callback(Output(PAGE_MAIN.id, CHILDREN),
                Input(TOKEN, DATA),
                State(PROJECT_ID_STORE, DATA),
-               State(ALERT_STORE, DATA),
-               check_access=False)
+               State(ALERT_STORE, DATA))
 def get_main_page(token: dict, project_id: int | None, alert_store: dict[str, bool]) -> dmc.Box:
     """
     Renders the main / landing page, on which user either create an new project,

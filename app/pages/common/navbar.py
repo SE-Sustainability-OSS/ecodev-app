@@ -1,7 +1,6 @@
 """
 File implementing the modules and page's navbar callback.
 """
-from dash import callback
 from dash import Input
 from dash import Output
 from dash import State
@@ -18,15 +17,16 @@ from sqlmodel import Session
 
 from app.constants import PROJECT_ID_STORE
 from app.db_model.retrievers.access_retrievers import verify_project_module_access
+from app.pages.common.custom_callback import safe_callback
 from app.pages.registry import get_modules
 
 
-@callback(Output(APPSHELL, NAVBAR,),
-          Output(NAVBAR, CHILDREN),
-          Input(URL, PATHNAME),
-          Input(TOKEN, DATA),
-          State(PROJECT_ID_STORE, DATA))
-def show_navbar(pathname: str, token: dict, project_id: int):
+@safe_callback(Output(APPSHELL, NAVBAR,),
+               Output(NAVBAR, CHILDREN),
+               Input(TOKEN, DATA),
+               State(PROJECT_ID_STORE, DATA),
+               Input(URL, PATHNAME))
+def show_navbar(token: dict, project_id: int, pathname: str):
     """
     Callback displaying the main page navbar and aside (if any)
     """

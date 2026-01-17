@@ -68,7 +68,7 @@ def create_update_computation(user: AppUser,
     Creates a computation step, or updates its completed status
     """
     if computation := get_computation(name, project_id, session):
-        _update_computation_status(computation, user, completed, failed)
+        _update_computation_status(computation, completed, failed)
     else:
         computation = Computation(name=name, project_id=project_id, launched_by=user.id)
         session.add(computation)
@@ -77,7 +77,7 @@ def create_update_computation(user: AppUser,
 
     log.info(f'Computation {name} (for project_id: {project_id}) '
              f'{"completed" if completed else "launched"}!')
-    return computation  # type:ignore[return-value]
+    return computation
 
 
 def _update_computation_status(computation: Computation,
