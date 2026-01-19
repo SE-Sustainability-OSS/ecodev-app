@@ -58,5 +58,5 @@ services:
 # NETWORKS
 networks:
   app-network:
-   name: app-network
+   name:  ${app_network:-test}
    external: true
