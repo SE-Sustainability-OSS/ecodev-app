@@ -3,7 +3,7 @@ app_name: 'EcoApp'
 
 authentication:
   algorithm: HS256
-  access_token_expire_minutes: 1440
+  access_token_expire_minutes: 480 # 8hrs
   secret_key: null
 
 database:
