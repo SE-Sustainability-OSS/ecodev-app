@@ -7,7 +7,6 @@ services:
       - ${jupyter_port:-5000}:5000
     volumes:
       - ./tests:/app/tests
-
   ecodev_app_backend:
     ports:
       - ${app_port:-8000}:80

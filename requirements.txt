@@ -1,4 +1,5 @@
-ecodev-core==0.0.33
-ecodev-front==0.0.59
-gunicorn == 21.*
-gevent==23.*
+ecodev-core==0.*
+ecodev-front==0.*
+gunicorn == 22.*
+gevent==25.*
+bcrypt==4.*

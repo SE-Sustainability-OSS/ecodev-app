@@ -1,0 +1,24 @@
+---
+app_name: 'EcoApp'
+
+authentication:
+  algorithm: HS256
+  access_token_expire_minutes: 480 # 8hrs
+  secret_key: null
+
+database:
+  db_port: 5432
+  db_name: null
+  db_host: null
+  db_username: null
+  db_password: null
+
+smtp:
+  email_smtp: smtp-mail.outlook.com
+  email_port: 587
+  email_sender: null
+  email_password: null
+
+dash_settings:
+  debug: false
+  gunicorn_setup: true
