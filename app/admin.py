@@ -3,13 +3,12 @@ Module implementing all sqladmin views
 """
 from sqladmin import ModelView
 
-from app.db_model import Product
+from app.db_model.project import Project
 
 
-class ProductAdmin(ModelView, model=Product):  # type: ignore
+class ProjectAdmin(ModelView, model=Project):  # type: ignore
     """
-    Example admin view
+    Example: Project admin view
     """
-
-    column_list = [Product.id, Product.name, Product.type, Product.value]
-    column_searchable_list = [Product.name]
+    column_list = [Project.id, Project.name, Project.description, Project.year]
+    column_searchable_list = [Project.name, Project.year]

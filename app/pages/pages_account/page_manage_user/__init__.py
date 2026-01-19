@@ -1,0 +1,15 @@
+MANAGE_USERS = 'manage-users'
+UPDATE_USERS = 'update-users'
+
+ADD_USER_MODAL_CONFIRM = 'add-user-modal-confirm'
+ADD_USER_MODAL_CANCEL = 'add-user-modal-cancel'
+ADD_USER = 'add-user'
+USERS = 'users'
+USER_EMAIL = 'user-email'
+USER_PERMISSION = 'user-permission'
+USER_CLIENT = 'user-client'
+ADD_USER_MODAL_ERROR = 'add-user-modal-error'
+UPDATE_USERS_ALERT = 'update-users-alert'
+
+REMOVE_USER_CONFIRM = 'remove-user-confirm'
+REMOVE_USER_CANCEL = 'remove-user-cancel'
