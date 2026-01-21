@@ -21,7 +21,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Install packages
 RUN python3 -m pip install --upgrade pip
 COPY ./requirements.txt /requirements.txt
-RUN python3 -m pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir -r /requirements.txt
 
 
 #########
