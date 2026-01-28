@@ -4,7 +4,14 @@ services:
     image: ecodev_app:latest
     restart: always
     container_name: ecodev_app
-    command: gunicorn app.dash_app:server --workers 4 --worker-class gevent  --bind 0.0.0.0:80
+    # https://gunicorn.org/asgi/?h=worker+connections#worker-connections
+    # https://gunicorn.org/guides/docker/?h=max+requests#out-of-memory
+    # https://gunicorn.org/reference/settings/?h=tmp+dir#worker_tmp_dir
+    # https://pythonspeed.com/articles/gunicorn-in-docker/
+    # https://uvicorn.dev/deployment/#gunicorn
+    command: gunicorn app.dash_app:server  --timeout 300 --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80 --worker-tmp-dir /dev/shm  --max-requests 500 --max-requests-jitter 50 --worker-connections 1000
+    # For debugging purposes
+    #command: uvicorn app.dash_app:server  --host 0.0.0.0 --port 80 --reload
     environment:
       TZ: Europe/Paris
     volumes:
