@@ -2,6 +2,7 @@
 Module creating / instantiating the dash app
 """
 import dash
+from asgiref.wsgi import WsgiToAsgi
 from dash import Dash
 from ecodev_core import create_db_and_tables
 from ecodev_core import engine
@@ -86,16 +87,13 @@ def _register_dash_pages() -> None:
 
 
 DASH_APP = init_dash_app()
-
-# Required for gunicorn setup
-server = DASH_APP.server
+server = WsgiToAsgi(DASH_APP.server)
 
 if not SETTINGS.dash_settings.gunicorn_setup:
-    DASH_APP.run(
-        host='0.0.0.0',
-        port=80,
-        debug=SETTINGS.dash_settings.debug,
-        use_reloader=debug if (debug := SETTINGS.dash_settings.debug) is None else False,
+    DASH_APP.enable_dev_tools(
+        dev_tools_ui=SETTINGS.dash_settings.debug,
+        dev_tools_props_check=SETTINGS.dash_settings.debug,
+        dev_tools_hot_reload=SETTINGS.dash_settings.debug,
     )
 
 
