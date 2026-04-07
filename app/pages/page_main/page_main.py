@@ -2,28 +2,21 @@
 Module implementing the main page
 """
 import dash_mantine_components as dmc
+from dash import callback
 from dash import Input
 from dash import Output
-from dash import State
-from ecodev_core import engine
-from ecodev_core import logger_get
 from ecodev_front import basic_layout
 from ecodev_front import CHILDREN
-from ecodev_front import DATA
+from ecodev_front import FOOTER_ID
+from ecodev_front import HEADER_ID
+from ecodev_front import HREF
 from ecodev_front import Page
-from ecodev_front import TOKEN
-from sqlmodel import Session
+from ecodev_front import PATHNAME
+from ecodev_front import URL
 
-from app.constants import ALERT_STORE
-from app.constants import PROJECT_ID_STORE
-from app.pages.common.custom_callback import safe_callback
-from app.pages.page_main.common.c_intro_text import INTRO_TEXT
-from app.pages.page_main.common.cb_documentation_popup import DOCUMENTATION
-from app.pages.page_main.common.cb_documentation_popup import documentation_popup
-from app.pages.page_main.project_options.cb_module_buttons import module_buttons
-from app.pages.page_main.project_options.cb_project_loader import project_loader
-
-log = logger_get(__name__)
+from app.constants import MAIN_PAGE_URL
+from app.pages.common import display_app_header
+from app.pages.common import main_footer
 
 
 PAGE_MAIN = Page(
@@ -36,24 +29,20 @@ PAGE_MAIN = Page(
 )
 
 
-@safe_callback(Output(PAGE_MAIN.id, CHILDREN),
-               Input(TOKEN, DATA),
-               State(PROJECT_ID_STORE, DATA),
-               State(ALERT_STORE, DATA))
-def get_main_page(token: dict, project_id: int | None, alert_store: dict[str, bool]) -> dmc.Box:
+@callback(Output(PAGE_MAIN.id, CHILDREN),
+          Output(HEADER_ID, CHILDREN),
+          Output(FOOTER_ID, CHILDREN),
+          Input(URL, PATHNAME),
+          Input(URL, HREF))
+def get_main_page(url_pathname: str, href: str) -> tuple[list[dmc.Box], list[dmc.Box], list[dmc.Box]]:
     """
-    Renders the main / landing page, on which user either create an new project,
-    or select a previous project which displays module buttons.
-    NOTE: No access check on this page, as user may not yet have any project.
+    Renders the main page.
     """
-    with Session(engine) as session:
-        return dmc.Box([
-            dmc.Container([
-                dmc.Stack([
-                    INTRO_TEXT,
-                    documentation_popup() if alert_store.get(DOCUMENTATION, True) else None,
-                    project_loader(token, project_id, session),
-                    module_buttons(token, project_id, session),
-                ], gap='xs', w='100%'),
-            ], w='80%', fluid=True)
-        ])
+    if not url_pathname == MAIN_PAGE_URL:
+        return [], [], []
+
+    page = dmc.Stack([
+        dmc.Text("""Hello World""", ta='center', fz=13, mb=10, fs='italic', c='green.4'),
+
+    ])
+    return page, display_app_header(), main_footer()

@@ -28,16 +28,16 @@ setup:		##@setup Install the pre-commit
 	pre-commit install
 
 launch-jupyter:            ##@docker Launch a jupyter notebook from a fresh container
-	docker exec ecodev_app jupyter notebook --no-browser --ip 0.0.0.0 --allow-root --port 5000
+	docker exec luxdem jupyter notebook --no-browser --ip 0.0.0.0 --allow-root --port 5000
 
 prod-launch:            ##@docker Launch production containers
 	docker compose -f docker-compose.yml up -d
 
 prod-build:            ##@docker build production image
-	docker build --tag ecodev_app . -
+	docker build --tag luxdem . -
 
 dev-build:            ##@docker build development image
-	docker build --tag ecodev_app . -f Dockerfile-dev --no-cache
+	docker build --tag luxdem . -f Dockerfile-dev --no-cache
 
 all-tests:		##@tests Run all the tests
-	docker exec ecodev_app python3 -m unittest discover tests
+	docker exec luxdem python3 -m unittest discover tests

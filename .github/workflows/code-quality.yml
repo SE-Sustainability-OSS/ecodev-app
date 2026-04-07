@@ -29,14 +29,14 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          docker build . --file Dockerfile --tag ecodev_app:latest
+          docker build . --file Dockerfile --tag luxdem:latest
 
       - name: Test with UnitTest
         uses: addnab/docker-run-action@v3
         env:
           POSTGRES_HOST: postgres
         with:
-          image: ecodev_app:latest
+          image: luxdem:latest
           options:
             -e algorithm=HS256
             -e access_token_expire_minutes=1440
@@ -69,7 +69,7 @@ jobs:
       - name: Analysing the code with pylint
         uses: addnab/docker-run-action@v3
         with:
-          image: ecodev_app:latest
+          image: luxdem:latest
           options: -v ${{github.workspace}}:/app/
           run: |
             python3 -m pip install pylint anybadge

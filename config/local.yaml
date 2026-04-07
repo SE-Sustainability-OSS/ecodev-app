@@ -1,5 +1,5 @@
 ---
-app_name: EcoApp
+app_name: LuxDem
 
 authentication:
   algorithm: HS256

@@ -1,2 +1,5 @@
 # Add only additional dependencies for dev-mode
 notebook==6.*
+beautifulsoup4==4.*
+pdfplumber==0.11.*
+lxml==6.*

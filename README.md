@@ -5,7 +5,7 @@ This app can serve as a template. It includes some basic functionalities such as
 customisable components such as navbar menus, and customised component builders.
 
 Associated documentation can be found [here](https://ecodev-doc.lcabox.com/cookiecutters/app/).
- 
+
 
 ### Usage
 1. First create a `<new-repository>` in your GitHub, then follow these commands, replacing any mention of `<new-repository>`, with your repo name:
@@ -15,13 +15,13 @@ Associated documentation can be found [here](https://ecodev-doc.lcabox.com/cooki
     mkdir <new-repository>; cd <new-repository>
 
     # Make a bare clone of this repository
-    git clone https://github.com/SE-Sustainability-OSS/ecodev-app
+    git clone https://github.com/SE-Sustainability-OSS/luxdem
 
     # Move files to parent directory
-    cd .. ; mv <new-repository>/ecodev-app/* <new-repository>/
+    cd .. ; mv <new-repository>/luxdem/* <new-repository>/
 
-    # Delete remaining ecodev-app files
-    cd <new-repository> ; rm -rf ecodev-app/
+    # Delete remaining luxdem files
+    cd <new-repository> ; rm -rf luxdem/
 
     # Remove git file
     rm -rf .git
@@ -34,7 +34,7 @@ Associated documentation can be found [here](https://ecodev-doc.lcabox.com/cooki
     ```
 
 
-2. Search for and replace any references to `ecodev-app` and `ecodev_app` within the repo, with your own app name.
+2. Search for and replace any references to `luxdem` and `luxdem` within the repo, with your own app name.
 
     - `docker-compose.yml`
     - `docker-compose.override.yml`
@@ -71,7 +71,7 @@ Use the docs/issues_template whenever possible. It will greatly help the develop
 1. Clone the repo and build the docker image:
 
     ```git
-    git clone git@github.com:FR-PAR-ECOACT/ecodev-app.git
+    git clone git@github.com:FR-PAR-ECOACT/luxdem.git
     ```
 
 2. Create an `.env` file and save it under the application's root folder. It must contain the following (you have an `env_template` to help you):
